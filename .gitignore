@@ -11,3 +11,6 @@ __pycache__/
 *.py[cod]
 .tmp-*.log
 forgeops-mcp-deploy.zip
+
+.pytest_cache/
+*.zip
