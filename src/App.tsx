@@ -39,12 +39,42 @@ function BrandMark() {
 
 function LiveDataLabel() {
   const { data } = useWorkbenchData();
+  const shortPlant = data.incident.plant.replace('Foundry Cluster - ', '');
   return (
-    <div className="live-status-pill">
+    <div className="live-status-pill" title={`${data.incident.plant} • Edge Telemetry`}>
       <span className="pulsing-indicator" />
       <span className="font-mono text-secondary" style={{ fontSize: '11px' }}>
-        {data.incident.plant} • Edge
+        {shortPlant} • Edge
       </span>
+    </div>
+  );
+}
+
+function ThemeToggle({ theme, setTheme }: { theme: Theme; setTheme: (t: Theme) => void }) {
+  return (
+    <div className="theme-toggle-segmented" role="radiogroup" aria-label="Theme selector">
+      <button
+        type="button"
+        className={`theme-segment-btn ${theme === 'dark' ? 'active' : ''}`}
+        onClick={() => setTheme('dark')}
+        title="Switch to Dark Mode"
+        aria-checked={theme === 'dark'}
+        role="radio"
+      >
+        <MoonIcon size={12} />
+        <span>Dark</span>
+      </button>
+      <button
+        type="button"
+        className={`theme-segment-btn ${theme === 'light' ? 'active' : ''}`}
+        onClick={() => setTheme('light')}
+        title="Switch to Light Mode"
+        aria-checked={theme === 'light'}
+        role="radio"
+      >
+        <SunIcon size={12} />
+        <span>Light</span>
+      </button>
     </div>
   );
 }
@@ -59,8 +89,6 @@ function App() {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('forgeops-theme', theme);
   }, [theme]);
-
-  const toggleTheme = () => setTheme(t => t === 'dark' ? 'light' : 'dark');
 
   return (
     <WorkbenchDataProvider>
@@ -102,20 +130,18 @@ function App() {
             </div>
 
             <div className="header-actions">
-              <LiveDataLabel />
+              <ThemeToggle theme={theme} setTheme={setTheme} />
+              
               <button
                 className="incident-alarm-pill"
                 onClick={() => setView('workbench')}
                 title="Active Incident: INC-ENG-2401 (+14.3% SEC)"
               >
-                <AlertTriangleIcon size={13} />
+                <AlertTriangleIcon size={12} />
                 <span>INC-ENG-2401 • +14.3%</span>
               </button>
-              <button className="theme-toggle-btn" onClick={toggleTheme} aria-label="Toggle theme"
-                title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}>
-                {theme === 'dark' ? <SunIcon size={14} /> : <MoonIcon size={14} />}
-                <span>{theme === 'dark' ? 'Light' : 'Dark'}</span>
-              </button>
+
+              <LiveDataLabel />
               <div className="avatar-pill" title="Plant Energy Engineer (Shift B)">EE</div>
             </div>
           </header>

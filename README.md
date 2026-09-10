@@ -1,185 +1,539 @@
-# ForgeOps Energy
-### Agentic AI for Industrial Energy & Process Efficiency
-> **Reduce Energy. Improve Efficiency. Decarbonise. Stay Competitive.**  
-> *Targeted for Indian Manufacturing SMEs · Smart Manufacturing Challenge 04*
+# ForgeOps Energy ⚡
+
+> **Continuously reduce specific energy consumption while preserving throughput, quality, safety, and economic viability.**
+
+An enterprise-grade **agentic industrial decision-intelligence platform** specifically architected for Indian manufacturing SMEs (Foundries, Forging, Heavy Engineering, Steel Fabrication, and Textiles). Aligned with the Bureau of Energy Efficiency (**BEE ADEETIE**) scheme to unlock bankable, investment-grade energy audits and rapid CapEx payback (<3 months).
 
 ---
 
-## 1. Executive Summary
+## 📑 Table of Contents
 
-**ForgeOps Energy** is a vendor-neutral agentic AI decision-intelligence layer that sits above existing factory infrastructure—Schneider, Siemens, ABB, or legacy equipment—to continuously identify why energy consumption is inefficient, quantify the production and economic impact of possible interventions, and recommend the lowest-cost actions that reduce Specific Energy Consumption (kWh/unit or kWh/ton) without sacrificing throughput, quality, or safety.
-
-- **Core Formula:**
-  $$\min \text{SEC} = \min \left( \frac{\text{kWh}}{\text{Good Output}} \right)$$
-- **Hard Operational Constraints:**
-  $$\text{Throughput} \ge \text{Baseline}, \quad \text{Quality} \ge \text{Baseline}, \quad \text{Safety} = \text{Preserved}$$
-- **Key Metric Improvement:**
-  $$\text{SEC}_{\text{improvement}} = \frac{\text{SEC}_{\text{baseline}} - \text{SEC}_{\text{optimized}}}{\text{SEC}_{\text{baseline}}} \times 100$$
-
----
-
-## 2. The Indian SME Problem & Opportunity
-
-Indian manufacturing SMEs are the backbone of industrial output, yet face acute structural energy challenges:
-- **35–40%** of India's total energy is consumed by industry.
-- **15–30%** of SME manufacturing production costs come from energy.
-- **Over 70%** of SMEs operate with fragmented instrumentation, no submetering, and zero real-time correlation between energy bills and batch production records.
-- **BEE ADEETIE Alignment:** The Bureau of Energy Efficiency (BEE) ADEETIE scheme (*Assistance in Deploying Energy Efficient Technologies in Industries & Establishments*) targets **60 energy-intensive clusters across 14 sectors** (Foundries, Forging, Ceramics, Textiles, Food Processing, Chemicals). ForgeOps Energy serves as the digital decision layer for investment-grade energy audits (IGEA) and bankable Detailed Project Reports (DPR).
+1. [Product Overview & Thesis](#1-product-overview--thesis)
+2. [The Indian SME Reality & Market Opportunity](#2-the-indian-sme-reality--market-opportunity)
+3. [Mathematical Formulation & Hard Constraints](#3-mathematical-formulation--hard-constraints)
+4. [End-to-End System Architecture](#4-end-to-end-system-architecture)
+5. [The 4-Agent Autonomous Intelligence Engine](#5-the-4-agent-autonomous-intelligence-engine)
+6. [Model Context Protocol (MCP) Server Specification](#6-model-context-protocol-mcp-server-specification)
+7. [Industrial Case Study: Belgaum Foundry Incident](#7-industrial-case-study-belgaum-foundry-incident)
+8. [Frontend Design System & Interactive Modules](#8-frontend-design-system--interactive-modules)
+9. [Backend Agent Orchestration & REST API](#9-backend-agent-orchestration--rest-api)
+10. [BEE ADEETIE Alignment & SME Economics](#10-bee-adeetie-alignment--sme-economics)
+11. [Repository Structure](#11-repository-structure)
+12. [Installation & Getting Started](#12-installation--getting-started)
+13. [Testing & Verification](#13-testing--verification)
+14. [Deployment & Production Readiness](#14-deployment--production-readiness)
 
 ---
 
-## 3. The 4-Agent Architecture
+## 1. Product Overview & Thesis
 
-ForgeOps Energy is strictly engineered as a **4-agent architecture** (Optimization is an integral capability of the Execution Agent, keeping the pipeline lean and deterministic):
+Traditional energy management systems (EMS) in manufacturing act merely as passive recording voltmeters: they display dashboards with kilowatt-hour charts, trigger noisy threshold alarms, and leave the difficult engineering work of root cause investigation to overworked plant engineers.
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    EXISTING FACTORY FLOOR                   │
-│  Energy Meters (Modbus) · Sensors · PLC/SCADA · MES · CMMS  │
-└──────────────────────────────┬──────────────────────────────┘
-                               │
-                               ▼
-┌─────────────────────────────────────────────────────────────┐
-│                  INDUSTRIAL EDGE GATEWAY                    │
-│    Modbus RTU/TCP · OPC-UA · MQTT · Local Ring Buffer       │
-└──────────────────────────────┬──────────────────────────────┘
-                               │
-                               ▼
-┌─────────────────────────────────────────────────────────────┐
-│                     ENERGY DATA PLATFORM                    │
-│    Time Series DB · Data Lake · Asset Context · Streaming   │
-└──────────────────────────────┬──────────────────────────────┘
-                               │
-                               ▼
-┌─────────────────────────────────────────────────────────────┐
-│               FORGEOPS ENERGY ENGINE (4 AGENTS)             │
-├─────────────────────────────────────────────────────────────┤
-│  1. PLANNER AGENT                                           │
-│     • Formulates: min(SEC = kWh/ton)                        │
-│     • Enforces constraints: Throughput, Quality, Safety     │
-│     • Directs MCP tool selection                            │
-├─────────────────────────────────────────────────────────────┤
-│  2. RESEARCH AGENT                                          │
-│     • Retrieves telemetry via ForgeOps MCP tools            │
-│     • Queries energy submeters, pressure SCADA, CMMS logs   │
-│     • Constructs cryptographically grounded evidence bundle │
-├─────────────────────────────────────────────────────────────┤
-│  3. ANALYSIS AGENT                                          │
-│     • Detects anomalies (+14.3% SEC spike)                  │
-│     • Correlates pressure drop (6.1 bar) with motor current │
-│     • Builds causal inference graph & isolates root cause   │
-├─────────────────────────────────────────────────────────────┤
-│  4. EXECUTION AGENT (Includes Scenario Optimization)        │
-│     • Simulates interventions (A: Leak, B: Setpoint, C: Both)│
-│     • Pareto tradeoff optimization (SEC, Cost, Downtime)    │
-│     • Quantifies ROI, Payback (1.5 mo), and CO₂ abatement   │
-│     • Generates actionable recommendation for human signoff │
-└──────────────────────────────┬──────────────────────────────┘
-                               │
-                               ▼
-┌─────────────────────────────────────────────────────────────┐
-│                  HUMAN APPROVAL GATEWAY                     │
-│        [Approve Intervention]  ·  [Reject]  ·  [Simulate]   │
-└──────────────────────────────┬──────────────────────────────┘
-                               │
-                               ▼
-┌─────────────────────────────────────────────────────────────┐
-│             VERIFICATION FEEDBACK LOOP                      │
-│        Edge Gateway measures actual post-repair drop        │
-│        SEC: 11.2 → 9.2 kWh/ton (-18%) · Impact Verified     │
-└─────────────────────────────────────────────────────────────┘
+**ForgeOps Energy** is an **active decision-intelligence platform**. Rather than asking *"What was our energy bill yesterday?"*, ForgeOps continuously computes:
+
+> *"Why is Line 2 currently consuming +14.3% more energy per ton of good castings than its baseline, what physical sub-system is failing, what are the Pareto-optimal trade-offs between repair cost and downtime, and what precise work order should be dispatched to fix it?"*
+
+### The Core Operational Loop
+
+```text
+┌────────────────┐      ┌────────────────┐      ┌────────────────┐
+│  FACTORY FLOOR │ ───► │  DETECT SPIKE  │ ───► │   INVESTIGATE  │
+│ Telemetry & MS │      │  SEC Anomaly   │      │ Multi-MCP Data │
+└────────────────┘      └────────────────┘      └───────┬────────┘
+                                                        │
+┌────────────────┐      ┌────────────────┐              ▼
+│  VERIFICATION  │ ◄─── │ HUMAN APPROVAL │ ◄─── ┌────────────────┐
+│ 9.2 kWh/t Post │      │ Plant Operator │      │   DIAGNOSE &   │
+│ Close Feedback │      │ Sign-off Gate  │      │ OPTIMIZE (SIM) │
+└────────────────┘      └────────────────┘      └────────────────┘
 ```
 
 ---
 
-## 4. Realistic User Story: Belgaum Foundry SME
+## 2. The Indian SME Reality & Market Opportunity
 
-| Stage | Time | Event | Telemetry & Evidence | Decision Outcome |
-|---|---|---|---|---|
-| **1. Anomaly Detected** | 08:30 AM | SEC Spikes +14.3% | SEC rises from 9.8 to 11.2 kWh/ton on Line 2 | Throughput (10.2t) and quality (97.6%) stable; flag non-productive waste |
-| **2. Root Cause Analysis** | 08:33 AM | ForgeOps isolates leak | Air pressure drops 7.2 → 6.1 bar; compressor modulation +21%; motor current 142A (+12%); 3 recurring CMMS leak logs | Root cause: Line 2 distribution manifold leak (93% confidence) |
-| **3. What-If Simulation** | 08:35 AM | Multi-scenario evaluation | Simulates Options A, B, C, D | Option C (Repair + Setpoint 6.5 bar) identified as Pareto optimal |
-| **4. Recommendation** | 08:35 AM | Human approval requested | Cost ₹9,500; Downtime 48 min during changeover; Payback 1.5 months | Plant Supervisor approves; CMMS Work Order WO-ENG-8821 dispatched |
-| **5. Verification** | 11:30 AM | Impact verified | Post-repair SEC drops to 9.2 kWh/ton (-18.0%); Throughput 10.2t (0% loss); Quality 97.8% (+0.2%) | **1,840 kWh/day (₹6,240/day) saved. Case closed.** |
+India's manufacturing sector comprises over 63 million Micro, Small, and Medium Enterprises (MSMEs), contributing ~30% of India's GDP and ~45% of total manufacturing output.
 
----
+### Structural Industry Bottlenecks:
+- **35–40%** of total national energy is consumed by industrial manufacturing.
+- **15–30%** of total operational expenditure in Foundries and Forging plants is spent on electrical and thermal energy.
+- **70%+ of SME Floors are Fragmented**: Submeters are rarely installed at the machine level, compressed air distribution is chronically leaky (20–40% air loss is typical), and production logs are kept on paper or isolated spreadsheets.
+- **Prohibitive Legacy Software**: Traditional Enterprise SCADA / EMS solutions cost ₹15,00,000 to ₹50,00,000+ with 9-month deployment cycles—out of reach for typical tier-2/3 SMEs.
 
-## 5. Value Proposition to Indian SMEs
-
-- **8–20% Reduction** in Specific Energy Consumption (SEC).
-- **10–15% Reduction** in total monthly energy billing.
-- **5–15% Reduction** in Scope 1 & 2 carbon emissions.
-- **1–3 Months** typical CapEx payback period.
-- **Low-Cost Hardware Retrofit:** ₹20,000 – ₹60,000 for plug-and-play DIN-rail edge gateway and submeters.
-- **Zero Production Disruption:** Interventions synchronized with scheduled tooling changeovers.
+### The ForgeOps Low-CapEx Advantage:
+- **Plug-and-Play Edge Hardware**: Retrofit with DIN-rail edge gateways (Modbus RS-485 / MQTT) costing ₹20,000 – ₹60,000.
+- **Non-Invasive**: Reads existing meter pulse outputs, clamp-on CT sensors, and pneumatic pressure transducers without halting the production line.
+- **Direct Payback**: Payback achieved within 1.0 to 3.0 months through immediate elimination of compressor idling, peak demand penalties, and pneumatic leaks.
 
 ---
 
-## 6. Repository Structure
+## 3. Mathematical Formulation & Hard Constraints
+
+ForgeOps Energy operates as a constrained optimization problem. It balances thermodynamic physics with hard factory production constraints.
+
+### 1. Primary Objective Function
+Minimize Specific Energy Consumption (SEC) per unit of verified good output:
+
+$$\min \text{SEC} = \min \left( \frac{\text{Total Electrical Energy (kWh)} + \text{Thermal Equivalent (kWh)}}{\text{Good Net Output (Metric Tons)}} \right)$$
+
+### 2. Hard Operational Constraints
+Any proposed intervention or setpoint change generated by the agents must strictly satisfy:
+
+$$\text{Throughput} \ge \text{Throughput}_{\text{baseline}} \quad (\text{e.g., } \ge 10.2 \text{ t/h})$$
+
+$$\text{Rejection Rate} \le \text{Rejection}_{\text{threshold}} \quad (\text{e.g., } \le 2.4\%)$$
+
+$$\text{Pneumatic Pressure} \ge P_{\text{min\_clamping}} \quad (\text{e.g., } \ge 5.5 \text{ bar for safety interlocks})$$
+
+$$\text{Thermal Holding Temp} \in [T_{\text{min\_liquidus}} + \Delta T, T_{\text{max\_oxidation}}] \quad (\text{Foundry pouring: } 1420^\circ\text{C} - 1460^\circ\text{C})$$
+
+### 3. Economic Viability Constraint
+CapEx and OpEx for any proposed intervention must produce positive NPV within the operational fiscal quarter:
+
+$$\text{Simple Payback (Months)} = \frac{\text{Implementation Cost (₹)}}{\text{Verified Monthly Energy Savings (₹)}} \le 3.0 \text{ months}$$
+
+---
+
+## 4. End-to-End System Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                       LEVEL 0 & 1: FACTORY FLOOR                        │
+│  Induction Furnaces · Compressors · Molding Lines · Modbus Submeters    │
+│  Pressure Transducers · CT Clamps · Machine Thermocouples · PLCs        │
+└────────────────────────────────────┬────────────────────────────────────┘
+                                     │ RS-485 / Modbus RTU / 4-20mA
+                                     ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    LEVEL 2: INDUSTRIAL EDGE GATEWAY                     │
+│  DIN-rail Gateway (Node.js/Python) · MQTT/OPC-UA · Local Ring Buffer    │
+│  Edge Telemetry Filtering · 1-Second Aggregations · Zero Cloud Lock-in  │
+└────────────────────────────────────┬────────────────────────────────────┘
+                                     │ Encrypted TLS JSON Streams
+                                     ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                  LEVEL 3: FORGEOPS MCP DATA PLATFORM                    │
+│  TypeScript MCP Server (@modelcontextprotocol / NitroStack)             │
+│  Modules: energy · mes · maintenance · quality · materials · simulation │
+└────────────────────────────────────┬────────────────────────────────────┘
+                                     │ Structured Tool Calls
+                                     ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                 LEVEL 4: 4-AGENT DECISION ENGINE (FASTAPI)              │
+│ ┌───────────────────┐ ┌───────────────────┐ ┌─────────────────────────┐ │
+│ │ 1. PLANNER AGENT  │ │ 2. RESEARCH AGENT │ │   3. ANALYSIS AGENT     │ │
+│ │ Intent & Boundary │ │ MCP Data Fetcher  │ │ Causal DAG & What-If Sim│ │
+│ └─────────┬─────────┘ └─────────┬─────────┘ └────────────┬────────────┘ │
+│           │                     │                        │              │
+│           ▼                     ▼                        ▼              │
+│ ┌─────────────────────────────────────────────────────────────────────┐ │
+│ │ 4. EXECUTION AGENT (Includes Scenario Optimization & Trade-offs)    │ │
+│ └──────────────────────────────────┬──────────────────────────────────┘ │
+└────────────────────────────────────┼────────────────────────────────────┘
+                                     ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                  LEVEL 5: HUMAN-IN-THE-LOOP APPROVAL                    │
+│    Operator Workbench · Work Order Generation · Audit Trail Database    │
+└────────────────────────────────────┬────────────────────────────────────┘
+                                     │ Approved Action
+                                     ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│               LEVEL 6: CLOSED-LOOP VERIFICATION TELEMETRY               │
+│  Continuous telemetry monitoring confirms post-repair SEC drop          │
+│  11.2 kWh/t → 9.2 kWh/t (-18.0%) · Savings Verified: ₹6,240/day        │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 5. The 4-Agent Autonomous Intelligence Engine
+
+ForgeOps Energy employs a strictly bounded **4-Agent Pipeline**. Rather than using a single monolithic LLM that hallucinates calculations, each agent has an isolated responsibility and explicit contract:
+
+### 1. 🎯 Planner Agent (`backend/agents/planner/planner.py`)
+- **Responsibility**: Semantic intent classification and mathematical problem framing.
+- **Logic**:
+  - Classifies user or trigger intent into: `show_evidence`, `explain_exclusion`, `compare_options`, `constraint_query`, `generate_report`, or `simulate`.
+  - Establishes mathematical objective: $\min \text{SEC} = \frac{\text{kWh}}{\text{Good Output}}$.
+  - Formulates hard boundary constraints ($\text{Throughput} \ge 10.2\text{ t}$, $\text{Quality} \ge 97.6\%$, $\text{Safety Interlocks} = \text{Preserved}$).
+  - Determines required MCP tools sequence and passes downstream.
+  - **Zero Manufacturing Facts**: The Planner never invents numbers; it only coordinates workflow.
+
+### 2. 🔍 Research Agent (`backend/agents/research/research.py`)
+- **Responsibility**: Multi-domain telemetry retrieval via the Model Context Protocol (MCP).
+- **Logic**:
+  - Calls read-only MCP tools across five segregated factory domains:
+    - **Energy**: Submeter active power, compressor load hours, power factor, peak demand register.
+    - **MES**: Batch run logs, casting tonnage, line cycle times, heat numbers.
+    - **Maintenance (CMMS)**: Equipment maintenance logs, overdue PM schedules, vibration alarms.
+    - **Quality**: Radiographic test rejection rates, sand mold inclusions, metallurgical hardness.
+  - Assembles a cryptographically traceable, tamper-evident `EvidenceBundle` containing timestamps, units, and raw sensor readings.
+
+### 3. 🔬 Analysis Agent (`backend/agents/analysis/analysis.py`)
+- **Responsibility**: Causal root-cause isolation and physics-based counterfactual simulation.
+- **Logic**:
+  - Performs Bayesian causal inference over the evidence bundle.
+  - Evaluates cross-correlations: identifies that compressor power spiked while pneumatic line pressure dropped from 7.2 to 6.1 bar ($R^2 = 0.94$).
+  - Rules out invalid hypotheses (e.g., rejects "motor bearing failure" because vibration spectra are within ISO 10816 baseline; rejects "mold sand dampness" because moisture sensors read normal 3.2%).
+  - Executes live counterfactual simulations against the thermodynamic model across candidate interventions.
+
+### 4. ⚡ Execution Agent (`backend/agents/execution/execution.py`)
+- **Responsibility**: Multi-criteria Pareto trade-off optimization, UI orchestration, and report dispatch.
+- **Logic**:
+  - Computes Pareto frontiers balancing **Energy Saved (kWh)** vs **Implementation Cost (₹)** vs **Production Downtime (minutes)**.
+  - Formulates the optimal recommendation (Option C: Manifold seal repair + setpoint trim to 6.5 bar).
+  - Prepares the dispatchable CMMS Work Order package with parts list and torque specifications.
+  - Emits declarative UI state mutations to synchronize the frontend charts, DAG graph highlights, and interactive sliders.
+
+---
+
+## 6. Model Context Protocol (MCP) Server Specification
+
+The MCP server is located at `forgeops-mcp/` and provides typed tools adhering to the Model Context Protocol standard:
+
+| Module | Tool Name | Description | Key Parameters |
+|---|---|---|---|
+| **energy** | `get_energy_telemetry` | Real-time electrical submeter power, SEC, voltage, current, PF | `time_range`, `line_id` |
+| **energy** | `get_compressed_air_metrics` | Compressor power (kW), line pressure (bar), airflow (CFM), VFD % | `compressor_id` |
+| **mes** | `get_batch_history` | Production volume, good tonnage vs scrap, cycle time per batch | `batch_id` |
+| **mes** | `get_production_path` | Step-by-step routing of batch through foundry stations | `batch_id` |
+| **mes** | `get_queue_events` | Buffer hold times and intermediate storage delays | `batch_id` |
+| **maintenance** | `get_machine_alerts` | CMMS failure notifications, threshold crossings, alarms | `machine_id` |
+| **maintenance** | `get_maintenance_state` | Preventive maintenance schedules, past repair logs | `machine_id` |
+| **materials** | `get_supplier_lot_info` | Raw material chemistry, pig iron grade, supplier certification | `lot_id` |
+| **materials** | `get_material_constraints`| Metallurgy chemistry limits (C, Si, Mn, P, S) | `material_type` |
+| **quality** | `get_defect_records` | Rejections, surface blowholes, porosity, sand inclusions | `batch_id` |
+| **quality** | `get_inspection_results`| Tensile strength, Brinell hardness (BHN), ultrasonic test | `batch_id` |
+| **simulation** | `run_scenario` | Counterfactual physics engine simulating pneumatic/energy changes | `leak_pct`, `pressure_setpoint` |
+| **orchestrator** | `get_incident_summary` | Full aggregated multi-domain incident dossier | `incident_id` |
+| **orchestrator** | `get_timeline` | High-resolution synchronized timeline of all factory events | `batch_id` |
+| **orchestrator** | `get_causal_graph` | Causal directed acyclic graph (DAG) nodes & probability edges | `batch_id` |
+| **orchestrator** | `get_recommendations`| Pareto-ranked actionable engineering interventions | `batch_id` |
+| **orchestrator** | `get_business_impact` | Monetary impact, ROI, electricity tariff cost modeling | `batch_id` |
+
+---
+
+## 7. Industrial Case Study: Belgaum Foundry Incident
+
+### Plant Context
+- **Location**: Belgaum Industrial Area, Karnataka, India.
+- **Facility**: Grey & SG Iron Automotive Casting SME.
+- **Equipment**: Twin 1.5-ton medium-frequency induction furnaces, high-pressure green sand molding line, 75 kW rotary screw air compressor with VFD.
+- **Electricity Tariff**: ₹8.20 / kWh (Peak ToD rate: ₹9.84 / kWh).
+
+### High-Resolution Incident Timeline:
+
+| Time | Stage | Real-Time Telemetry & Evidence | Decision & Agent Action |
+|---|---|---|---|
+| **08:30 AM** | **1. Anomaly Detected** | Specific Energy Consumption (SEC) on Line 2 jumps from baseline **9.8 kWh/ton to 11.2 kWh/ton (+14.3%)**. Good casting tonnage steady at 10.2 tons/hour. | **Planner Agent** flags abnormal energy consumption without throughput justification. Triggers investigation. |
+| **08:33 AM** | **2. Causal Investigation** | Compressor power climbs from 52 kW to 68 kW (+30.8%). Air line pressure drops from 7.2 bar to 6.1 bar. Motor current reaches 142A. CMMS shows 3 recurring minor leak reports on Line 2 manifold over 14 days. | **Research & Analysis Agents** correlate pneumatic decay with compressor loading ($R^2 = 0.94$). Rejects furnace & motor fault hypotheses. Confirms 93% confidence in manifold gasket blowout. |
+| **08:35 AM** | **3. Counterfactual Simulation** | Evaluates 4 candidate interventions:<br>• **Option A**: Seal leak only $\to$ SEC 9.8 kWh/t, Cost ₹9,500.<br>• **Option B**: Trim pressure to 6.0 bar only $\to$ Inadequate safety margin for mold clamping.<br>• **Option C (Pareto Optimal)**: Seal leak + tune pressure setpoint to 6.5 bar $\to$ SEC 9.2 kWh/t, Cost ₹9,500, Payback 1.5 mo.<br>• **Option D**: Replace 75 kW compressor $\to$ Cost ₹14,50,000, Payback 18 mo (Rejected). | **Execution Agent** selects Option C as Pareto-optimal. Prepares work order package for scheduled tooling changeover at 10:15 AM. |
+| **08:37 AM** | **4. Human Sign-Off Gate** | Shift Supervisor (Vaishak) reviews the evidence bundle, financial ROI, and 48-minute changeover window in the Decision Workbench. | **Supervisor Vaishak** clicks **[Approve Intervention]**. Dispatching CMMS Work Order `WO-ENG-8821`. |
+| **11:30 AM** | **5. Closed-Loop Verification** | Maintenance team replaces EPDM flange gasket and recalibrates pressure regulator during shift change. Edge telemetry measures actual response. | **Closed-Loop Verification View** registers SEC drop to **9.2 kWh/ton (-18.0%)**. Plant throughput preserved at 10.2 t/h. Defect rate unchanged (2.4%). **1,840 kWh/day (₹6,240/day) permanently saved.** |
+
+---
+
+## 8. Frontend Design System & Interactive Modules
+
+The user interface is built with **React 18 + Vite + TypeScript**, engineered for harsh industrial lighting and control room environments.
+
+### Dual Operating Modes (Light & Dark)
+- 🌙 **Industrial Dark Mode (`theme-dark`)**: Designed for control rooms and SCADA terminals. High-contrast deep slate canvas (`#0b0f19`), neon green operational status accents (`#00e5a3`), and amber warning indicators (`#f59e0b`).
+- ☀️ **Clean Daylight Operations Mode (`theme-light`)**: Designed for sunlit shop floor tablets and office management PCs. Clean porcelain background (`#f8fafc`), crisp borders (`#e2e8f0`), high-legibility dark navy text (`#0f172a`), and color-calibrated buttons that maintain visual weight and hierarchy across both themes.
+
+### Typography
+- **Plus Jakarta Sans**: Used for modern, ultra-legible dashboard metrics, navigation, section titles, and action buttons.
+- **JetBrains Mono**: Used for all raw industrial sensor values, machine IDs (`MCH-B-007`), engineering units, and time-stamped log lines.
+
+### Core Modules & Views:
+1. **⚡ Energy Overview (`HomeDashboard.tsx`)**: High-level real-time plant KPIs, SEC gauges, active factory alerts, Line 1 vs Line 2 telemetry charts, and peak tariff band indicators.
+2. **🤖 Agentic Decision Workbench (`Workbench.tsx`)**: The central operational cockpit featuring:
+   - **Agent Pipeline Status**: Real-time visualization of Planner, Research, Analysis, and Execution agent states.
+   - **Interactive Causal DAG (`GraphPanel.tsx`)**: Visual node network isolating root cause with confidence scores.
+   - **What-If Physics Simulator (`SimulatorPanel.tsx`)**: Interactive sliders to model pressure reductions, leak remediations, and VFD setpoints.
+   - **Evidence Explorer (`EvidencePanel.tsx`)**: Raw, immutable data packets proving every assertion made by the agents.
+   - **Recommendations & Approval Gate (`RecommendationsPanel.tsx`)**: Comprehensive operator sign-off interface with financial metrics and one-click work order dispatch.
+3. **🏭 Foundry User Story (`FoundryUserStoryView.tsx`)**: Guided 5-phase interactive narrative of the Belgaum SME incident for training, demonstrations, and operator onboarding.
+4. **🏗️ Architecture & Blueprint Explorer (`ArchitectureView.tsx`)**: In-page interactive system schematic displaying data flow from shop floor sensors to cloud agents with node inspect drawers.
+5. **📊 SME Economics & BEE ADEETIE (`SmeEconomicsView.tsx`)**: Interactive financial calculator calculating simple payback, 3-year IRR, annual CO₂ emissions reduction, and BEE ADEETIE subsidy eligibility.
+6. **🔍 Closed-Loop Verification (`VerificationView.tsx`)**: Dedicated analytics view comparing pre-incident baseline, incident peak, and post-repair verified operation.
+7. **💬 Embedded Industrial Copilot (`AskForgeOpsView.tsx`)**: Natural language chat interface with conversational access to factory telemetry, historical anomalies, and maintenance records.
+
+---
+
+## 9. Backend Agent Orchestration & REST API
+
+The backend is built on **FastAPI (Python 3.10+)** with deterministic fallback guarantees and live streaming telemetry support.
+
+### Key REST Endpoints:
+
+#### 1. Execute Multi-Agent Pipeline
+```http
+POST /api/pipeline/run
+Content-Type: application/json
+
+{
+  "query": "Why did Line 2 SEC spike to 11.2 kWh/ton during Shift A?",
+  "incident_id": "INC-2407-001",
+  "batch_id": "B-2407-184",
+  "constraints": {
+    "min_throughput_tonnage": 10.0,
+    "max_downtime_minutes": 60
+  }
+}
+```
+**Response**: Returns the complete execution dossier including Planner execution graph, Research evidence bundle, Analysis causal graph, and Execution Pareto recommendations.
+
+#### 2. Run What-If Simulation
+```http
+POST /api/simulate
+Content-Type: application/json
+
+{
+  "name": "Line 2 Manifold Leak Repair + Pressure Setpoint Trim",
+  "inputs": {
+    "leak_reduction_pct": 100,
+    "line_pressure_bar": 6.5,
+    "compressor_vfd_mod_pct": 65
+  }
+}
+```
+**Response**: Returns simulated SEC (9.2 kWh/t), daily kWh savings (1,840 kWh), daily monetary savings (₹6,240), and safety compliance flag (`true`).
+
+#### 3. Human Decision Approval & Work Order Dispatch
+```http
+POST /api/decisions/approve
+Content-Type: application/json
+
+{
+  "incident_id": "INC-2407-001",
+  "recommendation": {
+    "option_id": "OPT-C",
+    "action": "Repair distribution manifold gasket and trim line pressure to 6.5 bar",
+    "cost_inr": 9500,
+    "downtime_minutes": 48
+  },
+  "approved_by": "Vaishak (Shift Supervisor)",
+  "agent_conclusion": "Manifold gasket blowout confirmed with 93% confidence."
+}
+```
+**Response**: Logs immutable record in `audit_log.db` and dispatches CMMS work order `WO-ENG-8821`.
+
+---
+
+## 10. BEE ADEETIE Alignment & SME Economics
+
+The **Bureau of Energy Efficiency (BEE)** under the Ministry of Power, Government of India, launched the **ADEETIE** (*Assistance in Deploying Energy Efficient Technologies in Industries & Establishments*) scheme targeting **60 energy-intensive industrial clusters across 14 manufacturing sectors**.
+
+ForgeOps Energy directly serves as the digital intelligence layer for ADEETIE compliance:
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│                      BEE ADEETIE INTEGRATION FLOW                      │
+│                                                                        │
+│   1. Telemetry Logging ──► 2. Investment-Grade ──► 3. Bankable DPR     │
+│      Submeter Modbus          Energy Audit            (Detailed        │
+│      SEC Baseline             (IGEA Data Model)        Project Report) │
+│                                                              │         │
+│   4. Capital Subsidy   ◄── 5. Continuous      ◄──────────────┘         │
+│      Approval (BEE/           Measurement &                            │
+│      SIDBI 20-30%)            Verification                             │
+└────────────────────────────────────────────────────────────────────────┘
+```
+
+### Financial Return Matrix (Standard 50-Ton/Day Foundry):
+- **Annual Electrical Consumption**: 3,650,000 kWh
+- **Average Tariff Rate**: ₹8.20 / kWh
+- **Total Annual Energy Bill**: ₹2,99,30,000
+- **ForgeOps SEC Reduction (Conservative 10%)**: 365,000 kWh / year
+- **Direct Annual Savings**: **₹29,93,000 / year**
+- **System Retrofit Cost (Gateway + 4 Submeters)**: ₹1,20,000
+- **Software Subscription**: ₹15,000 / month (₹1,80,000 / year)
+- **Net Year 1 Return**: **₹26,93,000**
+- **Payback Period**: **1.4 Months**
+- **Carbon Abatement**: **299.3 Metric Tons of CO₂e / year**
+
+---
+
+## 11. Repository Structure
 
 ```
 E:\ForgeOps-Energy\
-├── backend/                  # FastAPI 4-agent orchestration engine
+├── backend/                       # FastAPI 4-Agent Pipeline & Orchestration
 │   ├── agents/
-│   │   ├── planner/          # Agent 1: Goal & boundary constraints
-│   │   ├── research/         # Agent 2: MCP multi-domain evidence fetcher
-│   │   ├── analysis/         # Agent 3: Causal root cause analyzer
-│   │   └── execution/        # Agent 4: What-if simulator & optimizer
-│   ├── api/                  # REST endpoints (/simulate, /pipeline, /workbench)
-│   └── schemas/              # Pydantic v2 data models
-├── forgeops-mcp/             # Official NitroStack MCP server
-│   └── src/modules/
-│       ├── energy/           # Energy telemetry, pneumatics & SEC tools
-│       ├── mes/              # Batch production & tonnage tools
-│       ├── maintenance/      # CMMS work order history
-│       ├── quality/          # Defect & yield records
-│       └── simulation/       # Physics counterfactual engine
-├── src/                      # React 18 + Vite frontend
-│   ├── modules/
-│   │   ├── HomeDashboard.tsx          # ⚡ Energy Overview & Anomalies
-│   │   ├── Workbench.tsx              # 🤖 4-Agent Decision Workbench
-│   │   ├── FoundryUserStoryView.tsx   # 🏭 Realistic SME Journey
-│   │   ├── ArchitectureView.tsx       # 🏗️ Technical Architecture Explorer
-│   │   ├── SmeEconomicsView.tsx       # 📊 SME ROI & BEE ADEETIE Calculator
-│   │   ├── SimulatorPanel.tsx         # What-If interactive sliders
-│   │   ├── RecommendationsPanel.tsx   # Operator approval gate
-│   │   └── AssistantPanel.tsx         # 4-Agent live trace & chat
-│   ├── mockData.ts           # Industrial telemetry dataset
-│   └── energy-styles.css     # Premium industrial dark design system
-└── index.html                # Entry point with SEO metadata
+│   │   ├── planner/               # Agent 1: Goal formulation & boundary constraints
+│   │   ├── research/              # Agent 2: MCP multi-domain evidence fetcher
+│   │   ├── analysis/              # Agent 3: Causal root cause analyzer & what-if engine
+│   │   └── execution/             # Agent 4: Pareto optimizer & UI dispatcher
+│   ├── api/                       # API route definitions
+│   ├── database/                  # SQLite immutable audit log & decision records
+│   ├── llm/                       # Model client integration (NitroChat / Claude / Gemini)
+│   ├── mcp/                       # Client connection to ForgeOps MCP server
+│   ├── schemas/                   # Pydantic v2 cross-agent message models
+│   ├── main.py                    # FastAPI application entry point
+│   ├── pipeline.py                # Synchronous and streaming pipeline runners
+│   ├── requirements.txt           # Python dependencies
+│   └── simulation_reasoning.py    # Counterfactual reconciliation logic
+├── forgeops-mcp/                  # Official Model Context Protocol (MCP) Server
+│   ├── src/
+│   │   ├── data/                  # Industrial plant telemetry datasets
+│   │   ├── modules/
+│   │   │   ├── energy/            # Submeters, compressors, and SEC tools
+│   │   │   ├── maintenance/       # CMMS work orders and machine alert tools
+│   │   │   ├── materials/         # Metallurgy and raw material chemistry tools
+│   │   │   ├── mes/               # Batch records, tonnage, and throughput tools
+│   │   │   ├── orchestrator/      # Incident aggregation and timeline tools
+│   │   │   ├── quality/           # Defect rates and metallurgy testing tools
+│   │   │   └── simulation/        # Thermodynamic counterfactual engine tools
+│   │   ├── app.module.ts          # NitroStack MCP module registrations
+│   │   └── index.ts               # MCP Server entry point
+│   ├── package.json               # Node dependencies
+│   └── tsconfig.json              # TypeScript configuration
+├── src/                           # React 18 + Vite + TypeScript Frontend
+│   ├── components/                # Reusable UI widgets, modals, and navigation
+│   │   ├── AskForgeOpsModal.tsx   # Floating quick query modal
+│   │   ├── AskForgeOpsView.tsx    # Full-page industrial copilot assistant
+│   │   └── Icons.tsx              # Clean SVG industrial icon library
+│   ├── modules/                   # Core application views and workbench panels
+│   │   ├── ArchitectureView.tsx   # Interactive technical architecture blueprint
+│   │   ├── AssistantPanel.tsx     # 4-agent trace stream and live commentary
+│   │   ├── EvidencePanel.tsx      # Immutable cryptographic sensor evidence tree
+│   │   ├── FoundryUserStoryView.tsx # 5-stage Belgaum foundry interactive narrative
+│   │   ├── GraphPanel.tsx         # Causal directed acyclic graph (DAG)
+│   │   ├── HomeDashboard.tsx      # High-level SEC telemetry & anomaly monitors
+│   │   ├── RecommendationsPanel.tsx # Operator sign-off & work order approval gate
+│   │   ├── ReplayPanel.tsx        # High-resolution telemetry time-scrubber
+│   │   ├── SimulatorPanel.tsx     # What-If scenario sandbox with sliders
+│   │   ├── SmeEconomicsView.tsx   # IGEA, CapEx ROI, and BEE ADEETIE calculator
+│   │   ├── TimelinePanel.tsx      # Multi-stream millisecond event timeline
+│   │   ├── VerificationView.tsx   # Post-repair closed-loop telemetry verifier
+│   │   └── Workbench.tsx          # Master 4-agent decision cockpit
+│   ├── App.tsx                    # Root routing, view controller, and navigation
+│   ├── FocusContext.tsx           # Cross-panel synchronized node highlight context
+│   ├── mockData.ts                # Real-world industrial foundry dataset
+│   ├── energy-styles.css          # Core CSS variables, typography, and layout rules
+│   ├── schneider-theme.css        # Enterprise SCADA theme styling tokens
+│   ├── theme.css                  # Light / Dark theme color tokens and classes
+│   └── types.ts                   # Complete TypeScript domain interfaces
+├── index.html                     # HTML5 entry point with SEO metadata
+├── package.json                   # Frontend npm dependencies
+├── tsconfig.json                  # Frontend TypeScript configuration
+└── vite.config.ts                 # Vite bundler build settings
 ```
 
 ---
 
-## 7. Getting Started
+## 12. Installation & Getting Started
 
 ### Prerequisites
-- Node.js 18+
-- Python 3.10+
+- **Node.js**: `v18.0.0` or later
+- **Python**: `3.10` or later
+- **Package Managers**: `npm` and `pip`
 
-### Local Frontend Development
+### Step 1: Clone the Repository
 ```bash
-# Install dependencies
+git clone https://github.com/shalcoder/ZenOps.git E:\ForgeOps-Energy
+cd E:\ForgeOps-Energy
+```
+
+### Step 2: Install and Run Frontend (React 18 + Vite)
+```bash
+# Install frontend dependencies
 npm install
 
 # Start development server
 npm run dev
-# Open http://localhost:5173/ in your browser
 ```
+The application will start immediately at `http://localhost:5173/`.
 
-### Production Build
+### Step 3: Run the Model Context Protocol (MCP) Server
+In a separate terminal window:
+```bash
+cd E:\ForgeOps-Energy\forgeops-mcp
+npm install
+npm run build
+npm start
+```
+The MCP server initializes on `http://localhost:3001` or standard stdio protocol.
+
+### Step 4: Install and Run Backend (FastAPI Agent Engine)
+In a third terminal window:
+```bash
+cd E:\ForgeOps-Energy
+python -m venv .venv
+# On Windows:
+.venv\Scripts\activate
+# On Linux/macOS:
+source .venv/bin/activate
+
+pip install -r backend/requirements.txt
+python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
+```
+The FastAPI interactive documentation will be available at `http://localhost:8000/docs`.
+
+---
+
+## 13. Testing & Verification
+
+ForgeOps Energy includes an automated test suite verifying agent output determinism, constraint compliance, and MCP tool interfaces.
+
+### Run Python Backend Tests
+```bash
+pytest backend/tests/ -v
+```
+**Test Coverage Includes**:
+- `test_agent_pipeline.py`: Validates that Planner correctly breaks down intents, Research executes only read-only tools, Analysis builds valid DAG graphs, and Execution respects throughput constraints.
+- `test_decision_approval.py`: Validates SQLite audit trail logging and atomic state transitions upon operator approval.
+- `test_nitrochat_client.py`: Verifies resilience and deterministic fallback behavior during LLM latency spikes.
+
+### Validate Frontend Production Build
 ```bash
 npm run build
-npm run preview
 ```
+Generates an optimized, tree-shaken static production bundle in `dist/`.
 
-### Run Backend Agentic Pipeline
-```bash
-python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
+---
+
+## 14. Deployment & Production Readiness
+
+### Production Environment Options:
+1. **Frontend**: The Vite frontend can be deployed directly to **Vercel**, **Cloudflare Pages**, or **AWS S3 + CloudFront**.
+2. **Edge Gateway**: The gateway service runs on local industrial PCs (Advantech, Moxa, or Raspberry Pi CM4) running Ubuntu Core.
+3. **Backend & MCP**: Packaged as lightweight Docker containers deployable via Docker Compose or Kubernetes:
+
+```yaml
+# docker-compose.yml example
+version: '3.8'
+services:
+  forgeops-frontend:
+    build: .
+    ports:
+      - "80:80"
+    restart: always
+
+  forgeops-backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      - FORGEOPS_MCP_URL=http://forgeops-mcp:3001
+    restart: always
+
+  forgeops-mcp:
+    build: ./forgeops-mcp
+    ports:
+      - "3001:3001"
+    restart: always
 ```
 
 ---
 
-## 8. Deployment
+## 📜 License & Compliance
 
-The ForgeOps Energy frontend is production-ready for deployment on **Vercel** with full client-side edge fallback capabilities.
+ForgeOps Energy is engineered for industrial resilience, safety compliance, and verifiable energy reduction.
+- Built in compliance with **BEE ADEETIE** measurement and verification protocols.
+- Aligned with **ISO 50001** (Energy Management Systems) continuous improvement cycles.
+
+---
+
+*ForgeOps Energy — Turning Industrial Energy Telemetry into Immediate, Bankable Action.*\n

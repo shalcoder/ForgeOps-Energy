@@ -1310,3 +1310,106 @@ html[data-theme="light"] .pulsing-indicator {
   box-shadow: 0 2px 8px rgba(0,211,40,0.25), inset 0 1px 0 rgba(255,255,255,0.15);
   border: 1px solid rgba(0,211,40,0.30);
 }
+
+
+/* ==========================================================================
+   THEME TOGGLE SEGMENTED CONTROL — high-visibility dual pill
+   ========================================================================== */
+.theme-toggle-segmented {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  padding: 2px;
+  gap: 2px;
+  flex-shrink: 0;
+  box-shadow: var(--neu-sunken);
+}
+
+.theme-segment-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+.theme-segment-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.theme-segment-btn.active {
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+  border-color: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.theme-segment-btn.active svg {
+  color: var(--schneider-green);
+  filter: drop-shadow(0 0 6px rgba(0, 229, 163, 0.6));
+}
+
+/* Light Mode Overrides for Theme Toggle */
+html[data-theme="light"] .theme-toggle-segmented {
+  background: #e2e8f0;
+  border-color: rgba(0, 0, 0, 0.14);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+html[data-theme="light"] .theme-segment-btn {
+  color: #64748b;
+}
+
+html[data-theme="light"] .theme-segment-btn:hover {
+  color: #0f172a;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+html[data-theme="light"] .theme-segment-btn.active {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.12);
+  color: #0f172a;
+  font-weight: 600;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1), 0 1px 1px rgba(0, 0, 0, 0.05);
+}
+
+html[data-theme="light"] .theme-segment-btn.active svg {
+  color: #d97706;
+  filter: drop-shadow(0 0 4px rgba(217, 119, 6, 0.5));
+}
+
+/* Responsive header rules to prevent right-edge clipping */
+.app-header-modern {
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.app-header-modern::-webkit-scrollbar {
+  display: none;
+}
+
+@media (max-width: 1440px) {
+  .nav-tab-btn {
+    padding: 5px 8px;
+    font-size: 11.5px;
+    gap: 5px;
+  }
+  .app-header-modern {
+    padding: 0 14px;
+    gap: 10px;
+  }
+}
