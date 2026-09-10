@@ -1,6 +1,16 @@
 import { useState } from 'react';
 import { recommendations } from '../mockData';
 import type { AssistantResponse, Recommendation } from '../types';
+import {
+  CheckCircleIcon,
+  CheckIcon,
+  XIcon,
+  WrenchIcon,
+  ShieldCheckIcon,
+  ClockIcon,
+  ZapIcon,
+  TrendingDownIcon,
+} from '../components/Icons';
 
 export function RecommendationsPanel({ agentResponse }: { agentResponse?: AssistantResponse | null }) {
   const [recList, setRecList] = useState<Recommendation[]>(recommendations);
@@ -26,19 +36,25 @@ export function RecommendationsPanel({ agentResponse }: { agentResponse?: Assist
           <h2>Actionable Recommendations & Operator Approval</h2>
           <span>Human-in-the-loop decision gate with quantified ROI and zero production risk</span>
         </div>
-        <span className="objective-badge">Constraint: min(SEC) | Preserved Throughput & Quality</span>
+        <span className="objective-badge font-mono">
+          min(SEC) | Preserved Throughput & Quality
+        </span>
       </header>
 
       {dispatchedOrder && (
         <div className="dispatch-alert-banner">
-          <span className="dispatch-icon">🚀</span>
+          <span className="dispatch-icon text-emerald-400">
+            <WrenchIcon size={20} />
+          </span>
           <div>
-            <strong>Intervention Approved & Work Order Dispatched!</strong>
+            <strong>Intervention Approved & Work Order Dispatched</strong>
             <p>
-              CMMS Work Order <strong>{dispatchedOrder}</strong> dispatched to Plant Line 2 Maintenance. Execution scheduled for upcoming 48-minute die changeover. Edge verification tracking enabled.
+              CMMS Work Order <strong className="font-mono text-emerald-300">{dispatchedOrder}</strong> dispatched to Plant Line 2 Maintenance. Execution scheduled for upcoming 48-minute die changeover. Edge verification tracking enabled.
             </p>
           </div>
-          <button className="dismiss-btn" onClick={() => setDispatchedOrder(null)}>✕</button>
+          <button className="dismiss-btn" onClick={() => setDispatchedOrder(null)} aria-label="Dismiss">
+            <XIcon size={14} />
+          </button>
         </div>
       )}
 
@@ -56,15 +72,25 @@ export function RecommendationsPanel({ agentResponse }: { agentResponse?: Assist
               <div className="rec-card-top">
                 <div className="rec-rank-group">
                   <span className={`rec-rank-badge ${isOptimal ? 'optimal-badge' : ''}`}>
-                    {isOptimal ? '★ RANK 1 (OPTIMAL)' : `RANK ${rec.rank}`}
+                    {isOptimal ? 'RANK 1 (OPTIMAL)' : `RANK ${rec.rank}`}
                   </span>
-                  <span className="rec-confidence-pill">Confidence: {(rec.confidence * 100).toFixed(0)}%</span>
-                  {isApproved && <span className="rec-status-tag approved">✓ CMMS Dispatched</span>}
-                  {isRejected && <span className="rec-status-tag rejected">✕ Rejected</span>}
+                  <span className="rec-confidence-pill font-mono">Confidence: {(rec.confidence * 100).toFixed(0)}%</span>
+                  {isApproved && (
+                    <span className="rec-status-tag approved flex items-center gap-1 font-mono">
+                      <CheckCircleIcon size={12} />
+                      CMMS Dispatched
+                    </span>
+                  )}
+                  {isRejected && (
+                    <span className="rec-status-tag rejected flex items-center gap-1 font-mono">
+                      <XIcon size={12} />
+                      Rejected
+                    </span>
+                  )}
                 </div>
                 <div className="rec-payback-tag">
                   <small>Payback Period</small>
-                  <strong>{rec.paybackPeriod}</strong>
+                  <strong className="font-mono text-emerald-400">{rec.paybackPeriod}</strong>
                 </div>
               </div>
 
@@ -77,62 +103,73 @@ export function RecommendationsPanel({ agentResponse }: { agentResponse?: Assist
               <div className="rec-impact-grid">
                 <div className="impact-box highlight">
                   <small>Daily Energy Saving</small>
-                  <strong>{rec.energySavingKwhDay.toLocaleString('en-IN')} kWh</strong>
-                  <span className="impact-sub green-text">▼ {rec.secReductionPct}% SEC reduction</span>
+                  <strong className="font-mono text-emerald-400">{rec.energySavingKwhDay.toLocaleString('en-IN')} kWh</strong>
+                  <span className="impact-sub green-text font-mono">-{rec.secReductionPct}% SEC reduction</span>
                 </div>
                 <div className="impact-box">
                   <small>Daily Cost Saving</small>
-                  <strong>₹{rec.costSavingInrDay.toLocaleString('en-IN')}</strong>
-                  <span className="impact-sub">₹{(rec.savingsPerMonthInr / 100000).toFixed(1)}L / month</span>
+                  <strong className="font-mono text-slate-100">&#8377;{rec.costSavingInrDay.toLocaleString('en-IN')}</strong>
+                  <span className="impact-sub font-mono">&#8377;{(rec.savingsPerMonthInr / 100000).toFixed(1)}L / month</span>
                 </div>
                 <div className="impact-box">
-                  <small>CO₂ Abatement</small>
-                  <strong>{rec.co2ReductionKgDay} kg / day</strong>
-                  <span className="impact-sub">{((rec.co2ReductionKgDay * 26 * 12) / 1000).toFixed(1)} tCO₂e / year</span>
+                  <small>CO2 Abatement</small>
+                  <strong className="font-mono text-cyan-400">{rec.co2ReductionKgDay} kg / day</strong>
+                  <span className="impact-sub font-mono">{((rec.co2ReductionKgDay * 26 * 12) / 1000).toFixed(1)} tCO2e / year</span>
                 </div>
                 <div className="impact-box">
                   <small>Estimated CapEx</small>
-                  <strong>{rec.cost}</strong>
+                  <strong className="font-mono text-slate-100">{rec.cost}</strong>
                   <span className="impact-sub">{rec.effort}</span>
                 </div>
               </div>
 
               {/* Hard Constraints Verification Strip */}
-              <div className="rec-constraints-strip">
+              <div className="rec-constraints-strip font-mono text-xs">
                 <div className="constraint-check-item">
-                  <span className="check-dot">✓</span>
-                  <span>Throughput: <strong>10.2 ton/day Preserved (0% loss)</strong></span>
+                  <CheckCircleIcon size={13} className="text-emerald-400" />
+                  <span>Throughput: <strong className="text-slate-200">10.2 ton/day Preserved (0% loss)</strong></span>
                 </div>
                 <div className="constraint-check-item">
-                  <span className="check-dot">✓</span>
-                  <span>Quality Yield: <strong>{rec.predictedYield}% Preserved</strong></span>
+                  <CheckCircleIcon size={13} className="text-emerald-400" />
+                  <span>Quality Yield: <strong className="text-slate-200">{rec.predictedYield}% Preserved</strong></span>
                 </div>
                 <div className="constraint-check-item">
-                  <span className="check-dot">✓</span>
-                  <span>Safety: <strong>Pneumatic pressure within safe envelope (6.5 bar)</strong></span>
+                  <CheckCircleIcon size={13} className="text-emerald-400" />
+                  <span>Safety: <strong className="text-slate-200">Pneumatic pressure in envelope (6.5 bar)</strong></span>
                 </div>
               </div>
 
               {/* Human Approval Action Strip */}
               <div className="rec-approval-actions">
                 <div className="rec-approval-left">
-                  <span>Operator Approval Required</span>
-                  <small>No autonomous equipment change without human supervisor sign-off.</small>
+                  <span className="text-xs font-semibold text-slate-300">Operator Decision Gate</span>
+                  <small className="text-slate-400 text-[11px] block">No autonomous actuator dispatch without plant supervisor sign-off.</small>
                 </div>
                 <div className="rec-approval-buttons">
                   <button
-                    className={`btn-approve-rec ${isApproved ? 'btn-done' : 'btn-primary-glow'}`}
+                    className={`btn-approve-rec ${isApproved ? 'btn-done' : 'btn-primary-glow'} flex items-center gap-1.5`}
                     disabled={isApproved}
                     onClick={() => handleApprove(rec.id)}
                   >
-                    {isApproved ? '✓ APPROVED & RUNNING' : 'APPROVE INTERVENTION'}
+                    {isApproved ? (
+                      <>
+                        <CheckIcon size={14} />
+                        <span>APPROVED & DISPATCHED</span>
+                      </>
+                    ) : (
+                      <>
+                        <ShieldCheckIcon size={14} />
+                        <span>APPROVE INTERVENTION</span>
+                      </>
+                    )}
                   </button>
                   <button
-                    className="btn-reject-rec"
+                    className="btn-reject-rec flex items-center gap-1"
                     disabled={isApproved}
                     onClick={() => handleReject(rec.id)}
                   >
-                    REJECT
+                    <XIcon size={13} />
+                    <span>REJECT</span>
                   </button>
                 </div>
               </div>

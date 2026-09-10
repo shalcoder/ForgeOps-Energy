@@ -2,6 +2,14 @@ import { useState, useMemo } from 'react';
 import { simulationPresets } from '../mockData';
 import { useWorkbenchData } from '../WorkbenchDataContext';
 import type { SimulationResult } from '../types';
+import {
+  SlidersIcon,
+  CheckCircleIcon,
+  AlertTriangleIcon,
+  ShieldCheckIcon,
+  ClockIcon,
+  ZapIcon,
+} from '../components/Icons';
 
 type PresetKey = 'both_repair_and_optimize' | 'repair_leakage' | 'optimize_setpoint' | 'no_action';
 
@@ -60,8 +68,8 @@ export function SimulatorPanel() {
       effort: `${maintenanceMin} min window`,
       downtimeMinutes: maintenanceMin,
       paybackMonths,
-      throughputImpact: scheduledChangeover ? '0% impact (10.2 ton/day Preserved)' : '-1.5% during unscheduled stop',
-      qualityImpact: '97.8% (Preserved ≥ 97.0%)',
+      throughputImpact: scheduledChangeover ? '0% loss (10.2 t/day Preserved)' : '-1.5% during unscheduled stop',
+      qualityImpact: '97.8% (Preserved >= 97.0%)',
       safetyPreserved: true,
       assumptions: [
         `Compressor setpoint adjusted to ${setpointBar.toFixed(1)} bar (nominal 7.2 bar)`,
@@ -108,7 +116,9 @@ export function SimulatorPanel() {
           <h2>What-If Simulator & Scenario Optimization</h2>
           <span>Simulate interventions against the 11.2 kWh/ton anomaly baseline</span>
         </div>
-        <span className="objective-badge">Constraint: min(SEC) | Throughput ≥ 10.2t | Quality ≥ 97.6%</span>
+        <span className="objective-badge font-mono">
+          min(SEC) | Throughput ≥ 10.2t | Quality ≥ 97.6%
+        </span>
       </header>
 
       <div className="simulator-grid-layout">
@@ -120,10 +130,10 @@ export function SimulatorPanel() {
               onClick={() => applyPreset('both_repair_and_optimize')}
             >
               <div className="preset-btn-top">
-                <strong>C. Both A + B (Recommended Optimal)</strong>
-                <span className="best-tag">★ Optimal</span>
+                <strong>Option C: Both A + B (Recommended)</strong>
+                <span className="best-tag">OPTIMAL</span>
               </div>
-              <small>Repair leak + setpoint 6.5 bar · -18.0% SEC · ₹6,240/day saved</small>
+              <small>Repair leak + setpoint 6.5 bar • -18.0% SEC • &#8377;6,240/day saved</small>
             </button>
 
             <button
@@ -131,10 +141,10 @@ export function SimulatorPanel() {
               onClick={() => applyPreset('repair_leakage')}
             >
               <div className="preset-btn-top">
-                <strong>A. Repair Leakage Only</strong>
-                <span>42 min</span>
+                <strong>Option A: Repair Leakage Only</strong>
+                <span className="font-mono text-xs text-slate-400">42 min</span>
               </div>
-              <small>Fix Line 2 flexible coupling · -13.4% SEC · ₹4,650/day saved</small>
+              <small>Fix Line 2 coupling • -13.4% SEC • &#8377;4,650/day saved</small>
             </button>
 
             <button
@@ -142,10 +152,10 @@ export function SimulatorPanel() {
               onClick={() => applyPreset('optimize_setpoint')}
             >
               <div className="preset-btn-top">
-                <strong>B. Optimize Setpoint Only</strong>
-                <span>10 min</span>
+                <strong>Option B: Optimize Setpoint Only</strong>
+                <span className="font-mono text-xs text-slate-400">10 min</span>
               </div>
-              <small>Lower setpoint to 6.5 bar · -9.8% SEC · ₹3,400/day saved</small>
+              <small>Lower setpoint to 6.5 bar • -9.8% SEC • &#8377;3,400/day saved</small>
             </button>
 
             <button
@@ -153,21 +163,26 @@ export function SimulatorPanel() {
               onClick={() => applyPreset('no_action')}
             >
               <div className="preset-btn-top">
-                <strong>D. No Action (Status Quo)</strong>
-                <span className="loss-tag">Loss</span>
+                <strong>Option D: No Action (Status Quo)</strong>
+                <span className="loss-tag">LOSS</span>
               </div>
-              <small>Maintain current 11.2 kWh/ton · ₹1,87,200/month continuous loss</small>
+              <small>Maintain 11.2 kWh/ton • &#8377;1,87,200/month continuous waste</small>
             </button>
           </div>
 
           {/* Interactive Sliders */}
           <div className="interactive-sliders-box">
-            <h4>Live Parameter Optimization</h4>
+            <div className="flex items-center gap-2 mb-3">
+              <SlidersIcon size={14} className="text-emerald-400" />
+              <h4 className="text-xs font-semibold text-slate-200 uppercase tracking-wider">
+                Live Parameter Tuning
+              </h4>
+            </div>
 
             <div className="slider-field">
               <div className="slider-label-row">
                 <label>Compressor Pressure Setpoint:</label>
-                <span className="slider-readout">{setpointBar.toFixed(1)} bar</span>
+                <span className="slider-readout font-mono text-cyan-400 font-bold">{setpointBar.toFixed(1)} bar</span>
               </div>
               <input
                 type="range"
@@ -178,18 +193,18 @@ export function SimulatorPanel() {
                 onChange={(e) => setSetpointBar(Number(e.target.value))}
                 className="sim-slider"
               />
-              <div className="slider-ticks">
-                <small>6.0 bar (Min)</small>
-                <small>6.5 bar (Optimal)</small>
-                <small>7.2 bar (Nominal)</small>
-                <small>8.5 bar</small>
+              <div className="slider-ticks font-mono text-[10px] text-slate-500">
+                <span>6.0 bar (Min)</span>
+                <span>6.5 bar (Optimal)</span>
+                <span>7.2 bar (Nominal)</span>
+                <span>8.5 bar</span>
               </div>
             </div>
 
             <div className="slider-field">
               <div className="slider-label-row">
                 <label>Leakage Reduction Efficiency:</label>
-                <span className="slider-readout green-text">{leakageFixPct}%</span>
+                <span className="slider-readout green-text font-mono text-emerald-400 font-bold">{leakageFixPct}%</span>
               </div>
               <input
                 type="range"
@@ -200,18 +215,18 @@ export function SimulatorPanel() {
                 onChange={(e) => setLeakageFixPct(Number(e.target.value))}
                 className="sim-slider"
               />
-              <div className="slider-ticks">
-                <small>0% (No fix)</small>
-                <small>50% (Temporary clamp)</small>
-                <small>90% (Braided hose)</small>
-                <small>100% (Full manifold)</small>
+              <div className="slider-ticks font-mono text-[10px] text-slate-500">
+                <span>0% (No fix)</span>
+                <span>50% (Clamp)</span>
+                <span>90% (Braided hose)</span>
+                <span>100% (Manifold)</span>
               </div>
             </div>
 
             <div className="slider-field">
               <div className="slider-label-row">
                 <label>Maintenance Window (Downtime):</label>
-                <span className="slider-readout">{maintenanceMin} min</span>
+                <span className="slider-readout font-mono text-slate-300">{maintenanceMin} min</span>
               </div>
               <input
                 type="range"
@@ -222,10 +237,10 @@ export function SimulatorPanel() {
                 onChange={(e) => setMaintenanceMin(Number(e.target.value))}
                 className="sim-slider"
               />
-              <div className="slider-ticks">
-                <small>10 min</small>
-                <small>48 min (Standard changeover)</small>
-                <small>60 min</small>
+              <div className="slider-ticks font-mono text-[10px] text-slate-500">
+                <span>10 min</span>
+                <span>48 min (Changeover)</span>
+                <span>60 min</span>
               </div>
             </div>
 
@@ -236,7 +251,9 @@ export function SimulatorPanel() {
                   checked={scheduledChangeover}
                   onChange={(e) => setScheduledChangeover(e.target.checked)}
                 />
-                <span>Execute strictly during planned shift changeover (Zero throughput penalty)</span>
+                <span className="text-xs text-slate-300">
+                  Execute strictly during planned shift changeover (Zero throughput penalty)
+                </span>
               </label>
             </div>
           </div>
@@ -247,92 +264,108 @@ export function SimulatorPanel() {
           <div className="sim-kpi-banner">
             <div className="sim-kpi-block highlight">
               <small>Simulated SEC</small>
-              <strong>{simulation.predictedSec} <span>{simulation.secUnit}</span></strong>
-              <span className="sim-delta green-text">▼ {simulation.secReductionPct}%</span>
+              <strong className="font-mono text-emerald-400">{simulation.predictedSec} <span>{simulation.secUnit}</span></strong>
+              <span className="sim-delta green-text font-mono">-{simulation.secReductionPct}%</span>
             </div>
             <div className="sim-kpi-block">
               <small>Energy Saved</small>
-              <strong>{simulation.energySavingKwhDay.toLocaleString('en-IN')} <span>kWh/day</span></strong>
-              <span className="sim-delta">{Math.round(simulation.energySavingKwhDay * 26).toLocaleString('en-IN')} kWh/mo</span>
+              <strong className="font-mono text-slate-100">{simulation.energySavingKwhDay.toLocaleString('en-IN')} <span>kWh/day</span></strong>
+              <span className="sim-delta font-mono">{Math.round(simulation.energySavingKwhDay * 26).toLocaleString('en-IN')} kWh/mo</span>
             </div>
             <div className="sim-kpi-block">
               <small>Cost Savings</small>
-              <strong>₹{simulation.costSavingInrDay.toLocaleString('en-IN')} <span>/ day</span></strong>
-              <span className="sim-delta">₹{Math.round(simulation.costSavingInrDay * 26).toLocaleString('en-IN')} / mo</span>
+              <strong className="font-mono text-slate-100">&#8377;{simulation.costSavingInrDay.toLocaleString('en-IN')} <span>/ day</span></strong>
+              <span className="sim-delta font-mono">&#8377;{Math.round(simulation.costSavingInrDay * 26).toLocaleString('en-IN')} / mo</span>
             </div>
             <div className="sim-kpi-block">
-              <small>CO₂ Abatement</small>
-              <strong>{simulation.co2ReductionKgDay} <span>kg / day</span></strong>
-              <span className="sim-delta">{((simulation.co2ReductionKgDay * 26 * 12) / 1000).toFixed(1)} tCO₂e/yr</span>
+              <small>CO2 Abatement</small>
+              <strong className="font-mono text-cyan-400">{simulation.co2ReductionKgDay} <span>kg/day</span></strong>
+              <span className="sim-delta font-mono">{((simulation.co2ReductionKgDay * 26 * 12) / 1000).toFixed(1)} tCO2e/yr</span>
             </div>
           </div>
 
           {/* Hard Constraints Verification Box */}
           <div className="constraints-validation-box">
-            <h4>Constrained Optimization Verification</h4>
-            <div className="constraint-chips-row">
-              <span className="val-chip ok">✓ Throughput: {simulation.throughputImpact}</span>
-              <span className="val-chip ok">✓ Quality: {simulation.qualityImpact}</span>
-              <span className="val-chip ok">✓ Safety: Preserved</span>
-              <span className="val-chip info">⏱ Payback: {simulation.paybackMonths} Months</span>
+            <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+              Constrained Optimization Verification
+            </h4>
+            <div className="constraint-chips-row font-mono text-xs">
+              <span className="val-chip ok flex items-center gap-1">
+                <CheckCircleIcon size={12} className="text-emerald-400" />
+                Throughput: {simulation.throughputImpact}
+              </span>
+              <span className="val-chip ok flex items-center gap-1">
+                <CheckCircleIcon size={12} className="text-emerald-400" />
+                Quality: {simulation.qualityImpact}
+              </span>
+              <span className="val-chip ok flex items-center gap-1">
+                <CheckCircleIcon size={12} className="text-emerald-400" />
+                Safety: Preserved
+              </span>
+              <span className="val-chip info flex items-center gap-1">
+                <ClockIcon size={12} className="text-cyan-400" />
+                Payback: {simulation.paybackMonths} Months
+              </span>
             </div>
           </div>
 
           {/* Side-by-Side Interventions Matrix */}
           <div className="scenarios-matrix-table">
-            <h4>All Interventions Comparison Matrix</h4>
+            <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+              All Interventions Comparison Matrix
+            </h4>
             <table>
               <thead>
                 <tr>
                   <th>Option</th>
                   <th>Intervention Strategy</th>
                   <th>SEC (kWh/t)</th>
-                  <th>SEC Δ</th>
+                  <th>SEC &Delta;</th>
                   <th>Cost</th>
                   <th>Downtime</th>
                   <th>Daily Saving</th>
                   <th>Payback</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="font-mono text-xs">
                 <tr className={selectedPreset === 'repair_leakage' ? 'active-row' : ''}>
                   <td><strong>A</strong></td>
-                  <td>Repair distribution leakage</td>
+                  <td className="font-sans">Repair distribution leakage</td>
                   <td>9.7</td>
                   <td className="green-text">-13.4%</td>
-                  <td>₹8,500</td>
+                  <td>&#8377;8,500</td>
                   <td>42 min</td>
-                  <td>₹4,650</td>
+                  <td>&#8377;4,650</td>
                   <td>1.8 mo</td>
                 </tr>
                 <tr className={selectedPreset === 'optimize_setpoint' ? 'active-row' : ''}>
                   <td><strong>B</strong></td>
-                  <td>Optimize setpoint to 6.5 bar</td>
+                  <td className="font-sans">Optimize setpoint to 6.5 bar</td>
                   <td>10.1</td>
                   <td className="green-text">-9.8%</td>
-                  <td>₹2,000</td>
+                  <td>&#8377;2,000</td>
                   <td>10 min</td>
-                  <td>₹3,400</td>
+                  <td>&#8377;3,400</td>
                   <td>0.6 mo</td>
                 </tr>
                 <tr className={`best-option-tr ${selectedPreset === 'both_repair_and_optimize' ? 'active-row' : ''}`}>
-                  <td><strong>C ★</strong></td>
-                  <td><strong>Both A + B (Optimal)</strong></td>
-                  <td><strong>9.2</strong></td>
+                  <td><strong className="text-emerald-400">C</strong></td>
+                  <td className="font-sans"><strong className="text-emerald-400">Both A + B (Optimal)</strong></td>
+                  <td><strong className="text-emerald-400">9.2</strong></td>
                   <td className="best-pct"><strong>-18.0%</strong></td>
-                  <td>₹9,500</td>
+                  <td>&#8377;9,500</td>
                   <td>48 min</td>
-                  <td className="green-text"><strong>₹6,240</strong></td>
-                  <td><strong>1.5 mo</strong></td>
+                  <td className="green-text"><strong>&#8377;6,240</strong></td>
+                  <td><strong className="text-emerald-400">1.5 mo</strong></td>
                 </tr>
                 <tr className={selectedPreset === 'no_action' ? 'active-row' : ''}>
                   <td><strong>D</strong></td>
-                  <td>No action (Status quo)</td>
-                  <td>11.2</td>
+                  <td className="font-sans text-slate-500">No action (Status quo)</td>
+                  <td className="text-rose-400">11.2</td>
                   <td>0.0%</td>
-                  <td>₹0</td>
+                  <td>&#8377;0</td>
                   <td>0 min</td>
-                  <td>₹0</td>
+                  <td>&#8377;0</td>
                   <td>—</td>
                 </tr>
               </tbody>
@@ -340,8 +373,9 @@ export function SimulatorPanel() {
           </div>
 
           {simulation.warnings.length > 0 && (
-            <div className="sim-warning-banner">
-              ⚠️ {simulation.warnings[0]}
+            <div className="sim-warning-banner flex items-center gap-2 font-mono text-xs text-amber-300">
+              <AlertTriangleIcon size={14} className="text-amber-400 flex-shrink-0" />
+              <span>{simulation.warnings[0]}</span>
             </div>
           )}
         </div>

@@ -271,3 +271,54 @@ export type UserStoryStep = {
   keyMetrics: Record<string, string>;
   details: string;
 };
+
+
+// --- 2026 PRODUCT BLUEPRINT TYPES ---
+
+export type Opportunity = {
+  id: string;
+  title: string;
+  assetId: string;
+  category: 'quick_win' | 'high_roi' | 'carbon' | 'strategic';
+  annualSavingsInr: number;
+  dailySavingsInr: number;
+  capexInr: number;
+  paybackMonths: number;
+  co2TonsYear: number;
+  downtimeMin: number;
+  confidence: number;
+  status: 'discovered' | 'qualified' | 'simulated' | 'recommended' | 'approved' | 'implemented' | 'verified';
+};
+
+export type VerificationRecord = {
+  id: string;
+  incidentId: string;
+  workOrderId: string;
+  technician: string;
+  baselineSec: number;
+  postActionSec: number;
+  secUnit: string;
+  energySavingPct: number;
+  throughputBaseline: number;
+  throughputActual: number;
+  throughputUnit: string;
+  qualityBaseline: number;
+  qualityActual: number;
+  verifiedAt: string;
+  verifiedBy: string;
+  status: 'verified' | 'reopened' | 'pending';
+  annualizedSavingsInr: number;
+};
+
+export type AgentStepStatus = 'idle' | 'running' | 'completed' | 'failed';
+
+export type AgentPipelineRun = {
+  runId: string;
+  incidentId: string;
+  plannerStatus: AgentStepStatus;
+  researchStatus: AgentStepStatus;
+  analysisStatus: AgentStepStatus;
+  executionStatus: AgentStepStatus;
+  confidenceScore: number;
+  currentStep: 'PLANNING' | 'RESEARCHING' | 'ANALYZING' | 'SIMULATING' | 'RECOMMENDATION_READY' | 'APPROVED' | 'VERIFIED';
+};

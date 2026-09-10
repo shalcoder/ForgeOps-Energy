@@ -1,470 +1,387 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import {
-  decarbonisationStats,
-  energyWasteBreakdown,
-  incidents,
-  topAnomalies,
-} from '../mockData';
-import { useWorkbenchData } from '../WorkbenchDataContext';
-
-const formatInr = (value: number) => {
-  if (value >= 100000) {
-    return `₹${(value / 100000).toFixed(1)}L`;
-  }
-  return `₹${value.toLocaleString('en-IN')}`;
-};
+  ZapIcon,
+  ActivityIcon,
+  AlertTriangleIcon,
+  CheckCircleIcon,
+  ArrowRightIcon,
+  GaugeIcon,
+  ClockIcon,
+  FileTextIcon,
+} from '../components/Icons';
 
 export function HomeDashboard({ onOpenWorkbench }: { onOpenWorkbench: () => void }) {
-  const { data, loading } = useWorkbenchData();
-  const incidentList = [data.incident, ...incidents.slice(1)];
-  const [plantFilter, setPlantFilter] = useState('All plants');
-  const [statusFilter, setStatusFilter] = useState('All statuses');
-
-  const filteredIncidents = useMemo(() => {
-    return incidentList.filter((incident) => {
-      const matchPlant = plantFilter === 'All plants' || incident.plant.toLowerCase().includes(plantFilter.toLowerCase());
-      const matchStatus = statusFilter === 'All statuses' || incident.status === statusFilter;
-      return matchPlant && matchStatus;
-    });
-  }, [incidentList, plantFilter, statusFilter]);
+  const [timeFilter, setTimeFilter] = useState('today');
 
   return (
-    <main className="dashboard-page energy-dashboard-page">
-      {/* Top Banner / National Manufacturing Context (Image 1 Header) */}
-      <section className="energy-banner">
-        <div className="energy-banner-header">
-          <div>
-            <div className="energy-pill-tag">Smart Manufacturing · Challenge 04</div>
-            <h1>ForgeOps Energy Decision Intelligence</h1>
-            <p className="energy-subtag">Agentic AI for Industrial Energy & Process Efficiency · Indian SME Retrofit</p>
+    <div className="page-container">
+      {/* Industrial Executive Header */}
+      <header className="page-header-clean">
+        <div>
+          <div className="page-kicker">
+            <span className="kicker-tag">Live Modbus Edge</span>
+            <span>Belgaum Foundry Complex • Induction Melting & Moulding Line 2</span>
           </div>
-          <div className="energy-national-stats">
-            <div className="national-stat-chip">
-              <span className="chip-icon">🏭</span>
-              <div>
-                <strong>35–40%</strong>
-                <small>of India's energy consumed by industry</small>
-              </div>
-            </div>
-            <div className="national-stat-chip">
-              <span className="chip-icon">₹</span>
-              <div>
-                <strong>15–30%</strong>
-                <small>of SME production costs from energy</small>
-              </div>
-            </div>
-            <div className="national-stat-chip alert-chip">
-              <span className="chip-icon">📉</span>
-              <div>
-                <strong>Real-Time Gap</strong>
-                <small>Energy monitoring missing in 70%+ SMEs</small>
-              </div>
-            </div>
+          <h1 className="page-title">Plant Energy Command & Decision Center</h1>
+          <p className="page-subtitle">
+            Sub-second telemetry monitoring, specific energy envelope tracking, and automated anomaly diagnosis.
+          </p>
+        </div>
+
+        <div className="header-controls-group">
+          <select
+            className="select-clean"
+            value={timeFilter}
+            onChange={(e) => setTimeFilter(e.target.value)}
+          >
+            <option value="today">Shift A • Live Today (06:00 - 14:00)</option>
+            <option value="yesterday">Yesterday (Full Day)</option>
+            <option value="7days">Last 7 Operating Days</option>
+          </select>
+          <button className="btn-secondary-action" onClick={() => alert('Exporting BEE-compliant Energy Audit Report (PDF)...')}>
+            <FileTextIcon size={14} />
+            <span>Export Audit (PDF)</span>
+          </button>
+        </div>
+      </header>
+
+      {/* 4 Core KPI Metric Cards */}
+      <section className="grid-kpi-4">
+        {/* KPI 1: Specific Energy Consumption */}
+        <div className="card-clean">
+          <div className="kpi-card-top">
+            <span className="kpi-card-label">Specific Energy (SEC)</span>
+            <span className="kpi-badge success">
+              <CheckCircleIcon size={12} />
+              <span>-12.9% Optimal</span>
+            </span>
+          </div>
+          <div className="kpi-value-row">
+            <span className="kpi-big-value">7.40</span>
+            <span className="kpi-unit-label">kWh / ton</span>
+          </div>
+          <div className="kpi-subtext">
+            <span>Target Envelope: <strong>8.50 kWh/t</strong> • Baseline preserved</span>
           </div>
         </div>
 
-        {/* What Our Solution Achieves Grid */}
-        <div className="solution-pillars">
-          <div className="pillar-item">
-            <span className="pillar-icon">🎯</span>
-            <div>
-              <strong>Reduce Specific Energy (SEC)</strong>
-              <p>Cut kWh per ton/unit without reducing quality or throughput.</p>
-            </div>
+        {/* KPI 2: Active Power Demand */}
+        <div className="card-clean">
+          <div className="kpi-card-top">
+            <span className="kpi-card-label">Active Power Demand</span>
+            <span className="kpi-badge info">
+              <ZapIcon size={12} />
+              <span>Normal Load</span>
+            </span>
           </div>
-          <div className="pillar-item">
-            <span className="pillar-icon">👁️</span>
-            <div>
-              <strong>Enable Real-Time Visibility</strong>
-              <p>Submetering, machine health, and power quality across legacy & modern assets.</p>
-            </div>
+          <div className="kpi-value-row">
+            <span className="kpi-big-value">842</span>
+            <span className="kpi-unit-label">kW</span>
           </div>
-          <div className="pillar-item">
-            <span className="pillar-icon">🌿</span>
-            <div>
-              <strong>Support Decarbonisation</strong>
-              <p>Scope 1 & 2 carbon tracking and rooftop renewable load-shifting.</p>
-            </div>
+          <div className="kpi-subtext">
+            <span>Peak Demand Today: <strong>1,080 kW</strong> (Contract: 1,200 kW)</span>
           </div>
-          <div className="pillar-item">
-            <span className="pillar-icon">⚡</span>
-            <div>
-              <strong>Strengthen SME Competitiveness</strong>
-              <p>Fast payback (1–3 months) with low-cost edge retrofit (₹20k–₹60k).</p>
-            </div>
+        </div>
+
+        {/* KPI 3: Daily Energy Cost */}
+        <div className="card-clean">
+          <div className="kpi-card-top">
+            <span className="kpi-card-label">Daily Energy Cost</span>
+            <span className="kpi-badge success">
+              <span>₹8,800 Saved</span>
+            </span>
+          </div>
+          <div className="kpi-value-row">
+            <span className="kpi-big-value">₹59,200</span>
+            <span className="kpi-unit-label">Today</span>
+          </div>
+          <div className="kpi-subtext">
+            <span>Run-rate: <strong>7,400 kWh</strong> • Blended Tariff: ₹7.80/kWh</span>
+          </div>
+        </div>
+
+        {/* KPI 4: Active Energy Inefficiencies */}
+        <div className="card-clean" style={{ borderColor: 'rgba(239, 68, 68, 0.4)' }}>
+          <div className="kpi-card-top">
+            <span className="kpi-card-label" style={{ color: '#f87171' }}>Active Anomalies</span>
+            <span className="kpi-badge danger">
+              <AlertTriangleIcon size={12} />
+              <span>₹780 / hr Bleed</span>
+            </span>
+          </div>
+          <div className="kpi-value-row">
+            <span className="kpi-big-value" style={{ color: '#f87171' }}>1 Critical</span>
+            <span className="kpi-unit-label">1 Warning</span>
+          </div>
+          <div className="kpi-subtext">
+            <span>Action Required: <strong>COMP-02 Manifold Pressure Loss</strong></span>
           </div>
         </div>
       </section>
 
-      {/* Primary KPI Grid (Energy Overview matching Image 1) */}
-      <section className="metric-grid energy-kpi-grid" aria-label="Energy KPIs">
-        <article className="metric-card metric-critical energy-card">
-          <div className="metric-topline">
-            <span>Specific Energy (SEC)</span>
-            <span className="metric-delta negative">↓ 12.9% vs Base</span>
-          </div>
-          <div className="kpi-main-val">
-            <strong>7.40</strong>
-            <span className="unit-label">kWh / unit</span>
-          </div>
-          <div className="kpi-subline">
-            <span>Target: <strong>8.50</strong> kWh/unit</span>
-            <span className="kpi-status-badge">Optimization Active</span>
-          </div>
-          <div className="mini-sparkline" aria-hidden="true">
-            <svg viewBox="0 0 160 30" className="sparkline-svg">
-              <path
-                d="M 0 24 Q 20 22, 40 18 T 80 20 T 120 12 T 160 8"
-                fill="none"
-                stroke="#10b981"
-                strokeWidth="2.5"
-              />
-              <line x1="0" y1="20" x2="160" y2="20" stroke="#94a3b8" strokeDasharray="3,3" strokeWidth="1" />
-            </svg>
-          </div>
-          <small className="kpi-footnote">Induction Line 2 · Foundry Cluster Belgaum</small>
-        </article>
-
-        <article className="metric-card energy-card">
-          <div className="metric-topline">
-            <span>Energy Today</span>
-            <span className="metric-delta positive">↓ 8.7% vs Yesterday</span>
-          </div>
-          <div className="kpi-main-val">
-            <strong>7,400</strong>
-            <span className="unit-label">kWh</span>
-          </div>
-          <div className="kpi-subline">
-            <span>Yesterday: 8,500 kWh</span>
-            <span className="positive-text">Saved: 1,100 kWh</span>
-          </div>
-          <div className="progress-track">
-            <i style={{ width: '87%', background: '#10b981' }} />
-          </div>
-          <small className="kpi-footnote">Cost run-rate: ₹59,200 (Saved ₹8,800 today)</small>
-        </article>
-
-        <article className="metric-card energy-card">
-          <div className="metric-topline">
-            <span>Production Output</span>
-            <span className="metric-delta neutral">0% impact (Preserved)</span>
-          </div>
-          <div className="kpi-main-val">
-            <strong>1,000</strong>
-            <span className="unit-label">units / 10.2 ton</span>
-          </div>
-          <div className="kpi-subline">
-            <span>Shift Target: 1,000 units</span>
-            <span className="badge-ok">Constraint Met</span>
-          </div>
-          <div className="progress-track">
-            <i style={{ width: '100%', background: '#38bdf8' }} />
-          </div>
-          <small className="kpi-footnote">Throughput ≥ Baseline (Hard constraint maintained)</small>
-        </article>
-
-        <article className="metric-card energy-card">
-          <div className="metric-topline">
-            <span>Quality Yield</span>
-            <span className="metric-delta positive">↑ 0.1% vs Yesterday</span>
-          </div>
-          <div className="kpi-main-val">
-            <strong>97.9<span>%</span></strong>
-            <span className="unit-label">Good casting yield</span>
-          </div>
-          <div className="kpi-subline">
-            <span>Threshold: 97.0%</span>
-            <span className="badge-ok">Zero Rejects</span>
-          </div>
-          <div className="progress-track">
-            <i style={{ width: '97.9%', background: '#3b82f6' }} />
-          </div>
-          <small className="kpi-footnote">Quality ≥ Baseline (Hard constraint preserved)</small>
-        </article>
-
-        <article className="metric-card energy-card">
-          <div className="metric-topline">
-            <span>Carbon Intensity</span>
-            <span className="metric-delta positive">↓ 9.4% CO₂</span>
-          </div>
-          <div className="kpi-main-val">
-            <strong>0.81</strong>
-            <span className="unit-label">tCO₂e / day</span>
-          </div>
-          <div className="kpi-subline">
-            <span>Renewable share: <strong>18.2%</strong></span>
-            <span>Target: 30%</span>
-          </div>
-          <div className="progress-track">
-            <i style={{ width: '60.6%', background: '#10b981' }} />
-          </div>
-          <small className="kpi-footnote">Scope 1 (0.18t) + Scope 2 (0.63t)</small>
-        </article>
-      </section>
-
-      {/* Analytics Mid-Section (Trend + Waste Donut + Top Anomalies + Decarbonisation) */}
-      <section className="energy-analytics-section">
-        {/* Left: 7-Day SEC Trend Curve */}
-        <div className="analytics-card trend-card">
-          <div className="card-header-flex">
+      {/* Middle Section: 24h Profile Chart + Sub-metering Distribution */}
+      <section className="grid-2col">
+        {/* Left: 24-Hour Energy Load Profile & SEC Envelope */}
+        <div className="card-clean">
+          <div className="card-header-clean">
             <div>
-              <h3>Energy Trend</h3>
-              <p className="card-sub">Specific Energy Consumption (kWh/unit) vs Baseline SEC</p>
+              <h2 className="card-title-clean">
+                <ActivityIcon size={16} className="text-emerald" />
+                <span>24-Hour Specific Energy & Operational Envelope</span>
+              </h2>
+              <p className="card-subtitle-clean">
+                Continuous telemetry comparison against dynamic baseline standards and anomaly threshold.
+              </p>
             </div>
-            <div className="trend-legend">
-              <span className="legend-item"><i className="legend-dot live-sec" /> Daily SEC</span>
-              <span className="legend-item"><i className="legend-dot base-sec" /> Baseline SEC (8.50)</span>
-            </div>
+            <span className="kpi-badge success">Dynamic Envelope Active</span>
           </div>
-          <div className="trend-chart-container">
-            <svg viewBox="0 0 460 170" className="trend-svg" preserveAspectRatio="none">
+
+          <div className="chart-container-box">
+            <svg viewBox="0 0 700 200" className="svg-chart-clean" preserveAspectRatio="none">
               <defs>
                 <linearGradient id="secAreaGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#10b981" stopOpacity="0.25" />
-                  <stop offset="100%" stopColor="#10b981" stopOpacity="0.0" />
+                  <stop offset="0%" stopColor="#00d328" stopOpacity="0.25" />
+                  <stop offset="100%" stopColor="#00d328" stopOpacity="0.0" />
+                </linearGradient>
+                <linearGradient id="anomalyAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#ef4444" stopOpacity="0.3" />
+                  <stop offset="100%" stopColor="#ef4444" stopOpacity="0.0" />
                 </linearGradient>
               </defs>
+
               {/* Grid Lines */}
-              <line x1="40" y1="20" x2="440" y2="20" stroke="#334155" strokeWidth="0.5" strokeDasharray="3,3" />
-              <line x1="40" y1="55" x2="440" y2="55" stroke="#334155" strokeWidth="0.5" strokeDasharray="3,3" />
-              <line x1="40" y1="90" x2="440" y2="90" stroke="#334155" strokeWidth="0.5" strokeDasharray="3,3" />
-              <line x1="40" y1="125" x2="440" y2="125" stroke="#334155" strokeWidth="0.5" strokeDasharray="3,3" />
+              <line x1="40" y1="40" x2="680" y2="40" stroke="#1f2937" strokeDasharray="3 3" />
+              <line x1="40" y1="90" x2="680" y2="90" stroke="#1f2937" strokeDasharray="3 3" />
+              <line x1="40" y1="140" x2="680" y2="140" stroke="#1f2937" strokeDasharray="3 3" />
+              <line x1="40" y1="180" x2="680" y2="180" stroke="#374151" />
 
-              {/* Y Axis Labels */}
-              <text x="15" y="24" className="axis-text">10.0</text>
-              <text x="15" y="59" className="axis-text">8.5</text>
-              <text x="15" y="94" className="axis-text">6.0</text>
-              <text x="15" y="129" className="axis-text">4.0</text>
+              {/* Y-Axis Labels */}
+              <text x="10" y="44" fill="#6b7280" fontSize="10" fontFamily="var(--font-mono)">12.0</text>
+              <text x="10" y="94" fill="#6b7280" fontSize="10" fontFamily="var(--font-mono)">10.0</text>
+              <text x="10" y="144" fill="#6b7280" fontSize="10" fontFamily="var(--font-mono)">8.0</text>
 
-              {/* Baseline Reference Line at 8.50 */}
-              <line x1="40" y1="55" x2="440" y2="55" stroke="#f59e0b" strokeWidth="2" strokeDasharray="5,4" />
+              {/* Baseline Band (Target: 8.5 kWh/t) */}
+              <line x1="40" y1="130" x2="680" y2="130" stroke="#f59e0b" strokeWidth="1.5" strokeDasharray="5 4" opacity="0.8" />
+              <text x="610" y="124" fill="#f59e0b" fontSize="10" fontFamily="var(--font-mono)">Target 8.5</text>
 
-              {/* Shaded Area Under SEC */}
+              {/* Upper Control Limit (10.0 kWh/t) */}
+              <line x1="40" y1="90" x2="680" y2="90" stroke="#ef4444" strokeWidth="1.2" strokeDasharray="4 4" opacity="0.7" />
+              <text x="610" y="84" fill="#ef4444" fontSize="10" fontFamily="var(--font-mono)">UCL 10.0</text>
+
+              {/* Area Fill */}
               <path
-                d="M 60 48 L 120 40 L 180 32 L 240 75 L 300 82 L 360 88 L 420 90 L 420 140 L 60 140 Z"
+                d="M 40 145 Q 120 140, 200 135 T 320 50 T 440 145 T 560 148 T 680 145 L 680 180 L 40 180 Z"
                 fill="url(#secAreaGrad)"
               />
 
-              {/* SEC Trend Line */}
+              {/* Main Trend Line */}
               <path
-                d="M 60 48 L 120 40 L 180 32 L 240 75 L 300 82 L 360 88 L 420 90"
+                d="M 40 145 Q 120 140, 200 135 T 320 50 T 440 145 T 560 148 T 680 145"
                 fill="none"
-                stroke="#10b981"
-                strokeWidth="3.2"
-                strokeLinecap="round"
+                stroke="#00d328"
+                strokeWidth="2.5"
               />
 
-              {/* Points */}
-              <circle cx="60" cy="48" r="4" fill="#10b981" />
-              <circle cx="120" cy="40" r="4" fill="#ef4444" />
-              <circle cx="180" cy="32" r="5" fill="#ef4444" stroke="#fff" strokeWidth="1.5" />
-              <circle cx="240" cy="75" r="4" fill="#10b981" />
-              <circle cx="300" cy="82" r="4" fill="#10b981" />
-              <circle cx="360" cy="88" r="4" fill="#10b981" />
-              <circle cx="420" cy="90" r="4" fill="#10b981" />
+              {/* Anomaly Highlight Section around 08:30 (x=320, y=50) */}
+              <circle cx="320" cy="50" r="5" fill="#ef4444" stroke="#ffffff" strokeWidth="2" />
+              <line x1="320" y1="50" x2="320" y2="180" stroke="#ef4444" strokeWidth="1.2" strokeDasharray="3 3" opacity="0.6" />
 
-              {/* X Axis Labels */}
-              <text x="50" y="155" className="axis-text">May 12</text>
-              <text x="110" y="155" className="axis-text">May 13</text>
-              <text x="170" y="155" className="axis-text">May 14</text>
-              <text x="230" y="155" className="axis-text">May 15</text>
-              <text x="290" y="155" className="axis-text">May 16</text>
-              <text x="350" y="155" className="axis-text">May 17</text>
-              <text x="410" y="155" className="axis-text">May 18</text>
+              {/* Anomaly Callout Box */}
+              <rect x="250" y="15" width="140" height="26" rx="4" fill="#111827" stroke="#ef4444" strokeWidth="1" />
+              <text x="258" y="32" fill="#f87171" fontSize="10.5" fontFamily="var(--font-mono)" fontWeight="bold">
+                08:30 Anomaly: +14.3%
+              </text>
+
+              {/* X-Axis Ticks */}
+              <text x="40" y="196" fill="#6b7280" fontSize="10" fontFamily="var(--font-mono)">00:00</text>
+              <text x="180" y="196" fill="#6b7280" fontSize="10" fontFamily="var(--font-mono)">04:00</text>
+              <text x="300" y="196" fill="#f87171" fontSize="10" fontFamily="var(--font-mono)" fontWeight="bold">08:30 (Excursion)</text>
+              <text x="440" y="196" fill="#6b7280" fontSize="10" fontFamily="var(--font-mono)">12:00</text>
+              <text x="560" y="196" fill="#6b7280" fontSize="10" fontFamily="var(--font-mono)">16:00</text>
+              <text x="650" y="196" fill="#6b7280" fontSize="10" fontFamily="var(--font-mono)">20:00</text>
             </svg>
           </div>
-          <div className="trend-insight-strip">
-            <span className="badge-pill alert-pill">May 14 Anomaly</span>
-            <p>Air leak on Line 2 caused temporary SEC spike to 11.2 kWh/ton. Post-intervention setpoint lowered SEC to 7.40 kWh/unit.</p>
+
+          <div className="chart-legend-bar">
+            <div className="legend-chip">
+              <span className="legend-dot-indicator" style={{ backgroundColor: '#00d328' }} />
+              <span>Measured SEC (kWh/ton)</span>
+            </div>
+            <div className="legend-chip">
+              <span className="legend-dot-indicator" style={{ backgroundColor: '#f59e0b' }} />
+              <span>Target Standard (8.50)</span>
+            </div>
+            <div className="legend-chip">
+              <span className="legend-dot-indicator" style={{ backgroundColor: '#ef4444' }} />
+              <span>Excursion Threshold (10.0)</span>
+            </div>
           </div>
         </div>
 
-        {/* Center: Energy Waste Breakdown (Image 1 Donut) */}
-        <div className="analytics-card waste-card">
-          <div className="card-header-flex">
+        {/* Right: Sub-metering Energy Distribution */}
+        <div className="card-clean">
+          <div className="card-header-clean">
             <div>
-              <h3>Energy Waste Breakdown</h3>
-              <p className="card-sub">Identified today: <strong>1,250 kWh waste</strong></p>
+              <h2 className="card-title-clean">
+                <GaugeIcon size={16} className="text-cyan" />
+                <span>Sub-Metered Load Center</span>
+              </h2>
+              <p className="card-subtitle-clean">Total: 7,400 kWh • 4 Feeder Circuits</p>
             </div>
+            <span className="kpi-badge info">14 Meters Live</span>
           </div>
-          <div className="donut-and-legend">
-            <div className="donut-wrapper">
-              <svg viewBox="0 0 120 120" className="donut-svg">
-                {/* 
-                  Circumference = 2 * PI * 40 = 251.3
-                  Compressed Air: 28% = 70.3
-                  Furnace: 26% = 65.3
-                  Motors: 20% = 50.2
-                  Fans & Pumps: 14% = 35.1
-                  Lighting: 6% = 15.0
-                  Others: 6% = 15.0
-                */}
-                <circle cx="60" cy="60" r="40" fill="none" stroke="#1e293b" strokeWidth="18" />
-                <circle cx="60" cy="60" r="40" fill="none" stroke="#38bdf8" strokeWidth="18" strokeDasharray="70.3 181" strokeDashoffset="0" />
-                <circle cx="60" cy="60" r="40" fill="none" stroke="#f97316" strokeWidth="18" strokeDasharray="65.3 186" strokeDashoffset="-70.3" />
-                <circle cx="60" cy="60" r="40" fill="none" stroke="#10b981" strokeWidth="18" strokeDasharray="50.2 201" strokeDashoffset="-135.6" />
-                <circle cx="60" cy="60" r="40" fill="none" stroke="#a855f7" strokeWidth="18" strokeDasharray="35.1 216" strokeDashoffset="-185.8" />
-                <circle cx="60" cy="60" r="40" fill="none" stroke="#eab308" strokeWidth="18" strokeDasharray="15.0 236" strokeDashoffset="-220.9" />
-                <circle cx="60" cy="60" r="40" fill="none" stroke="#64748b" strokeWidth="18" strokeDasharray="15.4 236" strokeDashoffset="-235.9" />
+
+          <div className="distribution-layout">
+            <div className="donut-graphic-wrap">
+              <svg viewBox="0 0 100 100" style={{ transform: 'rotate(-90deg)', width: '100%', height: '100%' }}>
+                {/* Furnace 44% */}
+                <circle cx="50" cy="50" r="38" fill="none" stroke="#00d328" strokeWidth="12" strokeDasharray="105 239" />
+                {/* Compressors 28% */}
+                <circle cx="50" cy="50" r="38" fill="none" stroke="#ef4444" strokeWidth="12" strokeDasharray="67 239" strokeDashoffset="-105" />
+                {/* Sand Preparation 16% */}
+                <circle cx="50" cy="50" r="38" fill="none" stroke="#06b6d4" strokeWidth="12" strokeDasharray="38 239" strokeDashoffset="-172" />
+                {/* Auxiliaries 12% */}
+                <circle cx="50" cy="50" r="38" fill="none" stroke="#6b7280" strokeWidth="12" strokeDasharray="29 239" strokeDashoffset="-210" />
               </svg>
-              <div className="donut-center-text">
-                <span className="donut-number">1,250</span>
-                <small>kWh Loss</small>
+              <div className="donut-center-metric">
+                <strong>7,400</strong>
+                <small>kWh Today</small>
               </div>
             </div>
-            <div className="donut-legend-list">
-              {energyWasteBreakdown.map((item) => (
-                <div key={item.category} className="legend-row">
-                  <span className="legend-color-dot" style={{ backgroundColor: item.color }} />
-                  <span className="legend-name">{item.category}</span>
-                  <strong className="legend-pct">{item.percentage}%</strong>
-                  <small className="legend-kwh">({item.kwh} kWh)</small>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
 
-        {/* Right: Top Anomalies + Decarbonisation */}
-        <div className="analytics-card anomalies-card">
-          <div className="card-header-flex">
-            <div>
-              <h3>Top Detected Anomalies</h3>
-              <p className="card-sub">AI cross-correlated across energy & production</p>
-            </div>
-            <button className="text-link-btn" onClick={onOpenWorkbench}>Investigate All ↗</button>
-          </div>
-
-          <div className="anomalies-list">
-            {topAnomalies.map((anomaly) => (
-              <div key={anomaly.id} className={`anomaly-item-chip ${anomaly.severity}`}>
-                <div className="anomaly-chip-left">
-                  <span className={`chip-badge ${anomaly.severity}`}>
-                    {anomaly.severity.toUpperCase()}
-                  </span>
-                  <div>
-                    <strong>{anomaly.title}</strong>
-                    <small>{anomaly.equipment}</small>
-                  </div>
+            <div className="breakdown-bars-list">
+              <div className="breakdown-item">
+                <div className="breakdown-item-label">
+                  <span className="text-primary font-semibold">Induction Melting</span>
+                  <span className="font-mono text-emerald">44% (3,256 kWh)</span>
                 </div>
-                <div className="anomaly-chip-impact">
-                  <span>Energy Impact</span>
-                  <strong>{anomaly.impactPct}%</strong>
+                <div className="breakdown-bar-track">
+                  <div className="breakdown-bar-fill" style={{ width: '44%', backgroundColor: '#00d328' }} />
                 </div>
               </div>
-            ))}
-          </div>
 
-          {/* Decarbonisation & Renewables Mini-Widget */}
-          <div className="decarbonisation-subpanel">
-            <div className="decarb-top">
-              <strong>CO₂ & Decarbonisation</strong>
-              <span>Renewable: <strong>{decarbonisationStats.renewablePct}%</strong> (Target 30%)</span>
-            </div>
-            <div className="scope-bars">
-              <div className="scope-bar-item">
-                <span className="scope-label">Scope 1 (Thermal/Standby)</span>
-                <div className="bar-track"><i style={{ width: '22%', background: '#f97316' }} /></div>
-                <span className="scope-val">0.18 tCO₂e</span>
+              <div className="breakdown-item">
+                <div className="breakdown-item-label">
+                  <span className="text-primary font-semibold">Compressed Air Systems</span>
+                  <span className="font-mono text-alert font-bold">28% (2,072 kWh) • Leak</span>
+                </div>
+                <div className="breakdown-bar-track">
+                  <div className="breakdown-bar-fill" style={{ width: '28%', backgroundColor: '#ef4444' }} />
+                </div>
               </div>
-              <div className="scope-bar-item">
-                <span className="scope-label">Scope 2 (Grid Electricity)</span>
-                <div className="bar-track"><i style={{ width: '78%', background: '#3b82f6' }} /></div>
-                <span className="scope-val">0.63 tCO₂e</span>
+
+              <div className="breakdown-item">
+                <div className="breakdown-item-label">
+                  <span className="text-primary font-semibold">Sand Muller & Drives</span>
+                  <span className="font-mono text-cyan">16% (1,184 kWh)</span>
+                </div>
+                <div className="breakdown-bar-track">
+                  <div className="breakdown-bar-fill" style={{ width: '16%', backgroundColor: '#06b6d4' }} />
+                </div>
+              </div>
+
+              <div className="breakdown-item">
+                <div className="breakdown-item-label">
+                  <span className="text-primary font-semibold">Auxiliaries & Cooling</span>
+                  <span className="font-mono text-muted">12% (888 kWh)</span>
+                </div>
+                <div className="breakdown-bar-track">
+                  <div className="breakdown-bar-fill" style={{ width: '12%', backgroundColor: '#6b7280' }} />
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Decision Queue / Active Plant Incidents (Image 1 Bottom Section) */}
-      <section className="energy-decision-queue">
-        <div className="section-heading">
+      {/* Bottom Section: Active Anomalies Queue Table */}
+      <section className="card-clean">
+        <div className="card-header-clean">
           <div>
-            <p className="section-kicker">Agentic Triage & Action</p>
-            <h2>Active Plant Energy Decisions</h2>
+            <h2 className="card-title-clean">
+              <AlertTriangleIcon size={16} className="text-alert" />
+              <span>Active Plant Energy Anomalies & Decision Queue</span>
+            </h2>
+            <p className="card-subtitle-clean">
+              Ranked by hourly financial exposure. Click Investigate to launch root cause reasoning in the Workbench.
+            </p>
           </div>
-          <div className="filter-controls">
-            <label>
-              <span className="filter-label">Filter Plant:</span>
-              <select value={plantFilter} onChange={(e) => setPlantFilter(e.target.value)} className="select-input">
-                <option>All plants</option>
-                <option>Foundry Cluster - Belgaum</option>
-                <option>Forging Cluster - Pune</option>
-                <option>Textile Finishing - Surat</option>
-                <option>Foundry Cluster - Coimbatore</option>
-              </select>
-            </label>
-            <label>
-              <span className="filter-label">Status:</span>
-              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="select-input">
-                <option>All statuses</option>
-                <option value="investigating">Investigating</option>
-                <option value="open">Open</option>
-                <option value="monitoring">Monitoring</option>
-              </select>
-            </label>
-          </div>
+          <span className="kpi-badge danger">2 Active Excursions</span>
         </div>
 
-        <div className="incident-cards-container">
-          {filteredIncidents.map((incident) => {
-            const isPriority = incident.id === data.incident.id;
-            return (
-              <article key={incident.id} className={`energy-incident-card ${incident.severity}${isPriority ? ' is-priority-incident' : ''}`}>
-                <div className="card-topline">
-                  <div className="id-tags">
-                    <span className={`severity-tag ${incident.severity}`}>{incident.severity.toUpperCase()}</span>
-                    <span className="incident-id-text">{incident.id}</span>
-                    {isPriority && <span className="priority-pill">★ Priority Decision</span>}
-                  </div>
-                  <span className={`status-pill ${incident.status}`}>{incident.status}</span>
-                </div>
-
-                <div className="card-body-text">
-                  <h3>{incident.title}</h3>
-                  <p className="incident-summary">{incident.summary}</p>
-                </div>
-
-                <div className="incident-metrics-strip">
-                  <div className="strip-metric">
-                    <small>SEC Impact</small>
-                    <strong className="critical-metric-text">
-                      {incident.currentSec} {incident.secUnit}
-                      <span className="delta-sub"> (+{incident.secDeltaPct}%)</span>
-                    </strong>
-                  </div>
-                  <div className="strip-metric">
-                    <small>Plant / Line</small>
-                    <strong>{incident.plant}</strong>
-                  </div>
-                  <div className="strip-metric">
-                    <small>Batch / Product</small>
-                    <span>{incident.product}</span>
-                  </div>
-                  <div className="strip-metric">
-                    <small>Loss Exposure</small>
-                    <strong className="loss-val">{formatInr(incident.exposureInr)}/mo</strong>
-                  </div>
-                </div>
-
-                <div className="card-actions-strip">
-                  <div className="constraint-confirmation">
-                    <span className="constraint-badge">✓ Throughput Preserved</span>
-                    <span className="constraint-badge">✓ Quality Preserved</span>
-                  </div>
-                  <button
-                    className={`btn-action ${isPriority ? 'btn-primary-glow' : 'btn-secondary'}`}
-                    onClick={onOpenWorkbench}
-                  >
-                    {isPriority ? 'Open 4-Agent Workbench →' : 'Review Incident'}
+        <div className="table-wrap-clean">
+          <table className="table-clean">
+            <thead>
+              <tr>
+                <th>Incident ID</th>
+                <th>Asset / Location</th>
+                <th>Physical Mechanism</th>
+                <th>SEC Delta</th>
+                <th>Hourly Loss</th>
+                <th>Severity</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <span className="font-mono font-bold text-primary">INC-ENG-2401</span>
+                </td>
+                <td>
+                  <strong>Line 2 Moulding Pneumatics</strong>
+                  <div className="text-muted font-mono text-xs">Screw Compressor COMP-02 (75 kW)</div>
+                </td>
+                <td>
+                  <span className="text-secondary">Pneumatic distribution line pressure drop (7.2 → 6.1 bar)</span>
+                  <div className="text-alert font-mono text-xs">Continuous on-load compressor modulation +21%</div>
+                </td>
+                <td>
+                  <span className="font-mono text-alert font-bold">+14.3% Spike</span>
+                </td>
+                <td>
+                  <span className="font-mono text-alert font-bold">₹780 / hr</span>
+                </td>
+                <td>
+                  <span className="kpi-badge danger">CRITICAL</span>
+                </td>
+                <td>
+                  <button className="btn-primary-action" onClick={onOpenWorkbench}>
+                    <span>Investigate</span>
+                    <ArrowRightIcon size={13} />
                   </button>
-                </div>
-              </article>
-            );
-          })}
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <span className="font-mono font-bold text-primary">INC-ENG-2402</span>
+                </td>
+                <td>
+                  <strong>Induction Furnace Preheater</strong>
+                  <div className="text-muted font-mono text-xs">Heating Bank F-01 • Holding Stage</div>
+                </td>
+                <td>
+                  <span className="text-secondary">Preheat idling power draw over 45 min without charge transfer</span>
+                </td>
+                <td>
+                  <span className="font-mono text-warning font-bold">+8.2% Nominal</span>
+                </td>
+                <td>
+                  <span className="font-mono text-warning font-bold">₹240 / hr</span>
+                </td>
+                <td>
+                  <span className="kpi-badge warning">WARNING</span>
+                </td>
+                <td>
+                  <button className="btn-secondary-action" onClick={onOpenWorkbench}>
+                    <span>Inspect</span>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

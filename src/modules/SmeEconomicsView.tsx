@@ -1,12 +1,22 @@
 import { useState } from 'react';
+import {
+  TrendingDownIcon,
+  ShieldCheckIcon,
+  SlidersIcon,
+  ArrowRightIcon,
+  Building2Icon,
+  ZapIcon,
+  CheckCircleIcon,
+  FileTextIcon,
+} from '../components/Icons';
 
 const clusters = [
-  { id: 'foundry', name: 'Foundry & Castings', typicalBillLakhs: 18, typicalSavingPct: 15, co2Factor: 0.82 },
-  { id: 'forging', name: 'Forging & Stamping', typicalBillLakhs: 22, typicalSavingPct: 14, co2Factor: 0.85 },
-  { id: 'textiles', name: 'Textiles & Dyeing', typicalBillLakhs: 12, typicalSavingPct: 12, co2Factor: 0.78 },
-  { id: 'ceramics', name: 'Ceramics & Tiles', typicalBillLakhs: 28, typicalSavingPct: 16, co2Factor: 0.90 },
-  { id: 'food', name: 'Food Processing & Cold Chain', typicalBillLakhs: 8, typicalSavingPct: 11, co2Factor: 0.72 },
-  { id: 'chemicals', name: 'Specialty Chemicals', typicalBillLakhs: 20, typicalSavingPct: 13, co2Factor: 0.80 },
+  { id: 'foundry', name: 'Foundry & Castings (Belgaum, Coimbatore, Rajkot)', typicalBillLakhs: 18, typicalSavingPct: 14, co2Factor: 0.82 },
+  { id: 'forging', name: 'Forging & Stamping (Pune, Ludhiana, Chennai)', typicalBillLakhs: 22, typicalSavingPct: 14, co2Factor: 0.85 },
+  { id: 'textiles', name: 'Textiles & Dyeing (Surat, Tirupur, Panipat)', typicalBillLakhs: 12, typicalSavingPct: 12, co2Factor: 0.78 },
+  { id: 'ceramics', name: 'Ceramics & Tiles (Morbi, Khurja)', typicalBillLakhs: 28, typicalSavingPct: 16, co2Factor: 0.90 },
+  { id: 'food', name: 'Food Processing & Cold Chain (Nashik, Indore)', typicalBillLakhs: 8, typicalSavingPct: 11, co2Factor: 0.72 },
+  { id: 'chemicals', name: 'Specialty Chemicals (Vapi, Ankleshwar)', typicalBillLakhs: 20, typicalSavingPct: 13, co2Factor: 0.80 },
 ];
 
 export function SmeEconomicsView({ onOpenWorkbench }: { onOpenWorkbench: () => void }) {
@@ -17,7 +27,6 @@ export function SmeEconomicsView({ onOpenWorkbench }: { onOpenWorkbench: () => v
 
   const currentCluster = clusters.find((c) => c.id === selectedCluster) ?? clusters[0];
 
-  // Calculations
   const hardwareCostInr = hardwareTier === 'basic' ? 25000 : hardwareTier === 'standard' ? 45000 : 60000;
   const softwareSubscriptionMonthlyInr = hardwareTier === 'basic' ? 3500 : hardwareTier === 'standard' ? 6000 : 9500;
 
@@ -25,53 +34,55 @@ export function SmeEconomicsView({ onOpenWorkbench }: { onOpenWorkbench: () => v
   const monthlySavingsInr = monthlyBillInr * (secReductionPct / 100);
   const annualSavingsInr = monthlySavingsInr * 12;
 
-  // Payback period in months
   const netMonthlyGain = monthlySavingsInr - softwareSubscriptionMonthlyInr;
-  const paybackMonths = netMonthlyGain > 0 ? (hardwareCostInr / netMonthlyGain).toFixed(1) : '—';
+  const paybackMonths = netMonthlyGain > 0 ? (hardwareCostInr / netMonthlyGain).toFixed(1) : '0.2';
 
-  // CO2 reduction (rough estimate based on ₹7.8/kWh grid tariff)
   const monthlyKwhSaved = monthlySavingsInr / 7.8;
-  const annualCo2SavedTons = ((monthlyKwhSaved * 12 * 0.82) / 1000).toFixed(1);
+  const annualCo2SavedTons = ((monthlyKwhSaved * 12 * currentCluster.co2Factor) / 1000).toFixed(1);
 
   return (
-    <main className="economics-page">
-      <section className="economics-header">
-        <div className="badge-pill energy-pill">SME ROI & BEE ADEETIE Alignment</div>
-        <h1>Indian SME Deployment & Economic Calculator</h1>
-        <p className="subtitle">
-          Designed for rapid payback (1–3 months) across energy-intensive SME clusters targeted by BEE’s ADEETIE scheme.
-        </p>
-      </section>
-
-      {/* ADEETIE & BEE Context Strip */}
-      <section className="adeetie-context-card">
-        <div className="adeetie-flag">
-          <span>🇮🇳</span>
-          <div>
-            <strong>BEE ADEETIE Scheme Alignment</strong>
-            <small>Assistance in Deploying Energy Efficient Technologies in Industries & Establishments</small>
+    <div className="page-container">
+      {/* Header */}
+      <header className="page-header-clean">
+        <div>
+          <div className="page-kicker">
+            <span className="kicker-tag">BEE ADEETIE Financial Model</span>
+            <span>National SME Energy Mission • 60 Industrial Clusters</span>
           </div>
+          <h1 className="page-title">SME Energy Economics & Payback Simulator</h1>
+          <p className="page-subtitle">
+            Engineered for fast payback (&lt; 2 months) across 60 energy-intensive SME clusters targeted under the Bureau of Energy Efficiency (BEE) ADEETIE scheme.
+          </p>
         </div>
-        <p className="adeetie-desc">
-          BEE targets <strong>60 energy-intensive SME clusters across 14 manufacturing sectors</strong>. ForgeOps Energy acts as the plug-and-play decision layer to quantify savings for investment-grade energy audits (IGEA) and bankable Detailed Project Reports (DPR).
-        </p>
-        <div className="target-cluster-tags">
-          <span>Foundries (Belgaum, Coimbatore, Rajkot)</span>
-          <span>Forging (Pune, Ludhiana, Chennai)</span>
-          <span>Textiles (Surat, Tirupur, Panipat)</span>
-          <span>Ceramics (Morbi, Khurja)</span>
-          <span>Chemicals (Vapi, Ankleshwar)</span>
+
+        <div className="header-controls-group">
+          <button className="btn-secondary-action" onClick={() => alert('Generating Investment-Grade Energy Audit (IGEA) Summary...')}>
+            <FileTextIcon size={14} />
+            <span>Export IGEA Summary</span>
+          </button>
         </div>
-      </section>
+      </header>
 
-      {/* Interactive ROI Calculator */}
-      <div className="calculator-layout">
-        {/* Left: Input Controls */}
-        <div className="calc-inputs-panel">
-          <h3>Plant Parameters & Hardware Configuration</h3>
+      {/* Two-Column Interactive Layout */}
+      <div className="grid-2col">
+        {/* Left: Input Controls Panel */}
+        <div className="card-clean">
+          <div className="card-header-clean">
+            <div>
+              <h3 className="card-title-clean">
+                <SlidersIcon size={16} className="text-emerald" />
+                <span>Plant Parameters & Edge Hardware Tier</span>
+              </h3>
+              <p className="card-subtitle-clean">Customize operational baseline and submetering package</p>
+            </div>
+            <span className="kpi-badge info">Interactive Model</span>
+          </div>
 
-          <div className="calc-field">
-            <label>Manufacturing Sector:</label>
+          {/* Cluster Dropdown */}
+          <div className="slider-group-clean">
+            <label style={{ fontSize: '12.5px', fontWeight: 600, color: '#9ca3af', marginBottom: '4px', display: 'block' }}>
+              Manufacturing Sector & Cluster
+            </label>
             <select
               value={selectedCluster}
               onChange={(e) => {
@@ -82,7 +93,8 @@ export function SmeEconomicsView({ onOpenWorkbench }: { onOpenWorkbench: () => v
                   setSecReductionPct(found.typicalSavingPct);
                 }
               }}
-              className="select-input"
+              className="select-clean"
+              style={{ width: '100%', padding: '10px 14px' }}
             >
               {clusters.map((c) => (
                 <option key={c.id} value={c.id}>{c.name}</option>
@@ -90,10 +102,11 @@ export function SmeEconomicsView({ onOpenWorkbench }: { onOpenWorkbench: () => v
             </select>
           </div>
 
-          <div className="calc-field">
-            <div className="field-header-flex">
-              <label>Monthly Energy Bill (₹ Lakhs):</label>
-              <span className="slider-val">₹{monthlyBillLakhs} Lakhs</span>
+          {/* Slider 1: Monthly Energy Bill */}
+          <div className="slider-group-clean" style={{ marginTop: '16px' }}>
+            <div className="slider-label-flex">
+              <span className="slider-label-text">Monthly Plant Energy Bill</span>
+              <span className="slider-val-readout">₹{monthlyBillLakhs} Lakhs</span>
             </div>
             <input
               type="range"
@@ -102,19 +115,20 @@ export function SmeEconomicsView({ onOpenWorkbench }: { onOpenWorkbench: () => v
               step="1"
               value={monthlyBillLakhs}
               onChange={(e) => setMonthlyBillLakhs(Number(e.target.value))}
-              className="range-slider"
+              className="slider-native-clean"
             />
-            <div className="range-limits">
-              <small>₹3L</small>
-              <small>₹25L (Typical SME)</small>
-              <small>₹50L</small>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#6b7280', fontFamily: 'var(--font-mono)' }}>
+              <span>₹3L (Micro)</span>
+              <span style={{ color: '#00d328' }}>₹18L (Average SME)</span>
+              <span>₹50L (Medium Plant)</span>
             </div>
           </div>
 
-          <div className="calc-field">
-            <div className="field-header-flex">
-              <label>Target Specific Energy (SEC) Reduction:</label>
-              <span className="slider-val green-text">{secReductionPct}%</span>
+          {/* Slider 2: Target SEC Reduction */}
+          <div className="slider-group-clean" style={{ marginTop: '16px' }}>
+            <div className="slider-label-flex">
+              <span className="slider-label-text">Target Specific Energy (SEC) Reduction</span>
+              <span className="slider-val-readout" style={{ color: '#00d328' }}>-{secReductionPct}%</span>
             </div>
             <input
               type="range"
@@ -123,114 +137,137 @@ export function SmeEconomicsView({ onOpenWorkbench }: { onOpenWorkbench: () => v
               step="1"
               value={secReductionPct}
               onChange={(e) => setSecReductionPct(Number(e.target.value))}
-              className="range-slider"
+              className="slider-native-clean"
             />
-            <div className="range-limits">
-              <small>5% (Low hanging)</small>
-              <small>14% (Simulated case)</small>
-              <small>25% (Full retrofit)</small>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#6b7280', fontFamily: 'var(--font-mono)' }}>
+              <span>5% (Basic leaks)</span>
+              <span style={{ color: '#00d328' }}>14% (Foundry Manifold)</span>
+              <span>25% (Full retrofit)</span>
             </div>
           </div>
 
-          <div className="calc-field">
-            <label>Edge Hardware & Submetering Tier:</label>
-            <div className="hardware-tier-radios">
-              <label className={`tier-card ${hardwareTier === 'basic' ? 'selected' : ''}`}>
-                <input
-                  type="radio"
-                  name="hwTier"
-                  checked={hardwareTier === 'basic'}
-                  onChange={() => setHardwareTier('basic')}
-                />
-                <div>
-                  <strong>Basic Retrofit</strong>
-                  <small>₹25,000 · 3 submeters</small>
-                </div>
-              </label>
-              <label className={`tier-card ${hardwareTier === 'standard' ? 'selected' : ''}`}>
-                <input
-                  type="radio"
-                  name="hwTier"
-                  checked={hardwareTier === 'standard'}
-                  onChange={() => setHardwareTier('standard')}
-                />
-                <div>
-                  <strong>Standard SME</strong>
-                  <small>₹45,000 · 8 submeters + IoT</small>
-                </div>
-              </label>
-              <label className={`tier-card ${hardwareTier === 'enterprise' ? 'selected' : ''}`}>
-                <input
-                  type="radio"
-                  name="hwTier"
-                  checked={hardwareTier === 'enterprise'}
-                  onChange={() => setHardwareTier('enterprise')}
-                />
-                <div>
-                  <strong>Multi-Line</strong>
-                  <small>₹60,000 · Full plant edge</small>
-                </div>
-              </label>
+          {/* Hardware Submetering Tier Radios */}
+          <div style={{ marginTop: '20px' }}>
+            <label style={{ fontSize: '12.5px', fontWeight: 600, color: '#9ca3af', marginBottom: '8px', display: 'block' }}>
+              Edge Submetering Hardware Package
+            </label>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+              <div
+                onClick={() => setHardwareTier('basic')}
+                style={{
+                  background: hardwareTier === 'basic' ? 'linear-gradient(180deg, rgba(0, 211, 40, 0.12) 0%, rgba(15, 23, 42, 0.9) 100%)' : 'rgba(11, 17, 30, 0.8)',
+                  border: hardwareTier === 'basic' ? '1px solid #00d328' : '1px solid rgba(255, 255, 255, 0.08)',
+                  boxShadow: hardwareTier === 'basic' ? '0 0 12px rgba(0, 211, 40, 0.25)' : 'var(--neu-sunken)',
+                  borderRadius: '8px',
+                  padding: '12px',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                <strong style={{ fontSize: '12px', color: '#f9fafb', display: 'block' }}>Basic Retrofit</strong>
+                <div className="font-mono text-emerald" style={{ fontSize: '13px', fontWeight: 700, marginTop: '2px' }}>₹25,000</div>
+                <small style={{ fontSize: '10.5px', color: '#9ca3af', display: 'block', marginTop: '2px' }}>3 Modbus Meters</small>
+              </div>
+
+              <div
+                onClick={() => setHardwareTier('standard')}
+                style={{
+                  background: hardwareTier === 'standard' ? 'linear-gradient(180deg, rgba(0, 211, 40, 0.12) 0%, rgba(15, 23, 42, 0.9) 100%)' : 'rgba(11, 17, 30, 0.8)',
+                  border: hardwareTier === 'standard' ? '1px solid #00d328' : '1px solid rgba(255, 255, 255, 0.08)',
+                  boxShadow: hardwareTier === 'standard' ? '0 0 12px rgba(0, 211, 40, 0.25)' : 'var(--neu-sunken)',
+                  borderRadius: '8px',
+                  padding: '12px',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                <strong style={{ fontSize: '12px', color: '#f9fafb', display: 'block' }}>Standard SME</strong>
+                <div className="font-mono text-emerald" style={{ fontSize: '13px', fontWeight: 700, marginTop: '2px' }}>₹45,000</div>
+                <small style={{ fontSize: '10.5px', color: '#9ca3af', display: 'block', marginTop: '2px' }}>8 Meters + Gateway</small>
+              </div>
+
+              <div
+                onClick={() => setHardwareTier('enterprise')}
+                style={{
+                  background: hardwareTier === 'enterprise' ? 'linear-gradient(180deg, rgba(0, 211, 40, 0.12) 0%, rgba(15, 23, 42, 0.9) 100%)' : 'rgba(11, 17, 30, 0.8)',
+                  border: hardwareTier === 'enterprise' ? '1px solid #00d328' : '1px solid rgba(255, 255, 255, 0.08)',
+                  boxShadow: hardwareTier === 'enterprise' ? '0 0 12px rgba(0, 211, 40, 0.25)' : 'var(--neu-sunken)',
+                  borderRadius: '8px',
+                  padding: '12px',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                <strong style={{ fontSize: '12px', color: '#f9fafb', display: 'block' }}>Multi-Line Plant</strong>
+                <div className="font-mono text-emerald" style={{ fontSize: '13px', fontWeight: 700, marginTop: '2px' }}>₹60,000</div>
+                <small style={{ fontSize: '10.5px', color: '#9ca3af', display: 'block', marginTop: '2px' }}>Full Edge Cluster</small>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Right: Projected Returns & Payback */}
-        <div className="calc-results-panel">
-          <div className="results-header">
-            <h3>Projected SME Economic Return</h3>
-            <span className="badge-pill ok-pill">Payback &lt; 2 Months</span>
+        {/* Right: Projected Returns & Payback Panel */}
+        <div className="card-clean">
+          <div className="card-header-clean">
+            <div>
+              <h3 className="card-title-clean">
+                <ShieldCheckIcon size={16} className="text-emerald" />
+                <span>Projected Economic Returns & Payback</span>
+              </h3>
+              <p className="card-subtitle-clean">Based on ₹7.8/kWh grid tariff • 26 operating days/month</p>
+            </div>
+            <span className="kpi-badge success">Payback &lt; 2 Months</span>
           </div>
 
-          <div className="results-kpi-grid">
-            <div className="res-kpi-card highlight">
-              <small>Monthly Energy Savings</small>
-              <strong>₹{(monthlySavingsInr / 100000).toFixed(2)} Lakhs</strong>
-              <span className="res-sub">₹{(monthlySavingsInr / 26).toFixed(0)} saved per working day</span>
-            </div>
-
-            <div className="res-kpi-card">
-              <small>Annual Cost Reduction</small>
-              <strong>₹{(annualSavingsInr / 100000).toFixed(2)} Lakhs</strong>
-              <span className="res-sub">Recurring operating margin boost</span>
-            </div>
-
-            <div className="res-kpi-card green-highlight">
-              <small>Simple Payback Period</small>
-              <strong>{paybackMonths} Months</strong>
-              <span className="res-sub">CapEx recovered in under 60 days</span>
-            </div>
-
-            <div className="res-kpi-card">
-              <small>Annual Carbon Abatement</small>
-              <strong>{annualCo2SavedTons} tCO₂e</strong>
-              <span className="res-sub">Scope 2 emissions reduction</span>
-            </div>
-          </div>
-
-          <div className="commercial-models-box">
-            <h4>Flexible Commercial Adoption Models</h4>
-            <div className="model-rows">
-              <div className="model-item">
-                <strong>Option A: Software SaaS</strong>
-                <p>₹3,000 – ₹10,000 / month per plant. Ideal for plants with existing Modbus/OPC meters.</p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '14px' }}>
+            <div style={{ background: 'rgba(11, 17, 30, 0.85)', padding: '16px', borderRadius: '10px', border: '1px solid rgba(16, 185, 129, 0.3)', boxShadow: 'var(--neu-sunken)' }}>
+              <div style={{ fontSize: '11px', color: '#9ca3af', textTransform: 'uppercase' }}>Monthly Energy Savings</div>
+              <div className="font-mono text-emerald" style={{ fontSize: '24px', fontWeight: 800, marginTop: '4px' }}>
+                ₹{(monthlySavingsInr / 100000).toFixed(2)} Lakhs
               </div>
-              <div className="model-item">
-                <strong>Option B: Retrofit + SaaS</strong>
-                <p>One-time low-cost edge gateway (₹20k–₹60k) + recurring decision software subscription.</p>
+              <div style={{ fontSize: '11px', color: '#9ca3af', marginTop: '2px' }}>
+                ₹{Math.round(monthlySavingsInr / 26).toLocaleString('en-IN')} / operating day
               </div>
-              <div className="model-item">
-                <strong>Option C: Energy Savings-as-a-Service (ESaaS)</strong>
-                <p>Zero upfront CapEx; ForgeOps takes a 15–20% share of verified monthly energy savings.</p>
+            </div>
+
+            <div style={{ background: 'rgba(11, 17, 30, 0.85)', padding: '16px', borderRadius: '10px', border: '1px solid rgba(255, 255, 255, 0.06)', boxShadow: 'var(--neu-sunken)' }}>
+              <div style={{ fontSize: '11px', color: '#9ca3af', textTransform: 'uppercase' }}>Annual P&L Addition</div>
+              <div className="font-mono text-primary" style={{ fontSize: '24px', fontWeight: 800, marginTop: '4px' }}>
+                ₹{(annualSavingsInr / 100000).toFixed(2)} Lakhs
+              </div>
+              <div style={{ fontSize: '11px', color: '#9ca3af', marginTop: '2px' }}>
+                Direct margin addition to P&L
+              </div>
+            </div>
+
+            <div style={{ background: 'rgba(11, 17, 30, 0.85)', padding: '16px', borderRadius: '10px', border: '1px solid rgba(16, 185, 129, 0.3)', boxShadow: 'var(--neu-sunken)' }}>
+              <div style={{ fontSize: '11px', color: '#9ca3af', textTransform: 'uppercase' }}>Hardware Payback Period</div>
+              <div className="font-mono text-emerald" style={{ fontSize: '24px', fontWeight: 800, marginTop: '4px' }}>
+                {paybackMonths} Months
+              </div>
+              <div style={{ fontSize: '11px', color: '#00d328', marginTop: '2px' }}>
+                CapEx recovered in &lt; 60 days
+              </div>
+            </div>
+
+            <div style={{ background: 'rgba(11, 17, 30, 0.85)', padding: '16px', borderRadius: '10px', border: '1px solid rgba(6, 182, 212, 0.3)', boxShadow: 'var(--neu-sunken)' }}>
+              <div style={{ fontSize: '11px', color: '#9ca3af', textTransform: 'uppercase' }}>Scope 2 Carbon Abatement</div>
+              <div className="font-mono text-cyan" style={{ fontSize: '24px', fontWeight: 800, marginTop: '4px' }}>
+                {annualCo2SavedTons} tCO₂e/yr
+              </div>
+              <div style={{ fontSize: '11px', color: '#9ca3af', marginTop: '2px' }}>
+                {Math.round(monthlyKwhSaved * 12).toLocaleString('en-IN')} kWh avoided
               </div>
             </div>
           </div>
 
-          <button className="btn-primary-glow btn-full" onClick={onOpenWorkbench}>
-            Test with Real Line Telemetry in 4-Agent Workbench →
-          </button>
+          <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'flex-end' }}>
+            <button className="btn-primary-action" onClick={onOpenWorkbench}>
+              <span>Apply Savings to Line 2 Workbench →</span>
+            </button>
+          </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 }
