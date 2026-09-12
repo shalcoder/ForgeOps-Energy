@@ -9,6 +9,14 @@
 import { ToolDecorator as Tool, ExecutionContext, z } from '../../nitrostack.js';
 import { BATCH_HISTORY, PRODUCTION_PATH, QUEUE_EVENTS } from '../../data/incident-data.js';
 
+const withTimeout = async <T>(promise: Promise<T>, timeoutMs = 5000): Promise<T> => {
+  let timeoutHandle: NodeJS.Timeout;
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timeoutHandle = setTimeout(() => reject(new Error('timeout')), timeoutMs);
+  });
+  return Promise.race([promise, timeoutPromise]).finally(() => clearTimeout(timeoutHandle));
+};
+
 export class MesTools {
   @Tool({
     name: 'get_batch_history',
@@ -18,18 +26,24 @@ export class MesTools {
     }),
   })
   async getBatchHistory(input: { batch_id: string }, ctx: ExecutionContext) {
-    ctx.logger.info('MES: Retrieving batch history', { batch_id: input.batch_id });
-
-    if (input.batch_id === 'B-2407-184') {
-      return BATCH_HISTORY;
+    try {
+      return await withTimeout((async () => {
+        ctx.logger.info('MES: Retrieving batch history', { batch_id: input.batch_id });
+        if (input.batch_id === 'B-2407-184') {
+          return BATCH_HISTORY;
+        }
+        return {
+          source: 'mes',
+          record_id: `batch:${input.batch_id}`,
+          timestamp: new Date().toISOString(),
+          batch_id: input.batch_id,
+          error: 'Batch not found in system',
+        };
+      })());
+    } catch (error: any) {
+      ctx.logger.error('MES getBatchHistory error', { error: error.message });
+      return { is_partial: true, error: error.message };
     }
-    return {
-      source: 'mes',
-      record_id: `batch:${input.batch_id}`,
-      timestamp: new Date().toISOString(),
-      batch_id: input.batch_id,
-      error: 'Batch not found in system',
-    };
   }
 
   @Tool({
@@ -40,18 +54,24 @@ export class MesTools {
     }),
   })
   async getProductionPath(input: { batch_id: string }, ctx: ExecutionContext) {
-    ctx.logger.info('MES: Retrieving production path', { batch_id: input.batch_id });
-
-    if (input.batch_id === 'B-2407-184') {
-      return PRODUCTION_PATH;
+    try {
+      return await withTimeout((async () => {
+        ctx.logger.info('MES: Retrieving production path', { batch_id: input.batch_id });
+        if (input.batch_id === 'B-2407-184') {
+          return PRODUCTION_PATH;
+        }
+        return {
+          source: 'mes',
+          record_id: `path:${input.batch_id}`,
+          timestamp: new Date().toISOString(),
+          batch_id: input.batch_id,
+          error: 'Production path not found',
+        };
+      })());
+    } catch (error: any) {
+      ctx.logger.error('MES getProductionPath error', { error: error.message });
+      return { is_partial: true, error: error.message };
     }
-    return {
-      source: 'mes',
-      record_id: `path:${input.batch_id}`,
-      timestamp: new Date().toISOString(),
-      batch_id: input.batch_id,
-      error: 'Production path not found',
-    };
   }
 
   @Tool({
@@ -63,11 +83,17 @@ export class MesTools {
     }),
   })
   async getQueueEvents(input: { batch_id: string; line_id?: string }, ctx: ExecutionContext) {
-    ctx.logger.info('MES: Retrieving queue events', { batch_id: input.batch_id, line_id: input.line_id });
-
-    if (input.batch_id === 'B-2407-184') {
-      return { source: 'mes', record_id: `queue:${input.batch_id}`, events: QUEUE_EVENTS };
+    try {
+      return await withTimeout((async () => {
+        ctx.logger.info('MES: Retrieving queue events', { batch_id: input.batch_id, line_id: input.line_id });
+        if (input.batch_id === 'B-2407-184') {
+          return { source: 'mes', record_id: `queue:${input.batch_id}`, events: QUEUE_EVENTS };
+        }
+        return { source: 'mes', record_id: `queue:${input.batch_id}`, events: [] };
+      })());
+    } catch (error: any) {
+      ctx.logger.error('MES getQueueEvents error', { error: error.message });
+      return { is_partial: true, error: error.message };
     }
-    return { source: 'mes', record_id: `queue:${input.batch_id}`, events: [] };
   }
 }

@@ -8,12 +8,13 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from fastapi import FastAPI
+from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import Optional, Dict, Any
 
-from backend.pipeline import run_pipeline
-from backend.database.audit_log import get_audit_log, log_decision_approval
+from backend.pipeline import run_pipeline, stream_pipeline
+from backend.database.audit_log import get_audit_log, log_decision_approval, get_audit_export
 from backend.config import FORGEOPS_MCP_URL, FORGEOPS_MODEL, LIVE_AGENTS_ENABLED
 from backend.mcp.nitro_mcp_client import NitroMCPClient
 from backend.simulation_reasoning import reconcile_simulation
@@ -103,6 +104,19 @@ def pipeline_query(req: QueryRequest):
     return result.model_dump()
 
 
+@app.get("/api/pipeline/stream")
+def pipeline_stream(
+    query: str,
+    incident_id: str = "INC-2407-001",
+    batch_id: str = "B-2407-184",
+):
+    """Run the 4-agent pipeline and stream real-time phase updates via SSE."""
+    return StreamingResponse(
+        stream_pipeline(user_query=query, incident_id=incident_id, batch_id=batch_id),
+        media_type="text/event-stream"
+    )
+
+
 @app.get("/api/agent/workbench")
 def workbench_data(
     incident_id: str = "INC-2407-001",
@@ -141,6 +155,12 @@ def simulate(req: SimulationRequest):
 def audit_log(limit: int = 20):
     """Return the audit trail of agent pipeline runs."""
     return get_audit_log(limit=limit)
+
+
+@app.get("/api/audit-log/export")
+def audit_log_export():
+    """Export immutable audit trail for ISO 50001 compliance."""
+    return get_audit_export()
 
 
 @app.post("/api/agent/decision/approve")
