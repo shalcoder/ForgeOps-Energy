@@ -5,6 +5,7 @@ This is the main entry point for any engineering question.
 
 import sys
 import os
+import json
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from backend.schemas.shared_models import UIState
@@ -108,6 +109,92 @@ def run_pipeline(
     )
 
     return output
+
+
+def stream_pipeline(
+    user_query: str,
+    incident_id: str = "INC-2407-001",
+    batch_id: str = "B-2407-184",
+    constraints: dict = None,
+    ui_context: UIState = None,
+):
+    """Full 4-agent pipeline generator for SSE streaming."""
+    ui_context = ui_context or UIState()
+    constraints = constraints or {}
+
+    yield f"event: planner\ndata: {json.dumps({'status': 'running', 'intent': 'analyzing', 'constraints': constraints})}\n\n"
+    
+    # Agent 1 — Planner
+    planner = PlannerAgent()
+    plan = planner.plan(PlannerInput(
+        user_query=user_query,
+        incident_id=incident_id,
+        batch_id=batch_id,
+        ui_context=ui_context,
+        constraints=constraints,
+    ))
+    yield f"event: planner\ndata: {json.dumps({'status': 'complete', 'intent': plan.intent})}\n\n"
+
+    # Agent 2 — Research
+    yield f"event: research\ndata: {json.dumps({'status': 'running', 'tool': 'fetching_evidence'})}\n\n"
+    researcher = ResearchAgent()
+    evidence = researcher.retrieve(ResearchInput(
+        execution_plan=plan,
+        incident_id=incident_id,
+        batch_id=batch_id,
+    ))
+    yield f"event: research\ndata: {json.dumps({'status': 'complete', 'evidence_count': len(evidence.evidence_items)})}\n\n"
+
+    # Agent 3 — Analysis
+    yield f"event: analysis\ndata: {json.dumps({'status': 'running'})}\n\n"
+    analyst = AnalysisAgent()
+    analysis = analyst.analyze(AnalysisInput(
+        evidence=evidence,
+        plan=plan,
+    ))
+    yield f"event: analysis\ndata: {json.dumps({'status': 'complete', 'confidence': analysis.confidence})}\n\n"
+
+    # Agent 4 — Execution
+    yield f"event: execution\ndata: {json.dumps({'status': 'running'})}\n\n"
+    executor = ExecutionAgent()
+    output = executor.execute(ExecutionInput(
+        analysis=analysis,
+        current_ui=ui_context,
+        intent=plan.intent,
+        raw_query=user_query,
+    ))
+    agent_trace = [
+        planner.last_trace,
+        researcher.last_trace,
+        analyst.last_trace,
+        executor.last_trace,
+    ]
+    output.agent_trace = agent_trace
+    output.tool_trace = evidence.tool_trace + analyst.tool_trace
+    output.evidence_refs = evidence_refs_for_intent(
+        plan.intent,
+        evidence,
+        output.evidence_refs,
+    )
+    output.workbench_data = build_pipeline_workbench(evidence, analysis)
+    output.pipeline_mode = classify_pipeline_mode(agent_trace)
+    output.model = FORGEOPS_MODEL
+
+    # Audit trail
+    log_pipeline_run(
+        query=user_query,
+        intent=plan.intent,
+        required_servers=[s.value for s in plan.required_servers],
+        evidence_sources=evidence.retrieval_sources,
+        conclusion=output.conclusion,
+        confidence=output.confidence,
+        evidence_refs=output.evidence_refs,
+        assumptions=output.assumptions,
+        ui_actions=[a.action for a in output.ui_actions],
+    )
+
+    yield f"event: execution\ndata: {json.dumps({'status': 'complete', 'output': output.model_dump()})}\n\n"
+
 
 
 if __name__ == "__main__":

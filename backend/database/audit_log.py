@@ -6,6 +6,7 @@ Records: question, intent, tools used, record refs, simulation version, output, 
 import sqlite3
 import json
 import os
+import hashlib
 from datetime import datetime, timezone
 
 DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "audit_log.db")
@@ -105,22 +106,30 @@ def log_decision_approval(
             recommendation TEXT NOT NULL,
             approved_by TEXT NOT NULL,
             agent_conclusion TEXT NOT NULL,
-            execution_status TEXT NOT NULL
+            execution_status TEXT NOT NULL,
+            hash_signature TEXT NOT NULL
         )
     """)
     timestamp = datetime.now(timezone.utc).isoformat()
+    
+    # Calculate tamper-evident hash
+    recommendation_str = json.dumps(recommendation)
+    raw_str = f"{incident_id}{approved_by}{recommendation_str}{timestamp}{agent_conclusion}"
+    hash_signature = hashlib.sha256(raw_str.encode('utf-8')).hexdigest()
+    
     cursor = con.execute(
         """INSERT INTO decision_approvals
            (timestamp, incident_id, recommendation, approved_by,
-            agent_conclusion, execution_status)
-           VALUES (?, ?, ?, ?, ?, ?)""",
+            agent_conclusion, execution_status, hash_signature)
+           VALUES (?, ?, ?, ?, ?, ?, ?)""",
         (
             timestamp,
             incident_id,
-            json.dumps(recommendation),
+            recommendation_str,
             approved_by,
             agent_conclusion,
             "recorded_not_executed",
+            hash_signature,
         ),
     )
     con.commit()
@@ -133,4 +142,20 @@ def log_decision_approval(
         "recommendation": recommendation,
         "approved_by": approved_by,
         "execution_status": "recorded_not_executed",
+        "hash_signature": hash_signature,
+    }
+
+
+def get_audit_export() -> dict:
+    """Export immutable audit trail for ISO 50001 compliance."""
+    init_db()
+    con = sqlite3.connect(DB_PATH)
+    pipelines = con.execute("SELECT * FROM audit_log ORDER BY id ASC").fetchall()
+    decisions = con.execute("SELECT * FROM decision_approvals ORDER BY id ASC").fetchall()
+    con.close()
+    
+    return {
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "pipeline_runs": pipelines,
+        "decision_approvals": decisions,
     }
