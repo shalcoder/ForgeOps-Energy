@@ -137,3 +137,11 @@ schemas/
 - `tests/test_research.py`: Evidence bundle completeness
 - `tests/test_analysis.py`: Simulation + ranking output shape
 - `tests/test_execution.py`: UI actions + report export
+
+
+---
+
+## Team Roles & Implementation Division
+
+For the complete multi-developer team split (Dev 1: Agentic Backend/MCP, Dev 2: Frontend/UX, Dev 3: Simulation/Physics/Economics, Lead: Architecture/Release), see:
+👉 **[05_team_role_divide_plan.md](./05_team_role_divide_plan.md)**
