@@ -1,24 +1,24 @@
 # ForgeOps Energy — Team Role Division & Implementation Plan
 
 > **Document ID:** `05_team_role_divide_plan.md`  
-> **Target Audience:** Engineering Team (Lead Architect + 3 Core Developers)  
+> **Target Audience:** Engineering Team (Dev 1: Keerthi, Dev 2: Vaishak, Dev 3: Sham, Dev 4: Vishal)  
 > **Product:** ForgeOps Energy — Agentic Industrial Decision-Intelligence Platform for Manufacturing SMEs  
 
 ---
 
 ## 1. Executive Team Topology & Ownership
 
-ForgeOps Energy is structured as a tightly decoupled, high-velocity multi-stack platform. The 4-person team is divided across clear architectural boundaries to eliminate merge conflicts, enable parallel feature velocity, and maintain mathematical and operational determinism.
+ForgeOps Energy is structured as a tightly decoupled, high-velocity multi-stack platform. The 4-developer engineering team is divided across clear architectural boundaries to eliminate merge conflicts, enable parallel feature velocity, and maintain mathematical and operational determinism.
 
-```
+```text
 ┌────────────────────────────────────────────────────────────────────────┐
-│                   TEAM LEAD / LEAD SYSTEMS ARCHITECT                   │
+│                   DEV 4: VISHAL (ARCHITECT & SYSTEMS LEAD)             │
 │         Architecture · System Integration · Git Flow · Release         │
 └───────┬──────────────────────────┬──────────────────────────┬──────────┘
         │                          │                          │
         ▼                          ▼                          ▼
 ┌──────────────────┐      ┌──────────────────┐      ┌──────────────────┐
-│   DEVELOPER 1    │      │   DEVELOPER 2    │      │   DEVELOPER 3    │
+│  DEV 1: KEERTHI  │      │  DEV 2: VAISHAK  │      │   DEV 3: SHAM    │
 │  Agentic Backend │      │     Frontend     │      │ Physics, Sim &   │
 │   & MCP Engine   │      │   & Operator UX  │      │  Energy Econ     │
 │                  │      │                  │      │                  │
@@ -31,16 +31,16 @@ ForgeOps Energy is structured as a tightly decoupled, high-velocity multi-stack 
 
 ### Team Responsibilities Matrix
 
-| Developer | Role & Title | Primary Stack | Owned Files & Directories | Core Mission |
-|---|---|---|---|---|
-| **Dev 1** | **Agentic Pipeline & MCP Backend Engineer** | Python 3.10 (FastAPI), TypeScript, NitroStack MCP, Pydantic v2 | `backend/`, `forgeops-mcp/` | Own the "Brain & Nervous System": Agent determinism, MCP tool execution, streaming SSE, and tamper-proof audit trails. |
-| **Dev 2** | **Frontend & Industrial UX Engineer** | React 18, TypeScript, Vite, CSS Variables, SVG/Canvas | `src/`, `index.html` | Own the "Control Cockpit": Operator workbench, synchronized graph/timeline selection, responsive layouts, and industrial ergonomics. |
-| **Dev 3** | **Simulation, Telemetry & Energy Economics Engineer** | Python, TypeScript, NumPy/SciPy, Mathematical Modeling | `simulation/`, `data/`, `src/modules/SmeEconomicsView.tsx` | Own the "Ground Truth & Physics": Compressed air thermodynamic formulas, Pareto optimization, BEE ADEETIE compliance, and IPMVP verification. |
-| **Lead (You)** | **Lead Architect & Integration Lead** | Full-Stack Architecture, Git, Docker, Cloud/Edge | System Architecture, CI/CD, Deployment | End-to-end integration, API contracts, deployment to Vercel/Cloud/Edge, and stakeholder/demo alignment. |
+| Developer | Name | Role & Title | Primary Stack | Owned Files & Directories | Core Mission |
+|---|---|---|---|---|---|
+| **Dev 1** | **Keerthi** | **Agentic Pipeline & MCP Backend Engineer** | Python 3.10 (FastAPI), TypeScript, NitroStack MCP, Pydantic v2 | `backend/`, `forgeops-mcp/` | Own the "Brain & Nervous System": Agent determinism, MCP tool execution, streaming SSE, and tamper-proof audit trails. |
+| **Dev 2** | **Vaishak** | **Frontend & Industrial UX Engineer** | React 18, TypeScript, Vite, CSS Variables, SVG/Canvas | `src/`, `index.html` | Own the "Control Cockpit": Operator workbench, synchronized graph/timeline selection, responsive layouts, and industrial ergonomics. |
+| **Dev 3** | **Sham** | **Simulation, Telemetry & Energy Economics Engineer** | Python, TypeScript, NumPy/SciPy, Mathematical Modeling | `simulation/`, `data/`, `src/modules/SmeEconomicsView.tsx` | Own the "Ground Truth & Physics": Compressed air thermodynamic formulas, Pareto optimization, BEE ADEETIE compliance, and IPMVP verification. |
+| **Dev 4** | **Vishal** | **Lead Architect & Integration Lead** | Full-Stack Architecture, Git, Docker, Cloud/Edge | System Architecture, CI/CD, Deployment | End-to-end integration, API contracts, deployment to Vercel/Cloud/Edge, and stakeholder/demo alignment. |
 
 ---
 
-## 2. Developer 1: Agentic Pipeline & MCP Backend Engineer
+## 2. Dev 1 (Keerthi): Agentic Pipeline & MCP Backend Engineer
 
 ### Mental Model
 > *"The LLM coordinates and reasons; it never fabricates facts or hallucinates calculations."*
@@ -82,7 +82,7 @@ ForgeOps Energy is structured as a tightly decoupled, high-velocity multi-stack 
 
 ---
 
-## 3. Developer 2: Frontend & Industrial UX Engineer
+## 3. Dev 2 (Vaishak): Frontend & Industrial UX Engineer
 
 ### Mental Model
 > *"The visual Workbench is the product; the AI is an integrated operator co-pilot."*
@@ -118,7 +118,7 @@ ForgeOps Energy is structured as a tightly decoupled, high-velocity multi-stack 
 
 ---
 
-## 4. Developer 3: Simulation, Telemetry & Energy Economics Engineer
+## 4. Dev 3 (Sham): Simulation, Telemetry & Energy Economics Engineer
 
 ### Mental Model
 > *"Thermodynamic formulas, compressor physics, and electricity tariffs provide the immutable mathematical foundation."*
@@ -156,15 +156,27 @@ ForgeOps Energy is structured as a tightly decoupled, high-velocity multi-stack 
 
 ---
 
-## 5. Team Lead (Your Role): Architecture, Systems & Release
+## 5. Dev 4 (Vishal): Architecture, Systems & Release Lead
+
+### Mental Model
+> *"Keep the developers unblocked, protect system boundaries, and ensure end-to-end cohesion."*
+
+### Owned Areas
+- System Architecture & End-to-End Integration
+- Cross-Team API Contracts & Data Schemas
+- CI/CD Pipelines, Docker Packaging & Vercel/Edge Deployment
+- Production Verification & Stakeholder Demonstrations
 
 ### Core Responsibilities
 1. **API Contracts & Cross-Team Interfaces:**
-   - Ensure Dev 1 (Backend/MCP) and Dev 2 (Frontend) strictly adhere to shared TypeScript interfaces (`src/types.ts` $\leftrightarrow$ `backend/schemas/`).
-   - Ensure Dev 3's simulation engine is cleanly wrapped as both a standalone Python package and a TypeScript MCP tool.
+   - Ensure Dev 1 (Keerthi) and Dev 2 (Vaishak) strictly adhere to shared TypeScript interfaces (`src/types.ts` $\leftrightarrow$ `backend/schemas/`).
+   - Ensure Dev 3 (Sham)'s simulation engine is cleanly wrapped as both a standalone Python package and a TypeScript MCP tool.
 2. **Git & Branching Workflow:**
    - Protect `main`.
-   - Feature branch strategy: `feat/dev1-sse-streaming`, `feat/dev2-synchronized-focus`, `feat/dev3-physics-engine`.
+   - Feature branch strategy:
+     - `feat/keerthi-sse-streaming`
+     - `feat/vaishak-synchronized-focus`
+     - `feat/sham-physics-engine`
    - Continuous integration: Require `npm run build` and `pytest backend/tests/` to pass before merging.
 3. **Product Narrative & Demo Preparation:**
    - Rehearse the complete Belgaum Foundry story end-to-end:
@@ -179,62 +191,69 @@ ForgeOps Energy is structured as a tightly decoupled, high-velocity multi-stack 
 
 ## 6. Cross-Team Interface Contracts
 
-```
-               ┌───────────────────────────────┐
-               │    Developer 3: Simulation    │
-               │    & Canonical Telemetry      │
-               └───────────────┬───────────────┘
-                               │ Thermodynamic JSON
-                               │ Canonical Datasets
-                               ▼
-┌──────────────────────────────┴──────────────────────────────┐
-│            Developer 1: Agentic Backend & MCP               │
-│                                                             │
-│  FastAPI Endpoints:                                         │
-│    • GET  /api/pipeline/stream  (SSE streaming trace)       │
-│    • POST /api/pipeline/run     (Full execution dossier)    │
-│    • POST /api/simulate         (What-if simulation)        │
-│    • POST /api/decisions/approve (Operator sign-off gate)   │
-└──────────────────────────────┬──────────────────────────────┘
-                               │ Pydantic UIState & Trace JSON
-                               ▼
-┌──────────────────────────────┴──────────────────────────────┐
-│            Developer 2: Frontend Decision Cockpit           │
-│                                                             │
-│  React Components:                                          │
-│    • Workbench.tsx (Subscribes to SSE stream)               │
-│    • FocusContext.tsx (Synchronizes graph + timeline)       │
-│    • SimulatorPanel.tsx (Binds to /api/simulate)            │
-│    • RecommendationsPanel.tsx (Dispatches /api/approve)     │
-└─────────────────────────────────────────────────────────────┘
+```text
+               ┌───────────────────────────────────────────────┐
+               │         Dev 3: Sham (Physics & Sim)           │
+               │            & Canonical Telemetry              │
+               └───────────────────────┬───────────────────────┘
+                                       │ Thermodynamic JSON
+                                       │ Canonical Datasets
+                                       ▼
+┌──────────────────────────────────────┴──────────────────────────────────────┐
+│                  Dev 1: Keerthi (Agentic Backend & MCP)                     │
+│                                                                             │
+│  FastAPI Endpoints:                                                         │
+│    • GET  /api/pipeline/stream  (SSE streaming trace)                       │
+│    • POST /api/pipeline/run     (Full execution dossier)                    │
+│    • POST /api/simulate         (What-if simulation)                        │
+│    • POST /api/decisions/approve (Operator sign-off gate)                   │
+└──────────────────────────────────────┬──────────────────────────────────────┘
+                                       │ Pydantic UIState & Trace JSON
+                                       ▼
+┌──────────────────────────────────────┴──────────────────────────────────────┐
+│                 Dev 2: Vaishak (Frontend Decision Cockpit)                  │
+│                                                                             │
+│  React Components:                                                          │
+│    • Workbench.tsx (Subscribes to SSE stream)                               │
+│    • FocusContext.tsx (Synchronizes graph + timeline)                       │
+│    • SimulatorPanel.tsx (Binds to /api/simulate)                            │
+│    • RecommendationsPanel.tsx (Dispatches /api/approve)                     │
+└──────────────────────────────────────┬──────────────────────────────────────┘
+                                       │ Integration & Release
+                                       ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                 Dev 4: Vishal (Architecture & Systems Lead)                 │
+│         CI/CD · Docker · Edge Gateway · Demo Verification · Release         │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
 ## 7. 3-Week Execution Schedule
 
-```
+```text
 WEEK 1: Foundation & Contracts
-├── Dev 1: Stand up SSE agent streaming & strict MCP error boundaries
-├── Dev 2: Integrate FocusContext cross-panel highlighting & tablet responsiveness
-└── Dev 3: Implement orifice thermodynamic physics & ToD tariff calculations
+├── Dev 1 (Keerthi): Stand up SSE agent streaming & strict MCP error boundaries
+├── Dev 2 (Vaishak): Integrate FocusContext cross-panel highlighting & tablet responsiveness
+├── Dev 3 (Sham): Implement orifice thermodynamic physics & ToD tariff calculations
+└── Dev 4 (Vishal): Set up API mock contracts, CI build tests & branch rules
 
 WEEK 2: Deep Features & Integration
-├── Dev 1: Multi-tenant audit trail with cryptographic SHA-256 hashes
-├── Dev 2: Real-time telemetry chart scrubber & offline edge reconnect modal
-└── Dev 3: Pareto frontier generator & BEE ADEETIE DPR export logic
+├── Dev 1 (Keerthi): Multi-tenant audit trail with cryptographic SHA-256 hashes
+├── Dev 2 (Vaishak): Real-time telemetry chart scrubber & offline edge reconnect modal
+├── Dev 3 (Sham): Pareto frontier generator & BEE ADEETIE DPR export logic
+└── Dev 4 (Vishal): Validate cross-service integration & edge containerization
 
 WEEK 3: Hardening, Polish & Demo Rehearsal
-├── Dev 1: Stress testing & multi-scenario agent benchmark suite
-├── Dev 2: One-click PDF audit dossier generation & micro-animations
-├── Dev 3: Baseline adjustment verification against real factory noise
-└── Team Lead: End-to-end rehearsal, edge containerization & deployment
+├── Dev 1 (Keerthi): Stress testing & multi-scenario agent benchmark suite
+├── Dev 2 (Vaishak): One-click PDF audit dossier generation & micro-animations
+├── Dev 3 (Sham): Baseline adjustment verification against real factory noise
+└── Dev 4 (Vishal): End-to-end Belgaum story rehearsal, final deployment & release
 ```
-
 
 ---
 
 ## 8. Current System Inventory
 
-For a detailed file-by-file inventory of everything implemented in the codebase (frontend views, backend agents, MCP tools, simulation models, test suites), see:
+For a detailed file-by-file inventory of everything implemented in the codebase (frontend views, backend agents, MCP tools, simulation models, test suites), see:  
 👉 **[06_built_so_far.md](./06_built_so_far.md)**

@@ -143,5 +143,5 @@ schemas/
 
 ## Team Roles & Implementation Division
 
-For the complete multi-developer team split (Dev 1: Agentic Backend/MCP, Dev 2: Frontend/UX, Dev 3: Simulation/Physics/Economics, Lead: Architecture/Release), see:
+For the complete multi-developer team split (Dev 1: Keerthi, Dev 2: Vaishak, Dev 3: Sham, Dev 4: Vishal), see:
 👉 **[05_team_role_divide_plan.md](./05_team_role_divide_plan.md)**
