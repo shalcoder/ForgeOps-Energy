@@ -132,7 +132,7 @@ export function GraphPanel() {
                 else nodeRefs.current.delete(node.id);
               }}
               className={`cause-node type-${node.type}${active ? ' active' : ''}${aiActive ? ' ai-active' : ''}${reduced ? ' reduced' : ''}`}
-              style={{ left: `${node.position.x}%`, top: `${node.position.y}%` }}
+              style={{ left: `${node.position.x / 10}%`, top: `${(node.position.y / 370) * 100}%` }}
               onClick={() => focusGraphNode(node.id)}
               aria-pressed={active}
             >
