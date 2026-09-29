@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ZapIcon,
   ActivityIcon,
@@ -13,13 +13,37 @@ import {
   GaugeIcon,
   FileTextIcon,
 } from '../components/Icons';
+import { GraphPanel } from './GraphPanel';
+import { TimelinePanel } from './TimelinePanel';
+import { ReplayPanel } from './ReplayPanel';
+import { EvidencePanel } from './EvidencePanel';
+import { SimulatorPanel } from './SimulatorPanel';
+import { RecommendationsPanel } from './RecommendationsPanel';
+import { OfflineStatusBanner } from './OfflineStatusBanner';
+import { AuditDossier, exportAuditDossier } from './AuditDossier';
+import { useFocusContext } from '../FocusContext';
+import { useWorkbenchData } from '../WorkbenchDataContext';
+import { queueApproval, syncPendingApprovals } from '../offlineApprovals';
 
 export function Workbench({ onBack }: { onBack: () => void }) {
-  const [activeTab, setActiveTab] = useState<'diagnostics' | 'simulator'>('diagnostics');
+  const [activeTab, setActiveTab] = useState<'diagnostics' | 'simulator' | 'investigation'>('diagnostics');
   const [setpointBar, setSetpointBar] = useState(6.5);
   const [leakFixPct, setLeakFixPct] = useState(100);
-  const [isApproved, setIsApproved] = useState(false);
+  const [workOrderId, setWorkOrderId] = useState<string | null>(() => {
+    const records = JSON.parse(localStorage.getItem('forgeops-audit-approvals') ?? '[]') as Array<{ workOrderId: string }>;
+    return records[records.length - 1]?.workOrderId ?? null;
+  });
+  const isApproved = workOrderId !== null;
   const [showToast, setShowToast] = useState(false);
+  const [activeInvestigationPanel, setActiveInvestigationPanel] = useState('graph');
+  const { focus } = useFocusContext();
+  const { data } = useWorkbenchData();
+  const activeEvent = data.incidentEvents.find((event) => event.id === focus.eventId);
+  useEffect(() => {
+    if (focus.origin === 'user' && focus.eventId && window.matchMedia('(max-width: 1199px)').matches) {
+      setActiveInvestigationPanel('evidence');
+    }
+  }, [focus.eventId, focus.origin]);
 
   // Dynamic simulation calculations based on sliders
   // Baseline SEC is 9.8, current with leak is 11.2 (+14.3%)
@@ -35,13 +59,23 @@ export function Workbench({ onBack }: { onBack: () => void }) {
   const dailyCo2Kg = Math.round(dailyKwhSaved * 0.82);
 
   const handleApprove = () => {
-    setIsApproved(true);
+    const recommendation = data.recommendations.find((item) => item.rank === 1);
+    if (!recommendation) return;
+    const approval = queueApproval(recommendation);
+    setWorkOrderId(approval.workOrderId);
+    void syncPendingApprovals();
     setShowToast(true);
     setTimeout(() => setShowToast(false), 4000);
   };
 
   return (
     <div className="page-container">
+      <OfflineStatusBanner />
+      <div className="workbench-touch-nav" role="tablist" aria-label="Workbench views">
+        <button role="tab" aria-selected={activeTab === 'diagnostics'} className={activeTab === 'diagnostics' ? 'active' : ''} onClick={() => setActiveTab('diagnostics')}>Diagnostics</button>
+        <button role="tab" aria-selected={activeTab === 'simulator'} className={activeTab === 'simulator' ? 'active' : ''} onClick={() => setActiveTab('simulator')}>Simulator</button>
+        <button role="tab" aria-selected={activeTab === 'investigation'} className={activeTab === 'investigation' ? 'active' : ''} onClick={() => setActiveTab('investigation')}>Timeline & evidence</button>
+      </div>
       {/* Toast Notification */}
       {showToast && (
         <div style={{
@@ -61,9 +95,9 @@ export function Workbench({ onBack }: { onBack: () => void }) {
         }}>
           <CheckCircleIcon size={18} className="text-emerald" />
           <div>
-            <strong style={{ color: '#f9fafb', fontSize: '13px' }}>CMMS Work Order Dispatched: WO-ENG-7922</strong>
+            <strong style={{ color: '#f9fafb', fontSize: '13px' }}>Approval saved: {workOrderId}</strong>
             <p style={{ color: '#9ca3af', fontSize: '11.5px', margin: 0 }}>
-              Assigned to Mechanical Maintenance • Shift B Changeover (11:00 AM)
+              Approval will sync to the audit service when the edge gateway is online.
             </p>
           </div>
         </div>
@@ -108,6 +142,15 @@ export function Workbench({ onBack }: { onBack: () => void }) {
           >
             <ActivityIcon size={14} />
             <span>01 • Multi-Sensor Causal Diagnostics</span>
+          </button>
+          <button
+            className={`nav-tab-btn ${activeTab === 'investigation' ? 'active' : ''}`}
+            onClick={() => setActiveTab('investigation')}
+            role="tab"
+            aria-selected={activeTab === 'investigation'}
+          >
+            <ActivityIcon size={14} />
+            <span>03 • Timeline & Evidence</span>
           </button>
           <button
             className={`nav-tab-btn ${activeTab === 'simulator' ? 'active' : ''}`}
@@ -234,6 +277,11 @@ export function Workbench({ onBack }: { onBack: () => void }) {
       {/* Tab 2: What-If Simulator & Human Intervention Gate */}
       {activeTab === 'simulator' && (
         <div className="grid-2col">
+          <div className="workbench-focus-readout" aria-live="polite">
+            <strong>Focused telemetry · {activeEvent?.label ?? 'No event selected'}</strong>
+            <span>{activeEvent?.value ?? 'Choose an event in Timeline & evidence to synchronize the gauges.'}</span>
+            <span>{activeEvent ? `${activeEvent.source} · ${new Date(activeEvent.timestamp).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}` : 'Replay and event selection update this readout instantly.'}</span>
+          </div>
           {/* Left: Interactive Physics Simulator */}
           <div className="card-clean">
             <div className="card-header-clean">
@@ -341,10 +389,10 @@ export function Workbench({ onBack }: { onBack: () => void }) {
                   <ShieldCheckIcon size={16} className="text-emerald" />
                   <span>Human-in-the-Loop Decision Gate</span>
                 </h3>
-                <p className="card-subtitle-clean">Operator verification required before CMMS dispatch</p>
+                <p className="card-subtitle-clean">Operator approval is saved locally and synced when the edge gateway is available.</p>
               </div>
               <span className={`kpi-badge ${isApproved ? 'success' : 'warning'}`}>
-                {isApproved ? 'Approved & Dispatched' : 'Pending Approval'}
+                {isApproved ? 'Approval Recorded' : 'Pending Approval'}
               </span>
             </div>
 
@@ -377,20 +425,20 @@ export function Workbench({ onBack }: { onBack: () => void }) {
                   onClick={handleApprove}
                 >
                   <WrenchIcon size={16} />
-                  <span>Approve Intervention & Dispatch CMMS Work Order</span>
+                  <span>Approve intervention and save decision</span>
                 </button>
                 <div style={{ textAlign: 'center', fontSize: '11.5px', color: '#6b7280' }}>
-                  Work order WO-ENG-7922 will be queued to Maintenance Shift B
+                  Approval is saved on this device and queued for audit sync.
                 </div>
               </div>
             ) : (
               <div style={{ backgroundColor: 'rgba(0, 211, 40, 0.08)', border: '1px solid rgba(0, 211, 40, 0.3)', borderRadius: '8px', padding: '16px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
                   <CheckCircleIcon size={18} className="text-emerald" />
-                  <strong style={{ color: '#00d328', fontSize: '13px' }}>Work Order WO-ENG-7922 Dispatched & Active</strong>
+                  <strong style={{ color: '#00d328', fontSize: '13px' }}>Approval saved · {workOrderId}</strong>
                 </div>
                 <div style={{ fontSize: '12px', color: '#9ca3af', lineHeight: '1.5' }}>
-                  Technician assigned: <strong>S. Kulkarni (Millwright Shift B)</strong>. Execution scheduled at <strong>11:00 AM Changeover</strong>. Edge telemetry verification loop initiated.
+                  The approval record will synchronize automatically when the edge gateway reconnects. No physical work is dispatched by this demo action.
                 </div>
               </div>
             )}
@@ -405,6 +453,28 @@ export function Workbench({ onBack }: { onBack: () => void }) {
           </div>
         </div>
       )}
+      {activeTab === 'investigation' && (
+        <div className="workbench-investigation">
+          <div className="workbench-investigation-actions">
+            <span>Graph, telemetry, replay, and evidence stay synchronized as you inspect the incident.</span>
+            <button className="btn-primary-action" onClick={() => exportAuditDossier(data, focus)}>Export incident dossier</button>
+          </div>
+          <div className="workbench-panel-tabs" role="tablist" aria-label="Investigation panels">
+            {['graph', 'timeline', 'replay', 'evidence', 'simulator', 'recommendations'].map((panel) => (
+              <button key={panel} role="tab" aria-selected={activeInvestigationPanel === panel} className={activeInvestigationPanel === panel ? 'active' : ''} onClick={() => setActiveInvestigationPanel(panel)}>{panel}</button>
+            ))}
+          </div>
+          <div className="workbench-investigation-grid">
+            <div className={`investigation-module${activeInvestigationPanel === 'graph' ? ' selected' : ''}`}><GraphPanel /></div>
+            <div className={`investigation-module${activeInvestigationPanel === 'timeline' ? ' selected' : ''}`}><TimelinePanel /></div>
+            <div className={`investigation-module${activeInvestigationPanel === 'replay' ? ' selected' : ''}`}><ReplayPanel /></div>
+            <div className={`investigation-module${activeInvestigationPanel === 'evidence' ? ' selected' : ''}`}><EvidencePanel /></div>
+            <div className={`investigation-module${activeInvestigationPanel === 'simulator' ? ' selected' : ''}`}><SimulatorPanel /></div>
+            <div className={`investigation-module${activeInvestigationPanel === 'recommendations' ? ' selected' : ''}`}><RecommendationsPanel /></div>
+          </div>
+        </div>
+      )}
+      <AuditDossier data={data} focus={focus} />
     </div>
   );
 }

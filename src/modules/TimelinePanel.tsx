@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useEffect, useState } from 'react';
 import { useFocusContext } from '../FocusContext';
 import { useWorkbenchData } from '../WorkbenchDataContext';
 
@@ -15,6 +15,12 @@ export function TimelinePanel() {
   const { incidentEvents } = data;
   const [source, setSource] = useState('all');
   const [severity, setSeverity] = useState('all');
+  const eventRefs = useRef(new Map<string, HTMLButtonElement>());
+
+  useEffect(() => {
+    if (!focus.eventId) return;
+    eventRefs.current.get(focus.eventId)?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  }, [focus.eventId]);
 
   const visible = useMemo(() => incidentEvents.filter((event) => (
     (source === 'all' || event.category === source)
@@ -60,6 +66,10 @@ export function TimelinePanel() {
             return (
               <button
                 key={event.id}
+              ref={(element) => {
+                if (element) eventRefs.current.set(event.id, element);
+                else eventRefs.current.delete(event.id);
+              }}
                 className={`timeline-item severity-${event.severity}${active ? ' active' : ''}${aiActive ? ' ai-active' : ''}`}
                 onClick={() => focusEvent(event.id)}
                 aria-pressed={active}

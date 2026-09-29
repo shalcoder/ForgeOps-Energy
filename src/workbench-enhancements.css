@@ -1,0 +1,101 @@
+.workbench-touch-nav,
+.workbench-panel-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.workbench-touch-nav { display: none; }
+
+.workbench-touch-nav button,
+.workbench-panel-tabs button,
+.nav-tab-btn,
+.theme-segment-btn,
+.btn-primary-action,
+.btn-secondary-action,
+.toggle-button,
+.transport-button,
+.play-button,
+.cause-node,
+.timeline-item,
+.btn-approve-rec,
+.btn-reject-rec,
+.workbench-investigation-actions button,
+.edge-status-banner button,
+.dossier-export-button {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.workbench-touch-nav button,
+.workbench-panel-tabs button {
+  border: 1px solid var(--glass-border, #334155);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: var(--text-primary, #e2e8f0);
+  background: var(--bg-surface, #111827);
+  text-transform: capitalize;
+  cursor: pointer;
+}
+
+.workbench-touch-nav button.active,
+.workbench-panel-tabs button.active {
+  border-color: var(--schneider-green, #00d328);
+  box-shadow: 0 0 0 1px var(--schneider-green, #00d328) inset;
+}
+
+.workbench-investigation { display: grid; gap: 12px; margin-top: 18px; }
+.workbench-investigation-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.workbench-investigation-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 16px; }
+.investigation-module { min-width: 0; }
+.investigation-module > .module-panel { height: 100%; min-width: 0; }
+.workbench-investigation-grid *,
+.page-container { min-width: 0; }
+.workbench-focus-readout { grid-column: 1 / -1; display: grid; gap: 4px; padding: 14px 16px; border: 1px solid var(--glass-border, #334155); border-radius: 10px; background: var(--bg-surface, #111827); }
+.workbench-focus-readout span { color: var(--text-secondary, #94a3b8); }
+
+.edge-status-banner { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 8px 0 14px; padding: 12px 14px; border: 1px solid #b45309; border-radius: 8px; background: rgba(120, 53, 15, .18); color: var(--text-primary, #e2e8f0); }
+.edge-status-banner.reconnecting { border-color: #047857; background: rgba(6, 78, 59, .16); }
+.edge-status-banner > span:last-of-type { color: var(--text-secondary, #94a3b8); }
+.edge-status-banner button { margin-left: auto; padding: 8px 12px; border-radius: 6px; border: 1px solid currentColor; color: inherit; background: transparent; cursor: pointer; }
+.edge-status-dot { width: 9px; height: 9px; flex: 0 0 auto; border-radius: 50%; background: #f59e0b; }
+.reconnecting .edge-status-dot { background: #10b981; }
+
+.audit-dossier { display: none; }
+.audit-dossier h1 { font-size: 24px; }
+.audit-dossier h2 { margin: 18px 0 6px; font-size: 16px; }
+.audit-dossier section { break-inside: avoid; border-top: 1px solid #cbd5e1; padding-top: 8px; }
+.dossier-kicker { color: #047857; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
+
+@media (max-width: 1199px) {
+  .workbench-touch-nav { display: flex; }
+  .page-container > div > .segmented-nav { display: none !important; }
+  .workbench-investigation-grid { grid-template-columns: minmax(0, 1fr); }
+  .grid-2col { grid-template-columns: minmax(0, 1fr) !important; }
+  .investigation-module { display: none; }
+  .investigation-module.selected { display: block; }
+  .workbench-panel-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .workbench-panel-tabs button { min-width: 0; }
+}
+
+@media (max-width: 700px) {
+  .workbench-touch-nav button { flex: 1; }
+  .workbench-investigation-actions { align-items: stretch; }
+  .workbench-investigation-actions > * { width: 100%; }
+  .workbench-panel-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .edge-status-banner > span:last-of-type { flex-basis: 100%; }
+  .edge-status-banner button { margin-left: 0; }
+}
+
+@media print {
+  @page { margin: 16mm; }
+  body * { visibility: hidden !important; }
+  .audit-dossier,
+  .audit-dossier * { visibility: visible !important; }
+  .audit-dossier { display: block !important; position: absolute; inset: 0; width: 100%; color: #111827 !important; background: #fff !important; font: 12pt/1.5 Arial, sans-serif; }
+  .audit-dossier h1,
+  .audit-dossier h2,
+  .audit-dossier p,
+  .audit-dossier footer { color: #111827 !important; }
+}

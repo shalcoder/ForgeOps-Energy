@@ -10,17 +10,28 @@ import {
   ClockIcon,
   ZapIcon,
   TrendingDownIcon,
+  FileTextIcon,
 } from '../components/Icons';
+import { queueApproval, syncPendingApprovals } from '../offlineApprovals';
+import { useWorkbenchData } from '../WorkbenchDataContext';
+import { useFocusContext } from '../FocusContext';
+import { exportAuditDossier } from './AuditDossier';
 
 export function RecommendationsPanel({ agentResponse }: { agentResponse?: AssistantResponse | null }) {
   const [recList, setRecList] = useState<Recommendation[]>(recommendations);
   const [dispatchedOrder, setDispatchedOrder] = useState<string | null>(null);
+  const { data } = useWorkbenchData();
+  const { focus } = useFocusContext();
 
   const handleApprove = (id: string) => {
+    const recommendation = recList.find((item) => item.id === id);
+    if (!recommendation) return;
+    const approval = queueApproval(recommendation);
     setRecList((prev) =>
       prev.map((rec) => (rec.id === id ? { ...rec, status: 'approved' } : rec))
     );
-    setDispatchedOrder(`WO-ENG-${Math.floor(1000 + Math.random() * 9000)}`);
+    setDispatchedOrder(approval.workOrderId);
+    void syncPendingApprovals();
   };
 
   const handleReject = (id: string) => {
@@ -34,8 +45,9 @@ export function RecommendationsPanel({ agentResponse }: { agentResponse?: Assist
       <header className="module-header">
         <div>
           <h2>Actionable Recommendations & Operator Approval</h2>
-          <span>Human-in-the-loop decision gate with quantified ROI and zero production risk</span>
+          <span>Human approval is saved on this device and synchronized to the audit API when available.</span>
         </div>
+        <button className="btn-secondary-action dossier-export-button" onClick={() => exportAuditDossier(data, focus)}><FileTextIcon size={14} /> Export dossier</button>
         <span className="objective-badge font-mono">
           min(SEC) | Preserved Throughput & Quality
         </span>
@@ -47,9 +59,9 @@ export function RecommendationsPanel({ agentResponse }: { agentResponse?: Assist
             <WrenchIcon size={20} />
           </span>
           <div>
-            <strong>Intervention Approved & Work Order Dispatched</strong>
+            <strong>Operator Approval Recorded</strong>
             <p>
-              CMMS Work Order <strong className="font-mono text-emerald-300">{dispatchedOrder}</strong> dispatched to Plant Line 2 Maintenance. Execution scheduled for upcoming 48-minute die changeover. Edge verification tracking enabled.
+              Work order reference <strong className="font-mono text-emerald-300">{dispatchedOrder}</strong> saved locally. It will sync when the edge gateway is online; this records approval only and does not claim physical execution.
             </p>
           </div>
           <button className="dismiss-btn" onClick={() => setDispatchedOrder(null)} aria-label="Dismiss">
