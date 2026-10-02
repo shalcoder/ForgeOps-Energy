@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useFocusContext } from '../FocusContext';
 import { useWorkbenchData } from '../WorkbenchDataContext';
 
@@ -13,6 +13,7 @@ const formatTimestamp = (timestamp: string) => new Intl.DateTimeFormat('en-IN', 
 
 export function EvidencePanel() {
   const { focus } = useFocusContext();
+  const panelRef = useRef<HTMLElement>(null);
   const { data } = useWorkbenchData();
   const { evidenceRecords, graphNodes, incidentEvents } = data;
   const records = useMemo(
@@ -22,8 +23,13 @@ export function EvidencePanel() {
   const event = incidentEvents.find((item) => item.id === focus.eventId);
   const node = graphNodes.find((item) => focus.graphNodeIds.includes(item.id));
 
+  useEffect(() => {
+    if (!focus.eventId && !focus.graphNodeIds.length && !focus.evidenceIds.length) return;
+    panelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, [focus.eventId, focus.graphNodeIds, focus.evidenceIds]);
+
   return (
-    <section id="evidence-inspector" className="module-panel evidence-panel">
+    <section ref={panelRef} id="evidence-inspector" className="module-panel evidence-panel">
       <header className="module-header compact-header">
         <div>
           <p className="section-kicker">Evidence inspector</p>

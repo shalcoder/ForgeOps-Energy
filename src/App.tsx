@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { FocusProvider } from './FocusContext';
 import { WorkbenchDataProvider, useWorkbenchData } from './WorkbenchDataContext';
 import { HomeDashboard } from './modules/HomeDashboard';
@@ -8,152 +8,114 @@ import { SmeEconomicsView } from './modules/SmeEconomicsView';
 import { VerificationView } from './modules/VerificationView';
 import { AskForgeOpsView } from './components/AskForgeOpsView';
 import {
-  ZapIcon,
-  CpuIcon,
-  BarChartIcon,
-  GaugeIcon,
   AlertTriangleIcon,
+  BarChartIcon,
+  CpuIcon,
+  GaugeIcon,
+  MoonIcon,
   ShieldCheckIcon,
   SparklesIcon,
   SunIcon,
-  MoonIcon,
+  ZapIcon,
 } from './components/Icons';
 
 export type AppView = 'dashboard' | 'workbench' | 'fleet' | 'verification' | 'economics' | 'copilot';
 export type Theme = 'dark' | 'light';
 
+const pageLabels: Record<AppView, string> = {
+  dashboard: 'Overview',
+  workbench: 'Decision workbench',
+  fleet: 'Asset fleet',
+  verification: 'Savings verification',
+  economics: 'Energy economics',
+  copilot: 'Ask ForgeOps',
+};
+
 function BrandMark() {
-  return (
-    <div style={{
-      width: '28px', height: '28px', borderRadius: '8px', flexShrink: 0,
-      background: 'linear-gradient(135deg, #00e02c 0%, #00843d 100%)',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      boxShadow: '0 0 12px rgba(0, 211, 40, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.4)',
-    }} aria-hidden="true">
-      <svg width={16} height={16} viewBox="0 0 24 24" fill="none">
-        <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" fill="#ffffff" />
-      </svg>
-    </div>
-  );
+  return <span className="brand-mark" aria-hidden="true"><span>F</span></span>;
 }
 
 function LiveDataLabel() {
   const { data } = useWorkbenchData();
-  const shortPlant = data.incident.plant.replace('Foundry Cluster - ', '');
-  return (
-    <div className="live-status-pill" title={`${data.incident.plant} • Edge Telemetry`}>
-      <span className="pulsing-indicator" />
-      <span className="font-mono text-secondary" style={{ fontSize: '11px' }}>
-        {shortPlant} • Edge
-      </span>
-    </div>
-  );
+  return <div className="live-status-pill"><span className="pulsing-indicator" /><span>{data.live ? 'Edge connected' : 'Sample data'}</span></div>;
 }
 
-function ThemeToggle({ theme, setTheme }: { theme: Theme; setTheme: (t: Theme) => void }) {
+function ThemeToggle({ theme, setTheme }: { theme: Theme; setTheme: (theme: Theme) => void }) {
+  const nextTheme = theme === 'light' ? 'dark' : 'light';
   return (
-    <div className="theme-toggle-segmented" role="radiogroup" aria-label="Theme selector">
-      <button
-        type="button"
-        className={`theme-segment-btn ${theme === 'dark' ? 'active' : ''}`}
-        onClick={() => setTheme('dark')}
-        title="Switch to Dark Mode"
-        aria-checked={theme === 'dark'}
-        role="radio"
-      >
-        <MoonIcon size={12} />
-        <span>Dark</span>
-      </button>
-      <button
-        type="button"
-        className={`theme-segment-btn ${theme === 'light' ? 'active' : ''}`}
-        onClick={() => setTheme('light')}
-        title="Switch to Light Mode"
-        aria-checked={theme === 'light'}
-        role="radio"
-      >
-        <SunIcon size={12} />
-        <span>Light</span>
-      </button>
-    </div>
+    <button className="theme-toggle-segmented" onClick={() => setTheme(nextTheme)} aria-label={`Switch to ${nextTheme} theme`} title={`Switch to ${nextTheme} theme`}>
+      {theme === 'light' ? <MoonIcon size={16} /> : <SunIcon size={16} />}
+      <span>{theme === 'light' ? 'Dark' : 'Light'} theme</span>
+    </button>
   );
 }
 
 function App() {
   const [view, setView] = useState<AppView>('dashboard');
-  const [theme, setTheme] = useState<Theme>(() =>
-    (localStorage.getItem('forgeops-theme') as Theme) || 'dark'
-  );
+  const [theme, setTheme] = useState<Theme>(() => (
+    localStorage.getItem('forgeops-theme-v2') === 'dark' ? 'dark' : 'light'
+  ));
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('forgeops-theme', theme);
+    localStorage.setItem('forgeops-theme-v2', theme);
   }, [theme]);
+
+  const navigate = (nextView: AppView) => {
+    setView(nextView);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const navItem = (target: AppView, label: string, Icon: typeof ZapIcon) => (
+    <button key={target} className={`sidebar-link${view === target ? ' active' : ''}`} onClick={() => navigate(target)} aria-current={view === target ? 'page' : undefined}>
+      <Icon size={17} /><span>{label}</span>{target === 'workbench' && <span className="sidebar-count">1</span>}
+    </button>
+  );
 
   return (
     <WorkbenchDataProvider>
       <FocusProvider>
         <div className="app-shell">
-          <header className="app-header-modern">
-            <div className="header-brand-group">
-              <button className="brand-logo-btn" onClick={() => setView('dashboard')} aria-label="Home">
-                <BrandMark />
-                <span className="brand-title">
-                  FORGEOPS <span className="brand-accent">ENERGY</span>
-                </span>
-              </button>
+          <aside className="app-sidebar">
+            <button className="brand-logo-btn" onClick={() => navigate('dashboard')} aria-label="ForgeOps Energy home">
+              <BrandMark /><span className="brand-title">ForgeOps<span>Energy</span></span>
+            </button>
+            <div className="sidebar-plant"><span className="plant-avatar">B</span><span><strong>Belgaum Foundry</strong><small>Plant workspace</small></span><span className="plant-chevron">⌄</span></div>
+            <nav className="sidebar-navigation" aria-label="Main navigation">
+              <p className="sidebar-section-label">WORKSPACE</p>
+              {navItem('dashboard', 'Overview', ZapIcon)}
+              {navItem('workbench', 'Decision workbench', CpuIcon)}
+              <p className="sidebar-section-label">OPERATIONS</p>
+              {navItem('fleet', 'Asset fleet', GaugeIcon)}
+              {navItem('verification', 'Savings verification', ShieldCheckIcon)}
+              {navItem('economics', 'Energy economics', BarChartIcon)}
+            </nav>
+            <div className="sidebar-spacer" />
+            <button className={`sidebar-link copilot-link${view === 'copilot' ? ' active' : ''}`} onClick={() => navigate('copilot')} aria-current={view === 'copilot' ? 'page' : undefined}>
+              <SparklesIcon size={17} /><span>Ask ForgeOps</span><span className="copilot-shortcut">⌘ K</span>
+            </button>
+            <div className="sidebar-user"><span className="user-avatar">VA</span><span><strong>Vaishak</strong><small>Plant engineer</small></span><button aria-label="Account options">···</button></div>
+          </aside>
 
-              <nav className="segmented-nav" aria-label="Primary Navigation">
-                <button className={`nav-tab-btn ${view === 'dashboard' ? 'active' : ''}`} onClick={() => setView('dashboard')}>
-                  <ZapIcon size={13} /><span>Energy Overview</span>
-                </button>
-                <button className={`nav-tab-btn ${view === 'workbench' ? 'active' : ''}`} onClick={() => setView('workbench')}>
-                  <CpuIcon size={13} /><span>Decision Workbench</span>
-                </button>
-                <button className={`nav-tab-btn ${view === 'fleet' ? 'active' : ''}`} onClick={() => setView('fleet')}>
-                  <GaugeIcon size={13} /><span>Asset Fleet Monitor</span>
-                </button>
-                <button className={`nav-tab-btn ${view === 'verification' ? 'active' : ''}`} onClick={() => setView('verification')}>
-                  <ShieldCheckIcon size={13} /><span>Verification (IPMVP)</span>
-                </button>
-                <button className={`nav-tab-btn ${view === 'economics' ? 'active' : ''}`} onClick={() => setView('economics')}>
-                  <BarChartIcon size={13} /><span>Economics & BEE</span>
-                </button>
-                <button
-                  className={`nav-tab-btn copilot-tab ${view === 'copilot' ? 'active' : ''}`}
-                  onClick={() => setView('copilot')}
-                  style={{ color: view === 'copilot' ? undefined : 'var(--schneider-green)' }}
-                >
-                  <SparklesIcon size={13} /><span>Ask ForgeOps</span>
-                </button>
-              </nav>
-            </div>
-
-            <div className="header-actions">
-              <ThemeToggle theme={theme} setTheme={setTheme} />
-              
-              <button
-                className="incident-alarm-pill"
-                onClick={() => setView('workbench')}
-                title="Active Incident: INC-ENG-2401 (+14.3% SEC)"
-              >
-                <AlertTriangleIcon size={12} />
-                <span>INC-ENG-2401 • +14.3%</span>
-              </button>
-
-              <LiveDataLabel />
-              <div className="avatar-pill" title="Plant Energy Engineer (Shift B)">EE</div>
-            </div>
-          </header>
-
-          <main style={{ flexGrow: 1 }}>
-            {view === 'dashboard'     && <HomeDashboard onOpenWorkbench={() => setView('workbench')} />}
-            {view === 'workbench'     && <Workbench onBack={() => setView('dashboard')} />}
-            {view === 'fleet'         && <FoundryUserStoryView onSwitchToWorkbench={() => setView('workbench')} />}
-            {view === 'verification'  && <VerificationView onOpenWorkbench={() => setView('workbench')} />}
-            {view === 'economics'     && <SmeEconomicsView onOpenWorkbench={() => setView('workbench')} />}
-            {view === 'copilot'       && <AskForgeOpsView onNavigate={(v) => setView(v as AppView)} />}
-          </main>
+          <div className="workspace-column">
+            <header className="app-header-modern">
+              <div className="breadcrumbs"><span>Belgaum Foundry</span><span>/</span><strong>{pageLabels[view]}</strong></div>
+              <div className="header-actions">
+                <LiveDataLabel />
+                <button className="incident-alarm-pill" onClick={() => navigate('workbench')} title="Open the priority incident"><AlertTriangleIcon size={15} /><span>1 needs attention</span></button>
+                <ThemeToggle theme={theme} setTheme={setTheme} />
+                <span className="header-user-avatar">VA</span>
+              </div>
+            </header>
+            <main className="workspace-main" key={view}>
+              {view === 'dashboard' && <HomeDashboard onNavigate={navigate} />}
+              {view === 'workbench' && <Workbench onBack={() => navigate('dashboard')} />}
+              {view === 'fleet' && <FoundryUserStoryView onSwitchToWorkbench={() => navigate('workbench')} />}
+              {view === 'verification' && <VerificationView onOpenWorkbench={() => navigate('workbench')} />}
+              {view === 'economics' && <SmeEconomicsView onOpenWorkbench={() => navigate('workbench')} />}
+              {view === 'copilot' && <AskForgeOpsView onNavigate={(target) => navigate(target as AppView)} />}
+            </main>
+          </div>
         </div>
       </FocusProvider>
     </WorkbenchDataProvider>

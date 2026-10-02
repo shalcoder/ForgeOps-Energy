@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import { useWorkbenchData } from '../WorkbenchDataContext';
+import { useFocusContext } from '../FocusContext';
+import { AuditDossier, exportAuditDossier } from './AuditDossier';
 import {
   CheckCircleIcon,
   ShieldCheckIcon,
@@ -14,6 +17,8 @@ import {
 
 export function VerificationView({ onOpenWorkbench }: { onOpenWorkbench: () => void }) {
   const [activeIncidentId] = useState('INC-ENG-2401');
+  const { data } = useWorkbenchData();
+  const { focus } = useFocusContext();
 
   return (
     <div className="page-container">
@@ -35,9 +40,9 @@ export function VerificationView({ onOpenWorkbench }: { onOpenWorkbench: () => v
             <CheckCircleIcon size={14} />
             <span>Savings Audit Verified: -17.9% SEC</span>
           </span>
-          <button className="btn-secondary-action" onClick={() => alert('Downloading IPMVP Compliance Certificate (PDF)...')}>
+          <button className="btn-secondary-action" onClick={() => exportAuditDossier(data, focus)}>
             <FileTextIcon size={14} />
-            <span>Download M&V Certificate (PDF)</span>
+            <span>Export Incident Dossier (PDF)</span>
           </button>
         </div>
       </header>
@@ -245,6 +250,7 @@ export function VerificationView({ onOpenWorkbench }: { onOpenWorkbench: () => v
           </div>
         </div>
       </div>
+      <AuditDossier data={data} focus={focus} />
     </div>
   );
 }
