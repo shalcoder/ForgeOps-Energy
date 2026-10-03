@@ -13,20 +13,3 @@ services:
         value: "false"
       - key: FORGEOPS_HTTP_TIMEOUT_SECONDS
         value: "45"
-
-  - type: web
-    name: forgeops-energy-frontend
-    runtime: static
-    buildCommand: npm ci && npm run build
-    staticPublishPath: ./dist
-    envVars:
-      - key: VITE_FORGEOPS_API_URL
-        value: https://forgeops-energy-api.onrender.com
-      - key: VITE_ROLE3_API_URL
-        value: https://forgeops-energy-api.onrender.com
-      - key: VITE_ROLE1_AGENT_URL
-        value: https://forgeops-energy-api.onrender.com/api/agent/pipeline
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html

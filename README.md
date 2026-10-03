@@ -705,17 +705,26 @@ E:\ForgeOps-Energy\
 
 ## 12. Installation & Getting Started
 
-### 12.1 Render deployment (no-card free tier)
+### 12.1 Render backend deployment (no-card free tier)
 
 The repository includes [`render.yaml`](./render.yaml) and [`Dockerfile`](./Dockerfile)
 for a deployable Render blueprint:
 
 1. Create a Render account and connect this GitHub repository.
 2. Choose **Blueprint** and apply `render.yaml`.
-3. Render creates the Vite static frontend and Dockerized FastAPI backend.
+3. Render creates only the Dockerized FastAPI backend and its temporary SQLite database.
 4. The backend uses the free plan and stores SQLite files under `/tmp`; these
    files are ephemeral and can be lost when Render restarts or redeploys it.
-5. Set `FORGEOPS_MCP_URL`, `NITROCHAT_BASE_URL`, and any provider keys in the
+5. Deploy the frontend separately on Vercel. Set its build-time API variables
+   to the Render backend URL:
+
+   ```text
+   VITE_FORGEOPS_API_URL=https://forgeops-energy-api.onrender.com
+   VITE_ROLE3_API_URL=https://forgeops-energy-api.onrender.com
+   VITE_ROLE1_AGENT_URL=https://forgeops-energy-api.onrender.com/api/agent/pipeline
+   ```
+
+6. Set `FORGEOPS_MCP_URL`, `NITROCHAT_BASE_URL`, and any provider keys in the
    backend service environment before enabling live agents.
 
 This no-card configuration is suitable for demos and testing. For durable
