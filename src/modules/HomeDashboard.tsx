@@ -3,9 +3,9 @@ import { useWorkbenchData } from '../WorkbenchDataContext';
 import type { AppView } from '../App';
 
 const shortcuts: Array<{ view: AppView; title: string; detail: string; icon: typeof CpuIcon }> = [
-  { view: 'workbench', title: 'Decision workbench', detail: 'Investigate, simulate, and approve', icon: CpuIcon },
-  { view: 'fleet', title: 'Asset fleet', detail: 'Review equipment and events', icon: GaugeIcon },
-  { view: 'economics', title: 'Energy economics', detail: 'Explore cost and savings', icon: BarChartIcon },
+  { view: 'investigations', title: 'Investigations', detail: 'Investigate, simulate, and approve', icon: CpuIcon },
+  { view: 'assets', title: 'Asset fleet', detail: 'Review equipment and events', icon: GaugeIcon },
+  { view: 'energy', title: 'Energy economics', detail: 'Explore cost and savings', icon: BarChartIcon },
   { view: 'verification', title: 'Savings verification', detail: 'Check post-repair performance', icon: ShieldCheckIcon },
 ];
 
@@ -59,7 +59,7 @@ export function HomeDashboard({ onNavigate }: { onNavigate: (view: AppView) => v
             <span><small>Compressor load</small>{incident.compressorRuntimePct?.toFixed(0) ?? '—'}%</span>
           </div>
         </div>
-        <button className="priority-action" onClick={() => onNavigate('workbench')}>Open investigation <ArrowRightIcon size={16} /></button>
+        <button className="priority-action" onClick={() => onNavigate('investigations')}>Open investigation <ArrowRightIcon size={16} /></button>
       </section>
 
       <section className="overview-section" aria-labelledby="workspace-title">
@@ -80,7 +80,7 @@ export function HomeDashboard({ onNavigate }: { onNavigate: (view: AppView) => v
 
       <section className="overview-bottom">
         <div className="activity-card">
-          <div className="section-heading-row"><div><p className="eyebrow">LATEST UPDATES</p><h2>Recent activity</h2></div><button className="text-action" onClick={() => onNavigate('workbench')}>View timeline <ArrowRightIcon size={14} /></button></div>
+          <div className="section-heading-row"><div><p className="eyebrow">LATEST UPDATES</p><h2>Recent activity</h2></div><button className="text-action" onClick={() => onNavigate('investigations')}>View timeline <ArrowRightIcon size={14} /></button></div>
           <div className="activity-list">
             {data.incidentEvents.slice(0, 3).map((event, index) => (
               <div className="activity-row" key={event.id}>
@@ -93,7 +93,7 @@ export function HomeDashboard({ onNavigate }: { onNavigate: (view: AppView) => v
             {!data.incidentEvents.length && <div className="activity-empty"><CheckCircleIcon size={17} /> No recent alerts. Plant is operating within its target range.</div>}
           </div>
         </div>
-        <aside className="overview-note"><span className="note-symbol">✳</span><p>ForgeOps brings plant signals, engineering context, and operational decisions together in one place.</p><button onClick={() => onNavigate('copilot')}>Ask ForgeOps <ArrowRightIcon size={14} /></button></aside>
+        <aside className="overview-note"><span className="note-symbol">✳</span><p>ForgeOps brings plant signals, engineering context, and operational decisions together in one place.</p><button onClick={() => onNavigate('opportunities')}>Ask ForgeOps <ArrowRightIcon size={14} /></button></aside>
       </section>
       <footer className="overview-footer">Updated {new Date(data.updatedAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })} <span>·</span> {data.source === 'degraded_fallback' ? 'Showing sample plant data' : 'Connected to plant data'}</footer>
     </div>

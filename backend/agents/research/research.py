@@ -7,6 +7,8 @@ from typing import Any
 from backend.llm.nitrochat_client import NitroChatClient
 from backend.mcp.nitro_mcp_client import NitroMCPClient
 from backend.schemas.research_models import ResearchInput, EvidenceBundle
+from backend.decision2.decision2_engine import Decision2Engine
+
 
 
 TOOL_ARGUMENTS: dict[str, dict[str, Any]] = {
@@ -47,6 +49,7 @@ WORKBENCH_TOOLS = [
 class ResearchAgent:
     def __init__(self, llm: NitroChatClient | None = None) -> None:
         self.llm = llm or NitroChatClient()
+        self.decision2 = Decision2Engine()
         self.last_trace: dict[str, Any] = {}
 
     def retrieve(self, inp: ResearchInput) -> EvidenceBundle:
@@ -72,6 +75,11 @@ class ResearchAgent:
             if isinstance(name, str) and name in TOOL_ARGUMENTS
         ][:8]
         used_safe_tool_selection = not call.live or not selected_tool_names
+        if not call.live or not selected_tool_names:
+            # Leverage Decision 2.0 System 1 semantic router for sub-10ms tool selection
+            d2_tools = self.decision2.route_tools_system1(inp.execution_plan.raw_query, list(TOOL_ARGUMENTS.keys()))
+            if d2_tools:
+                fallback_tools = d2_tools
         tool_names = list(dict.fromkeys(WORKBENCH_TOOLS + selected_tool_names))
         if len(tool_names) < 2:
             tool_names = fallback_tools

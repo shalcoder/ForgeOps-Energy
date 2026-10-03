@@ -322,3 +322,98 @@ export type AgentPipelineRun = {
   confidenceScore: number;
   currentStep: 'PLANNING' | 'RESEARCHING' | 'ANALYZING' | 'SIMULATING' | 'RECOMMENDATION_READY' | 'APPROVED' | 'VERIFIED';
 };
+
+// ==========================================
+// CLOSED-LOOP HARNESS DATA CONTRACT (SECTION 15)
+// ==========================================
+
+export type EquipmentTelemetry = {
+  id: string;
+  type: string;
+  status: string;
+  powerKw: number;
+  loadPct?: number;
+  temperatureC?: number;
+  pressureBar?: number;
+  flowRate?: number;
+  vibration?: number;
+};
+
+export type ProductionState = {
+  lineId: string;
+  product: string;
+  throughput: number;
+  unit: string;
+  qualityRate: number;
+};
+
+export type EnergyState = {
+  totalKw: number;
+  kwhPerUnit: number;
+  tariff: number;
+};
+
+export type MaintenanceState = {
+  equipmentId: string;
+  openIssues: string[];
+  lastMaintenance?: string;
+};
+
+export type FactoryConstraints = {
+  minThroughput: number;
+  maxTemperature?: number;
+  minPressure?: number;
+  maxQualityLoss: number;
+};
+
+export type FactoryState = {
+  timestamp: string;
+  equipment: EquipmentTelemetry[];
+  production: ProductionState;
+  energy: EnergyState;
+  maintenance: MaintenanceState;
+  constraints: FactoryConstraints;
+};
+
+export type OperatingEnvelope = {
+  equipmentId: string;
+  description: string;
+  pressureMinBar: number;
+  pressureMaxBar: number;
+  flowMinCfm: number;
+  flowMaxCfm: number;
+  powerMinKw: number;
+  powerMaxKw: number;
+  vibrationMinMmS: number;
+  vibrationMaxMmS: number;
+  loadMinPct: number;
+  loadMaxPct: number;
+  isSimulatedBaseline: boolean;
+};
+
+export type CompetingHypothesis = {
+  id: 'A' | 'B' | 'C' | 'D';
+  title: string;
+  description: string;
+  confidenceScore: number;
+  physicsTest: string;
+  status: 'confirmed' | 'rejected' | 'inconclusive';
+  rejectionReason?: string;
+  evidenceRef: string;
+};
+
+export type ClosedLoopMAndV = {
+  baselineSec: number;
+  predictedDeltaSec: number;
+  targetSec: number;
+  actualMeasuredSec: number;
+  actualDeltaSec: number;
+  predictionErrorPct: number;
+  routineAdjustments: {
+    productionDeltaTons: number;
+    ambientTempDeltaC: number;
+    productMixFactor: number;
+  };
+  feedbackStatus: 'SENT_TO_BASELINE_REGISTRY' | 'CALIBRATING' | 'RE_ANCHORED';
+};
+

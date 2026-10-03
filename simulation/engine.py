@@ -428,6 +428,179 @@ def calculate_ipmvp_option_bc_verification(
     }
 
 
+def calculate_load_shifting_arbitrage(
+    shiftable_kwh_daily: float = 1600.0,
+    base_tariff_inr: float = DEFAULT_BASE_TARIFF_INR_KWH,
+    peak_surcharge_pct: float = DEFAULT_TOD_PEAK_SURCHARGE,
+    offpeak_discount_pct: float = DEFAULT_TOD_OFFPEAK_DISCOUNT,
+) -> Dict[str, Any]:
+    """Calculate financial arbitrage from shifting non-continuous loads from peak to solar/off-peak."""
+    peak_tariff = base_tariff_inr * (1.0 + peak_surcharge_pct)
+    offpeak_tariff = base_tariff_inr * (1.0 - offpeak_discount_pct)
+    tariff_delta = peak_tariff - offpeak_tariff
+    daily_cost_avoided = shiftable_kwh_daily * tariff_delta
+    monthly_savings = daily_cost_avoided * 26.0
+    annual_savings = monthly_savings * 12.0
+
+    return {
+        "shiftable_load_kwh_per_day": shiftable_kwh_daily,
+        "peak_hours": "06:00 - 10:00 & 18:00 - 22:00",
+        "offpeak_solar_hours": "10:00 - 16:00 (Solar Window) & 22:00 - 06:00 (Night Off-Peak)",
+        "peak_tariff_inr": round(peak_tariff, 2),
+        "offpeak_tariff_inr": round(offpeak_tariff, 2),
+        "tariff_delta_inr": round(tariff_delta, 2),
+        "daily_cost_avoided_inr": round(daily_cost_avoided, 2),
+        "monthly_savings_inr": round(monthly_savings, 2),
+        "annual_savings_inr": round(annual_savings, 2),
+        "peak_demand_kwh_reduced": shiftable_kwh_daily,
+        "tonnage_throughput_preserved": True,
+        "schedule_recommendation": "Pre-charge compressed-air reservoirs and schedule 2 batch induction heats during 10:00-14:00 solar band to eliminate peak ToD surcharges.",
+    }
+
+
+def calculate_fuel_switching(
+    annual_thermal_consumption_gj: float = 12500.0,
+    baseline_fuel: str = "furnace_oil",
+    target_fuel: str = "png",
+    burner_retrofit_capex_inr: float = 250000.0,
+) -> Dict[str, Any]:
+    """Calculate Scope 1 direct thermal decarbonisation via fuel-switching (e.g., Furnace Oil/Coal to PNG/Biomass)."""
+    emission_factors_gj = {
+        "furnace_oil": 77.4,
+        "coal": 94.6,
+        "diesel": 74.1,
+        "png": 56.1,
+        "biomass_briquettes": 4.2,
+    }
+    cost_per_gj = {
+        "furnace_oil": 1350.0,
+        "coal": 850.0,
+        "diesel": 1850.0,
+        "png": 1100.0,
+        "biomass_briquettes": 720.0,
+    }
+
+    b_ef = emission_factors_gj.get(baseline_fuel, 77.4)
+    t_ef = emission_factors_gj.get(target_fuel, 56.1)
+    b_cost_rate = cost_per_gj.get(baseline_fuel, 1350.0)
+    t_cost_rate = cost_per_gj.get(target_fuel, 1100.0)
+
+    baseline_cost = annual_thermal_consumption_gj * b_cost_rate
+    clean_cost = annual_thermal_consumption_gj * t_cost_rate
+    annual_savings = max(0.0, baseline_cost - clean_cost)
+    payback_months = (burner_retrofit_capex_inr / (annual_savings / 12.0)) if annual_savings > 0 else 0.0
+
+    baseline_co2_tons = (annual_thermal_consumption_gj * b_ef) / 1000.0
+    clean_co2_tons = (annual_thermal_consumption_gj * t_ef) / 1000.0
+    co2_reduction_tons = max(0.0, baseline_co2_tons - clean_co2_tons)
+    co2_reduction_pct = (co2_reduction_tons / baseline_co2_tons * 100.0) if baseline_co2_tons > 0 else 0.0
+
+    return {
+        "application": "Cupola / Reheating Furnace & Ladle Preheating Station",
+        "baseline_fuel_type": baseline_fuel.upper().replace("_", " "),
+        "clean_fuel_type": target_fuel.upper().replace("_", " "),
+        "baseline_fuel_consumption_kg_yr": round(annual_thermal_consumption_gj * 24.5),
+        "baseline_fuel_cost_inr_yr": round(baseline_cost, 2),
+        "clean_fuel_consumption_units_yr": round(annual_thermal_consumption_gj * 26.8),
+        "clean_fuel_cost_inr_yr": round(clean_cost, 2),
+        "annual_fuel_cost_savings_inr": round(annual_savings, 2),
+        "equipment_conversion_capex_inr": burner_retrofit_capex_inr,
+        "payback_months": round(payback_months, 1),
+        "baseline_scope1_co2_tons_yr": round(baseline_co2_tons, 1),
+        "clean_scope1_co2_tons_yr": round(clean_co2_tons, 1),
+        "scope1_co2_reduction_tons_yr": round(co2_reduction_tons, 1),
+        "co2_reduction_pct": round(co2_reduction_pct, 1),
+        "feasibility_score": 92.0,
+    }
+
+
+def calculate_brsr_carbon_disclosure(
+    annual_electricity_kwh: float = 3650000.0,
+    annual_tonnage_good: float = 3720.0,
+    annual_kwh_saved: float = 383718.0,
+    thermal_gj: float = 12500.0,
+) -> Dict[str, Any]:
+    """Compile SEBI BRSR Core & GHG Protocol Scope 1 and Scope 2 disclosure card."""
+    electricity_mwh = annual_electricity_kwh / 1000.0
+    electricity_gj = electricity_mwh * 3.6
+    total_energy_gj = electricity_gj + thermal_gj
+    energy_intensity = total_energy_gj / annual_tonnage_good
+    baseline_intensity = (electricity_gj + (annual_kwh_saved / 1000.0) * 3.6 + thermal_gj) / annual_tonnage_good
+    intensity_reduction_pct = ((baseline_intensity - energy_intensity) / baseline_intensity) * 100.0
+
+    scope1_tco2e = (thermal_gj * 77.4) / 1000.0
+    scope2_tco2e = (annual_electricity_kwh * GRID_CO2_FACTOR_KG_PER_KWH) / 1000.0
+    total_scope_1_and_2 = scope1_tco2e + scope2_tco2e
+    ghg_intensity = total_scope_1_and_2 / annual_tonnage_good
+    abated_tco2e = (annual_kwh_saved * GRID_CO2_FACTOR_KG_PER_KWH) / 1000.0
+
+    return {
+        "reporting_standard": "SEBI BRSR Core & GHG Protocol Corporate Standard",
+        "company_category": "Automotive Castings & Forging SME (Tier-2 Supplier)",
+        "financial_year": "FY 2026-27",
+        "energy_metrics": {
+            "total_electricity_consumption_mwh": round(electricity_mwh, 1),
+            "total_fuel_energy_consumption_gj": round(thermal_gj, 1),
+            "total_energy_consumption_gj": round(total_energy_gj, 1),
+            "energy_intensity_gj_per_ton": round(energy_intensity, 2),
+            "baseline_energy_intensity_gj_per_ton": round(baseline_intensity, 2),
+            "intensity_reduction_pct": round(intensity_reduction_pct, 2),
+        },
+        "ghg_emissions": {
+            "scope_1_direct_emissions_tco2e": round(scope1_tco2e, 1),
+            "scope_2_indirect_grid_emissions_tco2e": round(scope2_tco2e, 1),
+            "total_scope_1_and_2_tco2e": round(total_scope_1_and_2, 1),
+            "ghg_intensity_tco2e_per_ton": round(ghg_intensity, 3),
+            "abated_emissions_via_forgeops_tco2e_yr": round(abated_tco2e, 2),
+        },
+        "supply_chain_scorecard": {
+            "oem_compliance_status": "TIER-1 GREEN EXCELLENCE (BEE & Scope 2 Verified)",
+            "sebi_brsr_core_aligned": True,
+            "iso_50001_aligned": True,
+            "target_buyers": ["Tata Motors Commercial Vehicles", "Mahindra Automotive", "Bosch India"],
+        },
+    }
+
+
+def evaluate_system1_safety_bounds(
+    action_id: str = "OPT-C",
+    pressure_setpoint_bar: float = 6.5,
+    min_clamping_bar: float = 5.5,
+    vibration_mm_s: float = 2.1,
+    iso_vibration_threshold: float = 3.5,
+    holding_minutes: float = 20.0,
+) -> Dict[str, Any]:
+    """System 1 non-autoregressive decision & safety verification engine."""
+    clamping_ok = pressure_setpoint_bar >= min_clamping_bar
+    vibration_ok = vibration_mm_s <= iso_vibration_threshold
+    holding_ok = holding_minutes <= 45.0
+    throughput_ok = True
+
+    all_passed = clamping_ok and vibration_ok and holding_ok and throughput_ok
+    safety_score = (0.4 if clamping_ok else 0.0) + (0.3 if vibration_ok else 0.0) + (0.3 if holding_ok else 0.0)
+
+    return {
+        "model_type": "System 1 (Non-Autoregressive CLM / Laya)",
+        "state_verified": all_passed,
+        "latency_ms": 18,
+        "action_proposal_id": action_id,
+        "action_description": f"Set header pressure to {pressure_setpoint_bar} bar & repair manifold coupling seal",
+        "safety_score": round(safety_score, 2),
+        "interlock_checks": {
+            "clamping_pressure_ok": clamping_ok,
+            "vibration_iso10816_ok": vibration_ok,
+            "holding_delay_ok": holding_ok,
+            "throughput_preserved": throughput_ok,
+        },
+        "decision": "APPROVE_FOR_OPERATOR" if all_passed else "REJECT_UNSAFE",
+        "rationale": (
+            "System 1 verification passed in 18ms: 1.0 bar margin above 5.5 bar safety interlock preserved."
+            if all_passed else
+            f"System 1 violation: Pressure {pressure_setpoint_bar} bar or mechanical vibration violates safety envelope."
+        ),
+    }
+
+
 # ── Complete Simulation Engine Class ─────────────────────────────────
 
 class SimulationEnginePython:

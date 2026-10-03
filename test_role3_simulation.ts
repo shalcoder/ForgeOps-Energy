@@ -13,6 +13,10 @@ import {
   calculateParetoFront,
   calculateBeeAdeetieDpr,
   calculateIpmvpVerification,
+  calculateLoadShiftingArbitrage,
+  calculateFuelSwitching,
+  calculateBrsrCarbonDisclosure,
+  evaluateSystem1SafetyBounds,
 } from './simulation/engine';
 
 console.log('🧪 Starting Dev 3 (Sham) Simulation & Energy Economics Test Suite...\n');
@@ -74,4 +78,32 @@ console.log(`✅ Simulation Engine Scenario: ${leakScenario.scenario_name} -> Pr
 const outOfRange = engine.runScenario({ scenario_name: 'extreme_super_speed_1000' });
 console.log(`✅ Guardrail Out-of-Range Test: In Valid Range?: ${outOfRange.in_validated_range} | Warning: ${outOfRange.warning?.slice(0, 45)}...`);
 
-console.log('\n🎉 ALL Dev 3 (Sham) Simulation, Physics & Economics tests passed successfully!');
+// 9. Test Load Shifting & Solar Arbitrage
+const shift = calculateLoadShiftingArbitrage(1600.0);
+console.log(`✅ ToD Load-Shifting Arbitrage: ₹${shift.daily_cost_avoided_inr}/day saved (Annual: ₹${(shift.annual_savings_inr / 100000).toFixed(2)} Lakhs)`);
+if (shift.daily_cost_avoided_inr <= 0 || !shift.tonnage_throughput_preserved) {
+  throw new Error('Load-shifting calculation failed!');
+}
+
+// 10. Test Thermal Fuel Switching (Scope 1 Decarb)
+const fuel = calculateFuelSwitching(12500.0, 'furnace_oil', 'png', 250000.0);
+console.log(`✅ Thermal Fuel-Switching: ${fuel.clean_fuel_type} replaces ${fuel.baseline_fuel_type} -> Cut ${fuel.scope1_co2_reduction_tons_yr} tCO2e/yr (Payback: ${fuel.payback_months} Mo)`);
+if (fuel.scope1_co2_reduction_tons_yr <= 0 || fuel.payback_months > 12.0) {
+  throw new Error('Fuel-switching calculation failed!');
+}
+
+// 11. Test BRSR Core & ESG Supply Chain Scorecard
+const brsrCard = calculateBrsrCarbonDisclosure(3650000.0, 3720.0, 383718.0, 12500.0);
+console.log(`✅ SEBI BRSR Core ESG Card: ${brsrCard.supply_chain_scorecard.oem_compliance_status} | GHG Intensity: ${brsrCard.ghg_emissions.ghg_intensity_tco2e_per_ton} tCO2e/t`);
+if (!brsrCard.supply_chain_scorecard.sebi_brsr_core_aligned) {
+  throw new Error('BRSR ESG scorecard failed!');
+}
+
+// 12. Test System 1 Edge Fast Verification (CLM / Laya)
+const sys1 = evaluateSystem1SafetyBounds('OPT-C', 6.5, 5.5, 2.1, 3.5, 20.0);
+console.log(`✅ System 1 Fast Verifier: Decision: ${sys1.decision} in ${sys1.latency_ms}ms (Score: ${sys1.safety_score})`);
+if (sys1.decision !== 'APPROVE_FOR_OPERATOR') {
+  throw new Error('System 1 fast safety verification failed!');
+}
+
+console.log('\n🎉 ALL 12 Dev 3 (Sham) Simulation, Physics, Arbitrage & Decarbonisation tests passed successfully!');

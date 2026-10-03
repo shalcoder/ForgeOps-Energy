@@ -43,6 +43,17 @@ class Recommendation(BaseModel):
     business_impact: Dict[str, Any]
 
 
+class CompetingHypothesisModel(BaseModel):
+    hypothesis_id: str  # "A", "B", "C", "D"
+    title: str
+    description: str
+    confidence_score: float
+    status: str  # "confirmed" | "rejected" | "low_probability"
+    physics_test: str
+    rejection_reason: Optional[str] = None
+    evidence_refs: List[str] = Field(default_factory=list)
+
+
 class AnalysisInput(BaseModel):
     evidence: EvidenceBundle
     plan: ExecutionPlan
@@ -56,3 +67,5 @@ class AnalysisResult(BaseModel):
     business_impact: Dict[str, Any]
     supporting_evidence: List[str]
     anomalies_detected: int
+    competing_hypotheses: List[CompetingHypothesisModel] = Field(default_factory=list)
+

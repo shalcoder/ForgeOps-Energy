@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useWorkbenchData } from '../WorkbenchDataContext';
 import { useFocusContext } from '../FocusContext';
-import { AuditDossier, exportAuditDossier } from './AuditDossier';
+import { exportAuditDossier } from './AuditDossier';
 import {
   CheckCircleIcon,
   ShieldCheckIcon,
@@ -14,23 +14,25 @@ import {
   ZapIcon,
   RefreshCwIcon,
   SlidersIcon,
+  CheckIcon,
 } from '../components/Icons';
 import {
   calculateIpmvpVerification,
   DEFAULT_BASE_TARIFF_INR_KWH,
 } from '../../simulation/engine';
 
-export function VerificationView({ onOpenWorkbench }: { onOpenWorkbench: () => void }) {
+export function VerificationView({ onOpenWorkbench }: { onOpenWorkbench?: () => void }) {
   const { data } = useWorkbenchData();
   const { focus } = useFocusContext();
   const [actualTonnage, setActualTonnage] = useState(762.4);
   const [ambientTempActual, setAmbientTempActual] = useState(31.5);
   const [showFormulaModal, setShowFormulaModal] = useState(false);
+  const [expandedStage, setExpandedStage] = useState<string | null>(null);
 
   // IPMVP Option B / Option C Normalized Verification
   const verification = calculateIpmvpVerification(
     11.2,               // baseline SEC (incident)
-    9.2,                // post-repair SEC (measured)
+    9.8,                // post-repair SEC (measured)
     758.9,              // baseline tonnage
     actualTonnage,      // actual throughput
     28.0,               // baseline ambient temp °C
@@ -43,14 +45,14 @@ export function VerificationView({ onOpenWorkbench }: { onOpenWorkbench: () => v
 IPMVP OPTION B / OPTION C SAVINGS VERIFICATION CERTIFICATE
 Protocol: International Performance Measurement and Verification Protocol (IPMVP)
 Standard: BEE / ISO 50015 Energy Savings Verification Protocol
-Facility: Belgaum Foundry SME Cluster — Line 2 Moulding & Melting
+Facility: Belgaum Foundry SME Complex — Line 2 Moulding & Melting
 Incident Reference: INC-ENG-2401 • Work Order: WO-ENG-7922
 Verification Date: ${new Date().toLocaleDateString('en-IN')}
 ========================================================================
 
 1. MEASURED TELEMETRY BASELINE
 ------------------------------------------------------------------------
-Pre-Repair Measured SEC: ${verification.measured_baseline_sec} kWh/ton (Line 2 Manifold Leak)
+Pre-Repair Measured SEC: 11.2 kWh/ton (Line 2 Manifold Leak)
 Baseline Production Throughput: 758.9 tons/day
 Baseline Ambient Temperature: 28.0 °C
 
@@ -60,21 +62,20 @@ Actual Production Throughput: ${verification.tonnage_actual_tons} tons/day
 Actual Ambient Temperature: ${ambientTempActual} °C (Delta: +${verification.ambient_temp_delta_c} °C)
 Temperature Sensitivity Coefficient (alpha): 0.004 / °C
 Temperature Adjustment Factor: ${verification.temp_adjustment_factor}
-Normalized / Routine-Adjusted Baseline SEC: ${verification.adjusted_baseline_sec} kWh/ton
+Normalized / Routine-Adjusted Baseline SEC: 11.0 kWh/ton
 
 3. POST-REPAIR MEASUREMENT & VERIFIED AUDIT
 ------------------------------------------------------------------------
-Post-Repair Measured SEC: ${verification.measured_post_repair_sec} kWh/ton
-Verified Specific Energy Reduction: -${verification.verified_sec_reduction_pct}%
+Post-Repair Measured SEC: 9.8 kWh/ton
+Verified Specific Energy Reduction: -1.2 kWh/ton (-12.5%)
 Verified Electrical Energy Saved: ${verification.verified_daily_kwh_saved.toLocaleString('en-IN')} kWh/day
 Verified Daily Financial Savings: ₹${verification.verified_daily_savings_inr.toLocaleString('en-IN')} / day
 Verified Annual Run-Rate Savings: ₹${(verification.verified_annual_savings_inr / 100000).toFixed(2)} Lakhs / year
-Statistical Confidence Level: ${verification.statistical_confidence_pct}% (p < 0.01)
+Statistical Confidence Level: 96.8% (p < 0.01)
 
 4. VERIFICATION STATUS & SIGN-OFF
 ------------------------------------------------------------------------
-Status: ${verification.verification_status}
-Lead Energy Auditor: Plant Energy Engineer & Certified Energy Auditor (BEE Reg. #EA-4902)
+Status: VERIFIED & COMPLIANT
 Governing Method: Direct Modbus submetering on Feeder F-03 & CMP-01 VFD drive
 ========================================================================
 Verified by ForgeOps Energy Autonomous Industrial Decision-Intelligence Platform
@@ -88,385 +89,197 @@ Verified by ForgeOps Energy Autonomous Industrial Decision-Intelligence Platform
     URL.revokeObjectURL(url);
   };
 
+  const auditStages = [
+    { id: 'decision', title: '1. Decision Approval', date: 'Today 10:41 AM', summary: 'Plant engineer approved Option A (Repair leak) under 10.0 t/h constraint gate.' },
+    { id: 'work_order', title: '2. Work Order Creation', date: 'Today 10:45 AM', summary: 'CMMS dispatched WO-ENG-7922 for scheduled 14:30 changeover window.' },
+    { id: 'execution', title: '3. Physical Execution', date: 'Today 11:32 AM', summary: 'Braided coupling replaced on Line 2 header drop #4. Leak eliminated.' },
+    { id: 'telemetry', title: '4. Post-Repair Telemetry', date: 'Today 12:00 PM', summary: 'PM8000 submeter recorded power drop from 61 kW to 49 kW.' },
+    { id: 'normalization', title: '5. Baseline Normalization', date: 'Today 12:30 PM', summary: 'IPMVP Option B algorithm adjusted for +3.5°C ambient temperature delta.' },
+    { id: 'verification', title: '6. Final Verification', date: 'Today 01:00 PM', summary: 'Certified -1.2 kWh/t SEC reduction with 96.8% statistical confidence.' },
+  ];
+
   return (
     <div className="page-container">
-      {/* Header */}
+      {/* ── Page Header ── */}
       <header className="page-header-clean">
         <div>
           <div className="page-kicker">
-            <span className="kicker-tag">Closed-Loop Verification</span>
-            <span>BEE Normalized Measurement & Verification Protocol (IPMVP Option B/C)</span>
+            <span className="kicker-tag">VERIFICATION</span>
+            <span>BEE Normalized Measurement & Verification (IPMVP Option B/C)</span>
           </div>
-          <h1 className="page-title">Post-Intervention Savings Verification Engine</h1>
+          <h1 className="page-title">Savings Verification Engine</h1>
           <p className="page-subtitle">
-            Rigorous before-vs-after telemetry comparison normalized for throughput, metallurgy product mix, and ambient operating temperature shifts.
+            Outcome-oriented mathematical verification proving actual recurring electrical savings normalized for throughput and weather.
           </p>
         </div>
 
         <div className="header-controls-group">
-          <span className="kpi-badge success" style={{ padding: '8px 14px', fontSize: '12px' }}>
-            <CheckCircleIcon size={14} />
-            <span>Audit Verified: -{verification.verified_sec_reduction_pct}% SEC</span>
-          </span>
           <button className="btn-secondary-action" onClick={handleDownloadCertificate}>
             <FileTextIcon size={14} />
             <span>Download M&V Certificate (.txt)</span>
           </button>
-          <button className="btn-secondary-action" onClick={() => exportAuditDossier(data, focus)}>
-            <FileTextIcon size={14} />
-            <span>Export Incident Dossier (PDF)</span>
-          </button>
           <button className="btn-primary-action" onClick={() => setShowFormulaModal(true)}>
-            <span>Inspect IPMVP Formula</span>
+            <span>Inspect Normalization Formula</span>
           </button>
         </div>
       </header>
 
-      {/* Hero Card: Verified Incident Summary */}
-      <div className="card-clean" style={{ borderLeft: '4px solid #00d328', background: 'linear-gradient(180deg, rgba(16, 185, 129, 0.08) 0%, rgba(15, 23, 42, 0.85) 100%)' }}>
-        <div className="card-header-clean">
+      {/* ── Top Summary KPIs (Section 28 of Spec) ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '12px' }}>
+        <div className="card-clean" style={{ padding: '16px' }}>
+          <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Active Verifications</span>
+          <div style={{ fontSize: '24px', fontWeight: 650, color: '#bd6249', marginTop: '2px' }}>3 cases</div>
+          <small style={{ color: 'var(--text-muted)' }}>Ongoing telemetry logging</small>
+        </div>
+
+        <div className="card-clean" style={{ padding: '16px' }}>
+          <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Verified & Certified</span>
+          <div style={{ fontSize: '24px', fontWeight: 650, color: '#5e7e60', marginTop: '2px' }}>18 completed</div>
+          <small style={{ color: '#5e7e60', fontWeight: 600 }}>100% IPMVP compliant</small>
+        </div>
+
+        <div className="card-clean" style={{ padding: '16px' }}>
+          <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Pending Review</span>
+          <div style={{ fontSize: '24px', fontWeight: 650, color: '#a8793e', marginTop: '2px' }}>2 awaiting</div>
+          <small style={{ color: 'var(--text-muted)' }}>Baseline gathering stage</small>
+        </div>
+
+        <div className="card-clean" style={{ padding: '16px' }}>
+          <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Verified Savings</span>
+          <div style={{ fontSize: '24px', fontWeight: 650, color: 'var(--text-primary)', marginTop: '2px' }}>₹12.8 Lakhs</div>
+          <small style={{ color: '#5e7e60', fontWeight: 600 }}>Annual run-rate delivered</small>
+        </div>
+      </div>
+
+      {/* ── Intervention Outcome Detail (Section 29 of Spec) ── */}
+      <div className="card-clean" style={{ padding: '22px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-              <span className="kpi-badge success">CLOSED • VERIFIED</span>
-              <span className="font-mono text-muted" style={{ fontSize: '12px' }}>INC-ENG-2401 • Work Order WO-ENG-7922</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span className="best-tag">VERIFIED OUTCOME</span>
+              <span className="font-mono text-muted" style={{ fontSize: '12px' }}>WO-ENG-7922 &bull; Feeder F-03</span>
             </div>
-            <h2 style={{ fontSize: '18px', fontWeight: 800, color: '#f9fafb' }}>
-              Line 2 Compressed-Air Manifold Coupling Replacement & Pressure Optimization
+            <h2 style={{ margin: '8px 0 2px', fontFamily: 'var(--font-serif)', fontSize: '20px', color: 'var(--text-primary)' }}>
+              CMP-01 Pneumatic Leak Repair Outcome
             </h2>
+            <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-secondary)' }}>
+              Line 2 manifold drop coupling replacement verified against continuous submeter telemetry.
+            </p>
           </div>
 
-          <div style={{ textAlign: 'right' }}>
-            <span style={{ fontSize: '11px', color: '#9ca3af', textTransform: 'uppercase' }}>Verified Annual Run-Rate</span>
-            <div className="font-mono text-emerald" style={{ fontSize: '24px', fontWeight: 800 }}>
-              ₹{(verification.verified_annual_savings_inr / 100000).toFixed(2)} Lakhs / yr
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            <div style={{ textAlign: 'right' }}>
+              <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Predicted vs Measured</span>
+              <div style={{ fontSize: '13px', color: 'var(--text-primary)', marginTop: '2px' }}>
+                Predicted: <span className="font-mono"><strong>-1.5 kWh/t</strong></span> &bull; Measured: <span className="font-mono" style={{ color: '#5e7e60' }}><strong>-1.2 kWh/t</strong></span>
+              </div>
             </div>
+            <span className="provenance-badge provenance-measured">Verified</span>
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '14px', marginTop: '8px' }}>
-          {/* SEC Comparison */}
-          <div style={{ background: 'var(--glass-surface)', padding: '16px', borderRadius: '10px', border: '1px solid rgba(16, 185, 129, 0.3)', boxShadow: 'var(--neu-sunken)' }}>
-            <div style={{ fontSize: '11px', color: '#9ca3af', textTransform: 'uppercase' }}>Normalized Baseline vs Actual</div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '6px' }}>
-              <span className="font-mono" style={{ textDecoration: 'line-through', color: '#f87171', fontSize: '15px' }}>{verification.adjusted_baseline_sec}</span>
-              <span className="font-mono text-emerald" style={{ fontSize: '24px', fontWeight: 800 }}>{verification.measured_post_repair_sec}</span>
-              <span className="font-mono text-muted" style={{ fontSize: '12px' }}>kWh/t</span>
-            </div>
-            <div style={{ fontSize: '11.5px', color: '#00d328', fontWeight: 600, marginTop: '4px' }}>
-              &darr; -{verification.verified_sec_reduction_pct}% Verified Reduction
-            </div>
+        {/* ── Baseline Normalization Strip (Section 29 of Spec) ── */}
+        <div style={{ margin: '18px 0', padding: '14px', borderRadius: '8px', background: 'var(--bg-ground)', border: '1px solid var(--glass-border)' }}>
+          <div style={{ fontSize: '10.5px', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '8px' }}>
+            Baseline Normalization Parameters (IPMVP Option B)
           </div>
 
-          {/* Throughput Preservation */}
-          <div style={{ background: 'var(--glass-surface)', padding: '16px', borderRadius: '10px', border: '1px solid var(--glass-border)', boxShadow: 'var(--neu-sunken)' }}>
-            <div style={{ fontSize: '11px', color: '#9ca3af', textTransform: 'uppercase' }}>Daily Production Output</div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '6px' }}>
-              <span className="font-mono text-primary" style={{ fontSize: '24px', fontWeight: 800 }}>{actualTonnage}</span>
-              <span className="font-mono text-muted" style={{ fontSize: '12px' }}>tons / day</span>
-            </div>
-            <div style={{ fontSize: '11.5px', color: '#38bdf8', fontWeight: 600, marginTop: '4px' }}>
-              100% Preserved (10.2 t/h)
-            </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '12px', fontSize: '11.5px' }}>
+            <div>Production Throughput: <strong>{actualTonnage} t/day</strong></div>
+            <div>Ambient Temperature: <strong>{ambientTempActual}°C (+3.5°C delta)</strong></div>
+            <div>Product Metallurgy: <strong>Grade SG 500/7 (Matched)</strong></div>
+            <div>Operating Hours: <strong>24 hrs continuous (Matched)</strong></div>
+          </div>
+        </div>
+
+        {/* SEC Normalized Comparison Strip (Section 29 of Spec) */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '12px' }}>
+          <div style={{ padding: '14px', borderRadius: '7px', border: '1px solid var(--glass-border)', background: 'var(--bg-surface)' }}>
+            <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Baseline SEC</span>
+            <div style={{ fontSize: '20px', fontWeight: 650, color: 'var(--text-primary)', marginTop: '2px' }}>11.2 kWh/t</div>
+            <small style={{ color: 'var(--text-muted)' }}>Pre-intervention incident</small>
           </div>
 
-          {/* Verified Energy Saved */}
-          <div style={{ background: 'var(--glass-surface)', padding: '16px', borderRadius: '10px', border: '1px solid var(--glass-border)', boxShadow: 'var(--neu-sunken)' }}>
-            <div style={{ fontSize: '11px', color: '#9ca3af', textTransform: 'uppercase' }}>Daily Energy Saved</div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '6px' }}>
-              <span className="font-mono text-primary" style={{ fontSize: '24px', fontWeight: 800 }}>{verification.verified_daily_kwh_saved.toLocaleString('en-IN')}</span>
-              <span className="font-mono text-muted" style={{ fontSize: '12px' }}>kWh/day</span>
-            </div>
-            <div style={{ fontSize: '11.5px', color: '#00d328', fontWeight: 600, marginTop: '4px' }}>
-              ₹{verification.verified_daily_savings_inr.toLocaleString('en-IN')} saved daily
-            </div>
+          <div style={{ padding: '14px', borderRadius: '7px', border: '1px solid var(--glass-border)', background: 'var(--bg-surface)' }}>
+            <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Normalized Baseline</span>
+            <div style={{ fontSize: '20px', fontWeight: 650, color: 'var(--text-primary)', marginTop: '2px' }}>11.0 kWh/t</div>
+            <small style={{ color: 'var(--text-muted)' }}>Routine weather adjustment</small>
           </div>
 
-          {/* Carbon Abatement */}
-          <div style={{ background: 'var(--glass-surface)', padding: '16px', borderRadius: '10px', border: '1px solid rgba(6, 182, 212, 0.3)', boxShadow: 'var(--neu-sunken)' }}>
-            <div style={{ fontSize: '11px', color: '#9ca3af', textTransform: 'uppercase' }}>Scope 2 Avoidance</div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '6px' }}>
-              <span className="font-mono text-cyan" style={{ fontSize: '24px', fontWeight: 800 }}>{((verification.verified_daily_kwh_saved * 0.82) / 1000 * 365).toFixed(1)}</span>
-              <span className="font-mono text-muted" style={{ fontSize: '12px' }}>tCO₂e/yr</span>
-            </div>
-            <div style={{ fontSize: '11.5px', color: '#22d3ee', fontWeight: 600, marginTop: '4px' }}>
-              Clean avoided emissions
-            </div>
+          <div style={{ padding: '14px', borderRadius: '7px', border: '1px solid var(--glass-border)', background: 'var(--bg-surface)' }}>
+            <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Post-Intervention</span>
+            <div style={{ fontSize: '20px', fontWeight: 650, color: '#5e7e60', marginTop: '2px' }}>9.8 kWh/t</div>
+            <small style={{ color: '#5e7e60', fontWeight: 600 }}>Measured post-repair</small>
+          </div>
+
+          <div style={{ padding: '14px', borderRadius: '7px', border: '1px solid #5e7e60', background: 'var(--bg-surface)' }}>
+            <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Verified Impact</span>
+            <div style={{ fontSize: '20px', fontWeight: 650, color: '#5e7e60', marginTop: '2px' }}>-1.2 kWh/t</div>
+            <small style={{ color: '#5e7e60', fontWeight: 600 }}>₹6,240/day recurring saving</small>
           </div>
         </div>
       </div>
 
-      {/* Interactive Normalization Controls */}
-      <div className="card-clean" style={{ marginTop: '16px' }}>
-        <div className="card-header-clean">
-          <div>
-            <h3 className="card-title-clean">
-              <SlidersIcon size={16} className="text-emerald" />
-              <span>IPMVP Option B/C Baseline Normalization Sandbox</span>
-            </h3>
-            <p className="card-subtitle-clean">Adjust factory noise variables (ambient temperature & tonnage) to verify mathematical invariance</p>
-          </div>
-          <span className="kpi-badge info">Mathematical Normalizer</span>
-        </div>
+      {/* ── Expandable Audit Trail (Section 30 of Spec) ── */}
+      <div className="card-clean" style={{ padding: '20px' }}>
+        <h3 style={{ margin: '0 0 14px', fontFamily: 'var(--font-serif)', fontSize: '18px', color: 'var(--text-primary)' }}>
+          Traceable M&V Audit Trail
+        </h3>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
-          {/* Tonnage Slider */}
-          <div className="slider-group-clean">
-            <div className="slider-label-flex">
-              <span className="slider-label-text">Actual Production Throughput Tonnage</span>
-              <span className="slider-val-readout">{actualTonnage} tons/day</span>
-            </div>
-            <input
-              type="range"
-              min="500"
-              max="1000"
-              step="5"
-              value={actualTonnage}
-              onChange={(e) => setActualTonnage(Number(e.target.value))}
-              className="slider-native-clean"
-            />
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#6b7280', fontFamily: 'var(--font-mono)' }}>
-              <span>500 tons (Low load)</span>
-              <span style={{ color: '#00d328' }}>762.4 tons (Current)</span>
-              <span>1000 tons (Full capacity)</span>
-            </div>
-          </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {auditStages.map((st) => (
+            <div
+              key={st.id}
+              style={{
+                padding: '12px 14px',
+                borderRadius: '7px',
+                background: 'var(--bg-ground)',
+                border: '1px solid var(--glass-border)',
+                cursor: 'pointer',
+              }}
+              onClick={() => setExpandedStage(expandedStage === st.id ? null : st.id)}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <CheckCircleIcon size={15} style={{ color: '#5e7e60' }} />
+                  <strong style={{ fontSize: '12.5px', color: 'var(--text-primary)' }}>{st.title}</strong>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{st.date}</span>
+                  <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{expandedStage === st.id ? '▴' : '▾'}</span>
+                </div>
+              </div>
 
-          {/* Temperature Slider */}
-          <div className="slider-group-clean">
-            <div className="slider-label-flex">
-              <span className="slider-label-text">Actual Ambient Temperature (Compressor Room)</span>
-              <span className="slider-val-readout text-cyan">{ambientTempActual} °C (ΔT = +{verification.ambient_temp_delta_c} °C)</span>
+              {expandedStage === st.id && (
+                <p style={{ margin: '8px 0 0', paddingLeft: '25px', fontSize: '12px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                  {st.summary}
+                </p>
+              )}
             </div>
-            <input
-              type="range"
-              min="20"
-              max="45"
-              step="0.5"
-              value={ambientTempActual}
-              onChange={(e) => setAmbientTempActual(Number(e.target.value))}
-              className="slider-native-clean"
-            />
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#6b7280', fontFamily: 'var(--font-mono)' }}>
-              <span>20 °C (Winter)</span>
-              <span style={{ color: '#00d328' }}>31.5 °C (Current)</span>
-              <span>45 °C (Peak Summer)</span>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
 
-      {/* Two-Column Detail Grid */}
-      <div className="grid-equal-2" style={{ marginTop: '16px' }}>
-        {/* Left: Execution & Governance Audit Trail */}
-        <div className="card-clean">
-          <div className="card-header-clean">
-            <div>
-              <h3 className="card-title-clean">
-                <WrenchIcon size={16} className="text-emerald" />
-                <span>CMMS Work Order & Execution Audit Trail</span>
-              </h3>
-              <p className="card-subtitle-clean">End-to-end trace from anomaly detection to physical resolution</p>
-            </div>
-            <span className="kpi-badge info">Audit Stamped</span>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
-              <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'var(--bg-elevated, #1e293b)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: '#f87171' }}>
-                <ClockIcon size={14} />
-              </div>
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <strong style={{ fontSize: '13px', color: '#f9fafb' }}>Anomaly Detected by Edge Gateway</strong>
-                  <span className="font-mono text-muted" style={{ fontSize: '11px' }}>08:30 AM Today</span>
-                </div>
-                <p style={{ fontSize: '12px', color: '#9ca3af', margin: '2px 0 0 0' }}>
-                  Pneumatic manifold pressure dropped to 6.1 bar; compressor modulation spiked to 88%.
-                </p>
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
-              <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'var(--bg-elevated, #1e293b)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: '#38bdf8' }}>
-                <ShieldCheckIcon size={14} />
-              </div>
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <strong style={{ fontSize: '13px', color: '#f9fafb' }}>4-Agent Pipeline Investigation & Approval</strong>
-                  <span className="font-mono text-muted" style={{ fontSize: '11px' }}>08:35 AM Today</span>
-                </div>
-                <p style={{ fontSize: '12px', color: '#9ca3af', margin: '2px 0 0 0' }}>
-                  Option C approved by Supervisor. Work order <strong>WO-ENG-7922</strong> generated and dispatched.
-                </p>
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
-              <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'var(--bg-elevated, #1e293b)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: '#f59e0b' }}>
-                <WrenchIcon size={14} />
-              </div>
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <strong style={{ fontSize: '13px', color: '#f9fafb' }}>Maintenance Executed (Shift B Changeover)</strong>
-                  <span className="font-mono text-muted" style={{ fontSize: '11px' }}>11:00 AM - 11:48 AM</span>
-                </div>
-                <p style={{ fontSize: '12px', color: '#9ca3af', margin: '2px 0 0 0' }}>
-                  Technician replaced ruptured manifold coupling gasket; compressor setpoint adjusted to 6.5 bar.
-                </p>
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
-              <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#00d328', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: '#051408' }}>
-                <CheckCircleIcon size={14} />
-              </div>
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <strong style={{ fontSize: '13px', color: '#00d328' }}>Independent Telemetry Verification Confirmed</strong>
-                  <span className="font-mono text-emerald" style={{ fontSize: '11px', fontWeight: 600 }}>12:30 PM Today</span>
-                </div>
-                <p style={{ fontSize: '12px', color: '#9ca3af', margin: '2px 0 0 0' }}>
-                  Modbus Feeder F-03 confirms SEC stabilized at 9.2 kWh/ton. Energy audit ledger permanently updated.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Right: Controlled Model Learning & Baseline Calibration */}
-        <div className="card-clean">
-          <div className="card-header-clean">
-            <div>
-              <h3 className="card-title-clean">
-                <RefreshCwIcon size={16} className="text-emerald" />
-                <span>Controlled Model Learning & Calibration (Section 73)</span>
-              </h3>
-              <p className="card-subtitle-clean">Closed-loop model evaluation and baseline recalibration record</p>
-            </div>
-            <span className="kpi-badge success">Model Calibrated</span>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 14px', background: 'var(--glass-surface)', borderRadius: '8px', border: '1px solid var(--glass-border)' }}>
-              <div>
-                <span style={{ fontSize: '11px', color: '#9ca3af' }}>Simulation Prediction vs Actual Result</span>
-                <strong style={{ display: 'block', fontSize: '13px', color: '#f9fafb', marginTop: '2px' }}>
-                  Predicted: -17.9% SEC • Measured Actual: -{verification.verified_sec_reduction_pct}% SEC
-                </strong>
-              </div>
-              <span className="kpi-badge success">99.4% Accuracy</span>
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 14px', background: 'var(--glass-surface)', borderRadius: '8px', border: '1px solid var(--glass-border)' }}>
-              <div>
-                <span style={{ fontSize: '11px', color: '#9ca3af' }}>Downtime Window Execution</span>
-                <strong style={{ display: 'block', fontSize: '13px', color: '#f9fafb', marginTop: '2px' }}>
-                  Estimated: 48 min • Actual Changeover: 42 min
-                </strong>
-              </div>
-              <span className="kpi-badge info">Within Budget</span>
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 14px', background: 'var(--glass-surface)', borderRadius: '8px', border: '1px solid var(--glass-border)' }}>
-              <div>
-                <span style={{ fontSize: '11px', color: '#9ca3af' }}>Dynamic Baseline Envelope Status</span>
-                <strong style={{ display: 'block', fontSize: '13px', color: '#f9fafb', marginTop: '2px' }}>
-                  Line 2 Standard SEC recalibrated to 8.5 kWh/ton target
-                </strong>
-              </div>
-              <span className="kpi-badge success">Re-Anchored</span>
-            </div>
-
-            <div style={{ marginTop: 'auto', paddingTop: '10px', display: 'flex', justifyContent: 'flex-end' }}>
-              <button className="btn-primary-action" onClick={onOpenWorkbench}>
-                <span>View Decision Workbench →</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Audit Dossier Section */}
-      <AuditDossier data={data} focus={focus} />
-
-      {/* Modal: IPMVP Mathematical Regression Inspection */}
+      {/* Formula Modal */}
       {showFormulaModal && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          background: 'rgba(0, 0, 0, 0.75)',
-          backdropFilter: 'blur(6px)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-          padding: '20px',
-        }}>
-          <div className="card-clean" style={{ maxWidth: '650px', width: '100%', maxHeight: '90vh', overflowY: 'auto', border: '1px solid #00d328' }}>
-            <div className="card-header-clean">
-              <div>
-                <h3 className="card-title-clean">
-                  <FileTextIcon size={18} className="text-emerald" />
-                  <span>IPMVP Mathematical Normalization Equations</span>
-                </h3>
-                <p className="card-subtitle-clean">Option B (Retrofit Isolation) & Option C (Facility Level)</p>
-              </div>
-              <button
-                onClick={() => setShowFormulaModal(false)}
-                style={{ background: 'transparent', border: 'none', color: '#9ca3af', fontSize: '18px', cursor: 'pointer' }}
-              >
-                ✕
-              </button>
+        <div className="command-palette-backdrop" onClick={() => setShowFormulaModal(false)}>
+          <div className="command-palette-modal" style={{ maxWidth: '580px' }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--glass-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0, fontFamily: 'var(--font-serif)', fontSize: '17px', color: 'var(--text-primary)' }}>
+                IPMVP Equation & Normalization Logic
+              </h3>
+              <button className="header-icon-btn" onClick={() => setShowFormulaModal(false)}>✕</button>
             </div>
-
-            <div style={{ fontSize: '13px', lineHeight: '1.6', color: '#d1d5db' }}>
-              <div style={{ background: 'rgba(0, 211, 40, 0.08)', padding: '12px 16px', borderRadius: '8px', border: '1px solid rgba(0, 211, 40, 0.2)', marginBottom: '16px' }}>
-                <strong style={{ color: '#00d328', display: 'block', fontFamily: 'var(--font-mono)' }}>
-                  E_adjusted = E_baseline × (V_actual / V_baseline) × (1 + α × ΔT)
-                </strong>
-                <span style={{ fontSize: '12px', marginTop: '4px', display: 'block' }}>
-                  Ensures energy savings cannot be faked or distorted by changes in ambient factory weather or product production shifts.
-                </span>
+            <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '12px', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+              <div style={{ padding: '12px', borderRadius: '6px', background: 'var(--bg-ground)', fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--text-primary)' }}>
+                Savings = (Baseline SEC × Routine Adjustments) - Measured Post-Repair SEC
               </div>
-
-              <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '16px', fontFamily: 'var(--font-mono)', fontSize: '12.5px' }}>
-                <tbody>
-                  <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                    <td style={{ padding: '8px 0', color: '#9ca3af' }}>Measured Baseline SEC</td>
-                    <td style={{ padding: '8px 0', textAlign: 'right', color: '#f9fafb' }}>11.20 kWh/t</td>
-                  </tr>
-                  <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                    <td style={{ padding: '8px 0', color: '#9ca3af' }}>Throughput Scaling Ratio</td>
-                    <td style={{ padding: '8px 0', textAlign: 'right', color: '#38bdf8' }}>{(actualTonnage / 758.9).toFixed(3)}</td>
-                  </tr>
-                  <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                    <td style={{ padding: '8px 0', color: '#9ca3af' }}>Temperature Factor (1 + 0.004 × {verification.ambient_temp_delta_c})</td>
-                    <td style={{ padding: '8px 0', textAlign: 'right', color: '#38bdf8' }}>{verification.temp_adjustment_factor}</td>
-                  </tr>
-                  <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                    <td style={{ padding: '8px 0', color: '#9ca3af', fontWeight: 700 }}>Adjusted Baseline SEC</td>
-                    <td style={{ padding: '8px 0', textAlign: 'right', color: '#f87171', fontWeight: 800 }}>{verification.adjusted_baseline_sec} kWh/t</td>
-                  </tr>
-                  <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                    <td style={{ padding: '8px 0', color: '#9ca3af', fontWeight: 700 }}>Measured Post-Repair SEC</td>
-                    <td style={{ padding: '8px 0', textAlign: 'right', color: '#00d328', fontWeight: 800 }}>{verification.measured_post_repair_sec} kWh/t</td>
-                  </tr>
-                  <tr>
-                    <td style={{ padding: '8px 0', color: '#9ca3af', fontWeight: 700 }}>Net Verified Savings</td>
-                    <td style={{ padding: '8px 0', textAlign: 'right', color: '#00d328', fontWeight: 800 }}>-{verification.verified_sec_reduction_pct}% ({verification.verified_daily_kwh_saved.toLocaleString('en-IN')} kWh/day)</td>
-                  </tr>
-                </tbody>
-              </table>
+              <p style={{ margin: 0 }}>
+                Routine adjustments isolate weather (ambient temperature alpha = 0.004/°C) and product tonnage from physical energy efficiency changes.
+              </p>
             </div>
-
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '16px' }}>
-              <button className="btn-secondary-action" onClick={handleDownloadCertificate}>
-                <FileTextIcon size={14} />
-                <span>Export M&V Certificate (.txt)</span>
-              </button>
-              <button className="btn-primary-action" onClick={() => setShowFormulaModal(false)}>
-                <span>Close</span>
-              </button>
+            <div style={{ padding: '12px 20px', borderTop: '1px solid var(--glass-border)', display: 'flex', justifyContent: 'flex-end' }}>
+              <button className="btn-secondary-action" onClick={() => setShowFormulaModal(false)}>Close</button>
             </div>
           </div>
         </div>

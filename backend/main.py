@@ -45,7 +45,7 @@ class QueryRequest(BaseModel):
 class DecisionApprovalRequest(BaseModel):
     incident_id: str = "INC-2407-001"
     recommendation: Dict[str, Any]
-    approved_by: str = "Vaishak"
+    approved_by: str = "Vishal"
     agent_conclusion: str = ""
 
 
@@ -90,6 +90,23 @@ def health():
 @app.get("/api/agent/health")
 def agent_health():
     return _health_payload()
+
+
+@app.get("/api/v1/sim/health")
+def sim_health():
+    return {
+        "status": "ok",
+        "service": "forgeops-simulation-engine",
+        "version": "1.0.0",
+        "physics_models": [
+            "orifice_flow",
+            "compressor_vfd",
+            "furnace_sec",
+            "pareto_optimizer",
+            "discom_tariff",
+            "ipmvp_option_bc",
+        ],
+    }
 
 
 @app.post("/api/agent/pipeline")

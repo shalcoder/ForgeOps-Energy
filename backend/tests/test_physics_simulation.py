@@ -20,6 +20,10 @@ from simulation.engine import (
     calculate_pareto_front,
     calculate_bee_adeetie_dpr,
     calculate_ipmvp_option_bc_verification,
+    calculate_load_shifting_arbitrage,
+    calculate_fuel_switching,
+    calculate_brsr_carbon_disclosure,
+    evaluate_system1_safety_bounds,
     SimulationEnginePython,
 )
 
@@ -117,6 +121,44 @@ class TestDiscomTariffAndEconomics(unittest.TestCase):
         self.assertTrue(verif["adjusted_baseline_sec"] > 11.2)
         self.assertTrue(verif["verified_sec_reduction_pct"] > 18.0)
         self.assertEqual(verif["verification_status"], "APPROVED_VERIFIED")
+
+    def test_load_shifting_arbitrage(self):
+        """Test Time-of-Day peak-to-solar load shifting cost arbitrage."""
+        res = calculate_load_shifting_arbitrage(shiftable_kwh_daily=1600.0)
+        self.assertTrue(res["daily_cost_avoided_inr"] > 4000.0)
+        self.assertTrue(res["annual_savings_inr"] > 1000000.0)
+        self.assertTrue(res["tonnage_throughput_preserved"])
+
+    def test_fuel_switching_decarbonisation(self):
+        """Test thermal fuel switching from furnace oil to PNG."""
+        res = calculate_fuel_switching(
+            annual_thermal_consumption_gj=12500.0,
+            baseline_fuel="furnace_oil",
+            target_fuel="png",
+            burner_retrofit_capex_inr=250000.0,
+        )
+        self.assertTrue(res["annual_fuel_cost_savings_inr"] > 2500000.0)
+        self.assertTrue(res["payback_months"] < 2.0)
+        self.assertTrue(res["scope1_co2_reduction_tons_yr"] > 200.0)
+
+    def test_brsr_carbon_disclosure(self):
+        """Test SEBI BRSR Core and GHG Protocol reporting."""
+        res = calculate_brsr_carbon_disclosure(
+            annual_electricity_kwh=3650000.0,
+            annual_tonnage_good=3720.0,
+            annual_kwh_saved=383718.0,
+            thermal_gj=12500.0,
+        )
+        self.assertTrue(res["supply_chain_scorecard"]["sebi_brsr_core_aligned"])
+        self.assertTrue(res["ghg_emissions"]["total_scope_1_and_2_tco2e"] > 0)
+        self.assertTrue(res["energy_metrics"]["intensity_reduction_pct"] > 5.0)
+
+    def test_system1_fast_verification(self):
+        """Test System 1 non-autoregressive decision and safety bounding."""
+        res = evaluate_system1_safety_bounds("OPT-C", 6.5, 5.5, 2.1, 3.5, 20.0)
+        self.assertEqual(res["decision"], "APPROVE_FOR_OPERATOR")
+        self.assertTrue(res["latency_ms"] < 30)
+        self.assertEqual(res["safety_score"], 1.0)
 
 
 class TestSimulationEngineRunner(unittest.TestCase):

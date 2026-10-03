@@ -12,12 +12,12 @@ An enterprise-grade **agentic industrial decision-intelligence platform** specif
 2. [The Indian SME Reality & Market Opportunity](#2-the-indian-sme-reality--market-opportunity)
 3. [Mathematical Formulation & Hard Constraints](#3-mathematical-formulation--hard-constraints)
 4. [End-to-End System Architecture](#4-end-to-end-system-architecture)
-5. [The 4-Agent Autonomous Intelligence Engine](#5-the-4-agent-autonomous-intelligence-engine)
+5. [The Decision 2.0 Intelligence Architecture (Dual-Process AI)](#5-the-decision-20-intelligence-architecture-dual-process-ai)
 6. [Model Context Protocol (MCP) Server Specification](#6-model-context-protocol-mcp-server-specification)
 7. [Industrial Case Study: Belgaum Foundry Incident](#7-industrial-case-study-belgaum-foundry-incident)
 8. [Frontend Design System & Interactive Modules](#8-frontend-design-system--interactive-modules)
 9. [Backend Agent Orchestration & REST API](#9-backend-agent-orchestration--rest-api)
-10. [BEE ADEETIE Alignment & SME Economics](#10-bee-adeetie-alignment--sme-economics)
+10. [BEE ADEETIE Alignment, Solar Arbitrage & Decarbonisation](#10-bee-adeetie-alignment--sme-economics)
 11. [Repository Structure](#11-repository-structure)
 12. [Installation & Getting Started](#12-installation--getting-started)
 13. [Testing & Verification](#13-testing--verification)
@@ -96,30 +96,294 @@ $$\text{Simple Payback (Months)} = \frac{\text{Implementation Cost (₹)}}{\text
 
 ## 4. End-to-End System Architecture
 
+The system is built as a **closed-loop industrial decision harness**, not just an agent pipeline:
+
+> **Sense → Normalize → Baseline → Detect → Investigate → Explain → Simulate → Optimize → Approve → Execute → Measure → Verify → Learn**
+
+### 4.1 Complete Architecture Topology
+
+```mermaid
+flowchart TB
+
+%% =========================
+%% FACTORY LAYER
+%% =========================
+subgraph FACTORY["FACTORY / PHYSICAL WORLD"]
+    SENS["Sensors & Energy Meters"]
+    PLC["PLC / VFD / CNC / Furnace Controllers"]
+    MES["MES / Production Data"]
+    CMMS["Maintenance / CMMS"]
+    QMS["Quality System"]
+    ERP["ERP / Cost / Tariff Data"]
+end
+
+%% =========================
+%% EDGE
+%% =========================
+subgraph EDGE["EDGE INDUSTRIAL GATEWAY"]
+    COLLECT["Telemetry Collector"]
+    MODBUS["Modbus / OPC-UA / MQTT"]
+    BUFFER["Local Buffer / Store"]
+    NORMALIZE["Signal Normalization"]
+    FEATURE["Feature Extraction"]
+    BASELINE["Equipment-Specific Baseline"]
+end
+
+SENS --> MODBUS
+PLC --> MODBUS
+MES --> COLLECT
+CMMS --> COLLECT
+QMS --> COLLECT
+ERP --> COLLECT
+
+MODBUS --> COLLECT
+COLLECT --> BUFFER
+BUFFER --> NORMALIZE
+NORMALIZE --> FEATURE
+FEATURE --> BASELINE
+
+%% =========================
+%% SYSTEM 1
+%% =========================
+subgraph SYSTEM1["SYSTEM 1 — FAST DECISION LOOP"]
+    STATE["Current Factory State"]
+    DETECT["Anomaly Detection"]
+    TRIAGE["Decision Model"]
+    SAFETY["Deterministic Safety Guardrails"]
+    ROUTER["Tool / Investigation Router"]
+    SCORE["Candidate Action Scoring"]
+end
+
+FEATURE --> STATE
+BASELINE --> STATE
+STATE --> DETECT
+DETECT --> TRIAGE
+TRIAGE --> SAFETY
+SAFETY --> ROUTER
+SAFETY --> SCORE
+
+%% =========================
+%% TRIGGER
+%% =========================
+TRIGGER{"Requires Deep Investigation?"}
+
+ROUTER --> TRIGGER
+DETECT --> TRIGGER
+
+%% =========================
+%% SYSTEM 2
+%% =========================
+subgraph SYSTEM2["SYSTEM 2 — FORGEOPS DEEP DECISION LOOP"]
+    PLANNER["1. Planner Agent"]
+    RESEARCH["2. Research Agent"]
+    ANALYSIS["3. Analysis Agent"]
+    EXECUTION["4. Execution Agent"]
+
+    PLANNER --> RESEARCH
+    RESEARCH --> ANALYSIS
+    ANALYSIS --> EXECUTION
+end
+
+TRIGGER -->|YES| PLANNER
+TRIGGER -->|NO| SCORE
+
+%% =========================
+%% MCP
+%% =========================
+subgraph MCP["FORGEOPS MCP TOOL LAYER"]
+    M1["Telemetry Tools"]
+    M2["Production Tools"]
+    M3["Maintenance Tools"]
+    M4["Quality Tools"]
+    M5["Energy Tools"]
+    M6["Historical Data"]
+    M7["Supplier / Material Data"]
+end
+
+RESEARCH --> M1
+RESEARCH --> M2
+RESEARCH --> M3
+RESEARCH --> M4
+RESEARCH --> M5
+RESEARCH --> M6
+RESEARCH --> M7
+
+ANALYSIS --> M1
+ANALYSIS --> M2
+ANALYSIS --> M3
+ANALYSIS --> M4
+
+%% =========================
+%% ENGINEERING TRUTH
+%% =========================
+subgraph ENGINE["ENGINEERING / PHYSICS LAYER"]
+    COMP["Compressor Model"]
+    FURNACE["Furnace Thermal Model"]
+    LEAK["Leak / Flow Model"]
+    MOTOR["Motor / VFD Model"]
+    TARIF["Tariff / ToD Engine"]
+    CARBON["Carbon Calculation"]
+end
+
+M1 --> COMP
+M1 --> FURNACE
+M1 --> LEAK
+M1 --> MOTOR
+ERP --> TARIF
+
+ANALYSIS --> COMP
+ANALYSIS --> FURNACE
+ANALYSIS --> LEAK
+ANALYSIS --> MOTOR
+
+%% =========================
+%% SIMULATION
+%% =========================
+subgraph SIM["COUNTERFACTUAL / WHAT-IF ENGINE"]
+    SCENARIOS["Scenario Generator"]
+    SIMULATOR["Production + Energy Simulation"]
+    CONSTRAINTS["Hard Constraints"]
+    PARETO["Pareto Optimizer"]
+end
+
+EXECUTION --> SCENARIOS
+COMP --> SIMULATOR
+FURNACE --> SIMULATOR
+LEAK --> SIMULATOR
+MOTOR --> SIMULATOR
+TARIF --> SIMULATOR
+
+SCENARIOS --> SIMULATOR
+SIMULATOR --> CONSTRAINTS
+CONSTRAINTS --> PARETO
+
+%% =========================
+%% ECONOMICS
+%% =========================
+subgraph ECON["ECONOMIC DECISION LAYER"]
+    COST["Energy Cost"]
+    SAVINGS["Expected Savings"]
+    CAPEX["CAPEX / OPEX"]
+    PAYBACK["Payback"]
+    ROI["Economic Impact"]
+end
+
+PARETO --> COST
+COST --> SAVINGS
+SAVINGS --> CAPEX
+CAPEX --> PAYBACK
+PAYBACK --> ROI
+
+%% =========================
+%% HUMAN
+%% =========================
+subgraph HUMAN["HUMAN DECISION LAYER"]
+    DASH["ForgeOps Dashboard"]
+    EVIDENCE["Evidence & Explanation"]
+    OPTIONS["Recommended Options"]
+    APPROVAL["Engineer / Manager Approval"]
+end
+
+ROI --> OPTIONS
+PARETO --> OPTIONS
+ANALYSIS --> EVIDENCE
+RESEARCH --> EVIDENCE
+
+OPTIONS --> DASH
+EVIDENCE --> DASH
+DASH --> APPROVAL
+
+%% =========================
+%% EXECUTION
+%% =========================
+subgraph ACTION["CONTROLLED EXECUTION"]
+    WORKORDER["CMMS Work Order"]
+    SETPOINT["Approved Setpoint Change"]
+    SCHEDULE["Production / Energy Schedule"]
+    MAINTACTION["Maintenance Action"]
+end
+
+APPROVAL --> WORKORDER
+APPROVAL --> SETPOINT
+APPROVAL --> SCHEDULE
+APPROVAL --> MAINTACTION
+
+%% =========================
+%% VERIFICATION
+%% =========================
+subgraph VERIFY["MEASURE & VERIFY"]
+    POST["Post-Intervention Telemetry"]
+    NORMALIZE2["Normalized Baseline"]
+    MANDV["Measurement & Verification"]
+    SAVINGS_CERT["Savings Certificate"]
+end
+
+ACTION --> POST
+POST --> NORMALIZE2
+NORMALIZE2 --> MANDV
+MANDV --> SAVINGS_CERT
+
+%% =========================
+%% LEARNING
+%% =========================
+subgraph LEARN["CONTINUOUS LEARNING"]
+    FEEDBACK["Outcome Feedback"]
+    MODELREG["Model / Baseline Registry"]
+    AUDIT["Decision Audit Log"]
+end
+
+MANDV --> FEEDBACK
+FEEDBACK --> MODELREG
+FEEDBACK --> BASELINE
+APPROVAL --> AUDIT
+EXECUTION --> AUDIT
+MANDV --> AUDIT
+
+MODELREG --> BASELINE
 ```
+
+### 4.2 The 8 Major Harness Layers
+
+| Layer | Responsibility | Runtime / Technology |
+|---|---|---|
+| **L0 Factory** | Sensors, PLCs, submeters, MES, CMMS, QMS, ERP | Modbus RTU / RS-485, OPC-UA, 4-20mA, SQL |
+| **L1 Edge** | Telemetry ingestion, 72h buffering, normalization, learned asset baseline | DIN-Rail IPC, Python / Node.js, SQLite ring buffer |
+| **L2 System 1** | Sub-10ms fast anomaly detection and deterministic safety screening | `Decision-2.0-Sol-2B` (RTX 3060) / `Kai-0.6B` (Edge) |
+| **L3 System 2** | Bounded 4-Agent deliberative investigation and competing hypotheses | Planner &rarr; Research &rarr; Analysis &rarr; Execution |
+| **L4 Engineering** | Deterministic thermodynamics, isentropic curves, and ToD tariffs | Python / TypeScript Physics Engine (`simulation/engine`) |
+| **L5 Decision** | Counterfactual what-if simulation, hard constraints, Pareto frontier | Multi-objective optimizer, BEE ADEETIE CapEx model |
+| **L6 Human** | Evidence inspection, option selection, approval gate, and CMMS dispatch | Modern Dark Dashboard, Work Order API (Read-only/Simulated) |
+| **L7 Verification** | Post-repair IPMVP Option B/C verification & prediction error loopback | Normalized regression, 14.3% error feedback to registry |
+
+### 4.3 Key Design Principle
+
+> **ForgeOps is not four agents chatting with each other.**  
+> It is an **industrial decision harness around factory data**:  
+> • AI provides reasoning  
+> • Engineering provides physical validity  
+> • Economics provides business viability  
+> • Human provides authorization  
+> • Measurement proves whether the intervention worked.
+
+
+---
+
+## 5. The Decision 2.0 Intelligence Architecture (Dual-Process AI)
+
+Industrial manufacturing cannot tolerate hallucinations, latency spikes, or non-deterministic behavior. ForgeOps Energy implements a **Decision 2.0 Dual-Process AI Architecture**, combining ultra-fast, non-autoregressive **System 1 Edge Intelligence** with a deliberative **System 2 Bounded 4-Agent Pipeline**:
+
+```text
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                       LEVEL 0 & 1: FACTORY FLOOR                        │
-│  Induction Furnaces · Compressors · Molding Lines · Modbus Submeters    │
-│  Pressure Transducers · CT Clamps · Machine Thermocouples · PLCs        │
+│                      SYSTEM 1: FAST EDGE INTELLIGENCE                   │
+│   Non-Autoregressive Decision Engine (CLM-8B / Laya Edge Inspired)      │
+│   • Executes on ₹20,000 DIN-Rail Industrial Gateways in < 20 ms         │
+│   • Hard Safety Interlock Verification (P >= 5.5 bar, ISO 10816 Vib)    │
+│   • Continuous Edge Telemetry Screening & Anomaly Trigger Filter        │
 └────────────────────────────────────┬────────────────────────────────────┘
-                                     │ RS-485 / Modbus RTU / 4-20mA
+                                     │ Anomaly Triggered (>85% Conf)
                                      ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                    LEVEL 2: INDUSTRIAL EDGE GATEWAY                     │
-│  DIN-rail Gateway (Node.js/Python) · MQTT/OPC-UA · Local Ring Buffer    │
-│  Edge Telemetry Filtering · 1-Second Aggregations · Zero Cloud Lock-in  │
-└────────────────────────────────────┬────────────────────────────────────┘
-                                     │ Encrypted TLS JSON Streams
-                                     ▼
-┌─────────────────────────────────────────────────────────────────────────┐
-│                  LEVEL 3: FORGEOPS MCP DATA PLATFORM                    │
-│  TypeScript MCP Server (@modelcontextprotocol / NitroStack)             │
-│  Modules: energy · mes · maintenance · quality · materials · simulation │
-└────────────────────────────────────┬────────────────────────────────────┘
-                                     │ Structured Tool Calls
-                                     ▼
-┌─────────────────────────────────────────────────────────────────────────┐
-│                 LEVEL 4: 4-AGENT DECISION ENGINE (FASTAPI)              │
+│                SYSTEM 2: DELIBERATIVE 4-AGENT PIPELINE                  │
 │ ┌───────────────────┐ ┌───────────────────┐ ┌─────────────────────────┐ │
 │ │ 1. PLANNER AGENT  │ │ 2. RESEARCH AGENT │ │   3. ANALYSIS AGENT     │ │
 │ │ Intent & Boundary │ │ MCP Data Fetcher  │ │ Causal DAG & What-If Sim│ │
@@ -127,28 +391,12 @@ $$\text{Simple Payback (Months)} = \frac{\text{Implementation Cost (₹)}}{\text
 │           │                     │                        │              │
 │           ▼                     ▼                        ▼              │
 │ ┌─────────────────────────────────────────────────────────────────────┐ │
-│ │ 4. EXECUTION AGENT (Includes Scenario Optimization & Trade-offs)    │ │
-│ └──────────────────────────────────┬──────────────────────────────────┘ │
-└────────────────────────────────────┼────────────────────────────────────┘
-                                     ▼
-┌─────────────────────────────────────────────────────────────────────────┐
-│                  LEVEL 5: HUMAN-IN-THE-LOOP APPROVAL                    │
-│    Operator Workbench · Work Order Generation · Audit Trail Database    │
-└────────────────────────────────────┬────────────────────────────────────┘
-                                     │ Approved Action
-                                     ▼
-┌─────────────────────────────────────────────────────────────────────────┐
-│               LEVEL 6: CLOSED-LOOP VERIFICATION TELEMETRY               │
-│  Continuous telemetry monitoring confirms post-repair SEC drop          │
-│  11.2 kWh/t → 9.2 kWh/t (-18.0%) · Savings Verified: ₹6,240/day        │
+│ │ 4. EXECUTION AGENT (Pareto Frontier Optimization & Work Order Draft)│ │
+│ └─────────────────────────────────────────────────────────────────────┘ │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
----
-
-## 5. The 4-Agent Autonomous Intelligence Engine
-
-ForgeOps Energy employs a strictly bounded **4-Agent Pipeline**. Rather than using a single monolithic LLM that hallucinates calculations, each agent has an isolated responsibility and explicit contract:
+Rather than using a single monolithic LLM that hallucinates calculations, each agent has an isolated responsibility and explicit contract:
 
 ### 1. 🎯 Planner Agent (`backend/agents/planner/planner.py`)
 - **Responsibility**: Semantic intent classification and mathematical problem framing.
@@ -341,17 +589,48 @@ ForgeOps Energy directly serves as the digital intelligence layer for ADEETIE co
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Financial Return Matrix (Standard 50-Ton/Day Foundry):
+### 10.1 BEE ADEETIE Capital Subsidy & Financial Return Model
+Financial Return Matrix (Standard 50-Ton/Day Foundry):
 - **Annual Electrical Consumption**: 3,650,000 kWh
-- **Average Tariff Rate**: ₹8.20 / kWh
+- **Average Tariff Rate**: ₹7.80 / kWh (Blended: ₹8.20 / kWh)
 - **Total Annual Energy Bill**: ₹2,99,30,000
 - **ForgeOps SEC Reduction (Conservative 10%)**: 365,000 kWh / year
 - **Direct Annual Savings**: **₹29,93,000 / year**
-- **System Retrofit Cost (Gateway + 4 Submeters)**: ₹1,20,000
-- **Software Subscription**: ₹15,000 / month (₹1,80,000 / year)
-- **Net Year 1 Return**: **₹26,93,000**
-- **Payback Period**: **1.4 Months**
-- **Carbon Abatement**: **299.3 Metric Tons of CO₂e / year**
+- **System Retrofit Cost (Gateway + 4 Submeters)**: ₹45,000 – ₹1,20,000
+- **BEE/SIDBI Capital Subsidy (25%)**: -₹30,000 grant
+- **Net SME Out-of-Pocket CapEx**: **₹33,750 – ₹90,000**
+- **Software Subscription**: ₹6,000 / month (₹72,000 / year)
+- **Net Year 1 Return**: **₹29,21,000**
+- **Payback Period**: **0.2 to 1.4 Months (< 45 Days)**
+- **Scope 2 Carbon Abatement**: **299.3 Metric Tons of CO₂e / year**
+
+### 10.2 Time-of-Day (ToD) Load-Shifting & Solar Arbitrage Engine
+In Indian manufacturing DISCOM tariffs (e.g., BESCOM, HESCOM, MSEDCL, TANGEDCO), electricity costs fluctuate sharply by time of day:
+- **Peak Band (06:00 – 10:00 & 18:00 – 22:00)**: $+20\%$ surcharge ($\approx ₹9.36/\text{kWh}$)
+- **Normal Band (10:00 – 18:00)**: Baseline rate ($₹7.80/\text{kWh}$)
+- **Solar Window & Night Off-Peak (10:00 – 16:00 & 22:00 – 06:00)**: $-15\%$ discount ($\approx ₹6.63/\text{kWh}$)
+
+**The ForgeOps Arbitrage Solution**:
+ForgeOps continuously analyzes scheduled batch heat runs, mold preparation, and pneumatic receiver charging. By shifting **1,600 kWh/day of non-continuous batch load** into the solar/off-peak band:
+- **Tariff Delta Captured**: ₹2.73 / kWh
+- **Daily Operating Savings**: **₹4,368 / day**
+- **Annual Financial Addition**: **₹13.63 Lakhs / year** with **Zero Hardware CapEx** and **100% throughput preserved**.
+
+### 10.3 Thermal Process Decarbonisation & Fuel-Switching (Scope 1)
+Foundries and forging plants consume significant thermal energy in ladle preheating, reheating furnaces, and heat treatment stations:
+- **Baseline Fuels**: Furnace Oil ($77.4\text{ kg CO}_2\text{/GJ}$), Sub-bituminous Coal ($94.6\text{ kg CO}_2\text{/GJ}$), or HSD Diesel.
+- **Clean Transition Target**: Piped Natural Gas (PNG - $56.1\text{ kg CO}_2\text{/GJ}$) or Agricultural Biomass Briquettes ($4.2\text{ kg CO}_2\text{/GJ}$ net).
+- **Economic Feasibility**:
+  - **Retrofit CapEx (Dual-fuel burner & manifold valves)**: ₹2,50,000
+  - **Annual Operating Fuel Savings**: **₹26.25 Lakhs / year**
+  - **Simple Payback**: **1.1 Months**
+  - **Scope 1 Direct Emission Cut**: **-266.3 Metric Tons CO₂e / year (-27.5%)**
+
+### 10.4 SEBI BRSR Core & Tier-1 OEM Supply Chain ESG Card
+Tier-2/3 automotive suppliers in India face strict ESG compliance mandates from global OEMs (Tata Motors, Mahindra, Bosch, Maruti Suzuki). ForgeOps Energy automatically compiles an exportable **SEBI BRSR Core & GHG Protocol Disclosure Card**:
+- **Energy Intensity**: Evaluates total energy consumed per metric ton of good output ($1.06\text{ GJ/ton}$, a $-14.3\%$ reduction against baseline).
+- **Scope 1 + Scope 2 Accounting**: Certified according to the GHG Protocol Corporate Standard using CEA India grid emission factors ($0.82\text{ kg CO}_2\text{e/kWh}$).
+- **1-Click Audit Export**: Generates signed, tamper-evident audit dossiers for ISO 50001 certification and OEM contract renewals.
 
 ---
 
