@@ -473,6 +473,56 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .decision-page .dispatch-alert-banner .dispatch-icon { color: #65765e !important; }
 .decision-page .dismiss-btn { margin-left: auto; border: 0; background: transparent; color: #777166; cursor: pointer; }
 
+/* The simulator presents one selected estimate and a short list of controls. */
+.decision-page .energy-simulator-panel { padding: 18px; }
+.decision-page .energy-simulator-panel .module-header { display: flex; align-items: center; gap: 12px; padding-bottom: 14px; border-bottom: 1px solid var(--glass-border); }
+.decision-page .energy-simulator-panel .module-header > div { flex: 1; }
+.decision-page .energy-simulator-panel .module-header h2 { margin: 0 0 4px; color: #37342f !important; font-family: Georgia, serif; font-size: 17px; font-weight: 500; }
+.decision-page .energy-simulator-panel .module-header > div > span { color: #858077 !important; font-size: 10px; }
+.decision-page .energy-simulator-panel .objective-badge { padding: 7px 9px; border: 1px solid #e9e3d9; border-radius: 6px; background: #f7f5f1; color: #777166; font-size: 9px; }
+.decision-page .simulator-grid-layout { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 14px; margin-top: 14px; }
+.decision-page .sim-controls-col, .decision-page .sim-results-col { min-width: 0; }
+.decision-page .preset-radio-group { display: grid; gap: 7px; margin: 0 0 10px; }
+.decision-page .preset-btn { width: 100%; min-height: 56px; padding: 10px 11px; border: 1px solid #e8e5df; border-radius: 7px; background: #fff; color: #4b4841; text-align: left; cursor: pointer; }
+.decision-page .preset-btn:hover { border-color: #d2c7ba; background: #fbfaf8; }
+.decision-page .preset-btn.active { border-color: #d7b7a8; background: #faf4ef; }
+.decision-page .preset-btn.active.best { border-color: #c9d5c2; background: #f4f6f1; }
+.decision-page .preset-btn-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+.decision-page .preset-btn-top strong { color: #413d36; font-size: 10px; font-weight: 650; }
+.decision-page .preset-btn small { display: block; color: #858077; font-size: 9px; line-height: 1.4; }
+.decision-page .best-tag, .decision-page .loss-tag { padding: 3px 5px; border-radius: 4px; font-size: 8px; font-weight: 700; }
+.decision-page .best-tag { background: #e9efe5; color: #687c62; }
+.decision-page .loss-tag { background: #f6e8e3; color: #ad5d46; }
+.decision-page .interactive-sliders-box, .decision-page .constraints-validation-box { padding: 12px; border: 1px solid #e8e5df; border-radius: 8px; background: #f8f7f4; }
+.decision-page .interactive-sliders-box h4, .decision-page .constraints-validation-box h4 { margin: 0; color: #625d54 !important; font-size: 9px; letter-spacing: .05em; }
+.decision-page .slider-field { margin: 12px 0; }
+.decision-page .slider-label-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 8px; margin-bottom: 4px; color: #625d54; font-size: 9px; }
+.decision-page .slider-label-row label { color: #625d54; }
+.decision-page .slider-readout { color: #a65a43 !important; font-size: 9px; }
+.decision-page .sim-slider { width: 100%; min-height: 38px; accent-color: #bd6249; cursor: pointer; }
+.decision-page .slider-ticks { display: flex; justify-content: space-between; gap: 4px; color: #969187 !important; font-size: 7px !important; }
+.decision-page .checkbox-field { margin-top: 7px; padding-top: 9px; border-top: 1px solid #e9e6e0; }
+.decision-page .checkbox-label { display: flex; align-items: flex-start; gap: 7px; color: #716b62; font-size: 9px; line-height: 1.45; cursor: pointer; }
+.decision-page .checkbox-label input { flex: 0 0 auto; margin: 1px 0 0; accent-color: #bd6249; }
+.decision-page .checkbox-label span { color: #716b62 !important; }
+.decision-page .sim-kpi-banner { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; margin: 0; }
+.decision-page .sim-kpi-block { display: grid; min-width: 0; gap: 4px; padding: 11px; border: 1px solid #e8e5df; border-radius: 7px; background: #fff; }
+.decision-page .sim-kpi-block.highlight { border-color: #d9e1d4; background: #f4f6f1; }
+.decision-page .sim-kpi-block small { color: #89847a; font-size: 8px; line-height: 1.35; text-transform: none; }
+.decision-page .sim-kpi-block strong { overflow-wrap: anywhere; margin: 0; color: #46423c !important; font-family: Georgia, serif; font-size: 16px; font-weight: 500; }
+.decision-page .sim-kpi-block strong span { font-family: var(--font-sans); font-size: 8px; }
+.decision-page .sim-kpi-block .sim-delta { color: #75816d; font-size: 8px; }
+.decision-page .sim-assumption-note { margin: 10px 0; color: #918b81; font-size: 8px; line-height: 1.45; }
+.decision-page .constraints-validation-box { margin: 0; }
+.decision-page .constraint-chips-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.decision-page .val-chip { display: inline-flex; align-items: flex-start; gap: 5px; padding: 5px 7px; border: 1px solid #e7e3dc; border-radius: 5px; background: #fff; color: #777166; font-size: 8px; line-height: 1.4; }
+.decision-page .val-chip.ok { border-color: #dce4d7; background: #f4f6f1; color: #687c62; }
+.decision-page .val-chip.warning { border-color: #eed9c5; background: #fbf4eb; color: #9a6f3f; }
+.decision-page .val-chip.info { color: #777166; }
+.decision-page .sim-warning-banner { display: flex; align-items: flex-start; gap: 8px; margin-top: 10px; padding: 9px 10px; border: 1px solid #eed9c5; border-radius: 7px; background: #fbf4eb; color: #906b42 !important; font-family: var(--font-sans); font-size: 9px !important; line-height: 1.45; }
+.decision-page .sim-warning-banner svg { flex: 0 0 auto; color: #ad7e46 !important; }
+.decision-page .sim-warning-banner span { color: inherit !important; }
+
 @media (max-width: 900px) {
   .decision-page { width: calc(100% - 42px); }
   .decision-heading { align-items: flex-start; flex-direction: column; gap: 13px; }
@@ -502,6 +552,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .decision-page .rec-impact-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .decision-page .rec-approval-actions { align-items: stretch; flex-direction: column; }
   .decision-page .rec-approval-buttons { flex-wrap: wrap; }
+  .decision-page .simulator-grid-layout { grid-template-columns: minmax(0, 1fr); }
+  .decision-page .energy-simulator-panel .module-header { align-items: stretch; flex-direction: column; }
+  .decision-page .energy-simulator-panel .objective-badge { align-self: flex-start; }
+  .decision-page .sim-kpi-block strong { font-size: 14px; }
 }
 
 :root[data-theme="dark"] .overview-metrics,

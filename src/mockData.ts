@@ -263,7 +263,7 @@ export const incidentEvents: IncidentEvent[] = [
     evidenceIds: ['ev_simulation_matrix'],
     confidence: 0.94,
     value: 'Option C: Repair + Setpoint (SEC -18.0%, ₹6,240/day savings)',
-    description: 'Simulated 4 interventions. Evaluated tradeoff of leakage repair + setpoint reduction to 6.5 bar. Calculated 1.5 month payback and 96 kg CO2/day reduction.',
+    description: 'Simulated 4 interventions. Evaluated leakage repair + a 6.5 bar setpoint. The case-study estimate is a 1.5-day payback and 96 kg CO₂/day reduction.',
     secImpact: 'Optimum: 9.2 kWh/ton (-18%)',
   },
   {
@@ -698,7 +698,7 @@ export const simulationPresets: Record<string, SimulationResult> = {
     costInr: 8500,
     effort: '42 min maintenance window',
     downtimeMinutes: 42,
-    paybackMonths: 1.8,
+    paybackMonths: 0.07,
     throughputImpact: '0% impact (Preserved)',
     qualityImpact: '0% impact (Preserved)',
     safetyPreserved: true,
@@ -707,7 +707,7 @@ export const simulationPresets: Record<string, SimulationResult> = {
       'Execution scheduled during planned shift changeover to prevent throughput disruption',
       'Industrial power tariff calculated at ₹7.8 / kWh',
     ],
-    reasoning: 'Eliminating the 14.2 m³/min air leak allows compressor modulation to drop by 16%, saving 1,370 kWh daily with 1.8 month payback.',
+    reasoning: 'Repairing the air leak is estimated to save 1,370 kWh and ₹4,650 per day, for a simple payback of about 1.8 days.',
     inValidatedRange: true,
     warnings: [],
     evidenceRefs: ['ev_sec_calculation', 'ev_pressure_telemetry', 'ev_cmms_leakage_history'],
@@ -730,7 +730,7 @@ export const simulationPresets: Record<string, SimulationResult> = {
     costInr: 2000,
     effort: '10 min controller recalibration',
     downtimeMinutes: 10,
-    paybackMonths: 0.6,
+    paybackMonths: 0.02,
     throughputImpact: '0% impact (Preserved)',
     qualityImpact: '0% impact (Preserved)',
     safetyPreserved: true,
@@ -762,7 +762,7 @@ export const simulationPresets: Record<string, SimulationResult> = {
     costInr: 9500,
     effort: '48 min maintenance window',
     downtimeMinutes: 48,
-    paybackMonths: 1.5,
+    paybackMonths: 0.06,
     throughputImpact: '0% impact (10.2 ton/day Preserved)',
     qualityImpact: '+0.2% yield improvement (97.8%)',
     safetyPreserved: true,
@@ -771,7 +771,7 @@ export const simulationPresets: Record<string, SimulationResult> = {
       'Total intervention completed in 48 minutes during die cleanout',
       'Delivers compound efficiency: lower leakage velocity + reduced compressor work per cycle',
     ],
-    reasoning: 'Optimal economic intervention. Combining hardware leak elimination with 6.5 bar operating setpoint delivers 18.0% SEC reduction (1,840 kWh/day) with 1.5 months payback and zero throughput penalty.',
+    reasoning: 'Combining leak repair with a 6.5 bar operating setpoint is estimated to reduce SEC by 18% and save ₹6,240 per day. The simple payback is about 1.5 days.',
     inValidatedRange: true,
     warnings: [],
     evidenceRefs: ['ev_sec_calculation', 'ev_pressure_telemetry', 'ev_compressor_telemetry', 'ev_cmms_leakage_history'],
@@ -823,14 +823,14 @@ export const recommendations: Recommendation[] = [
     energySavingKwhDay: 1840,
     costSavingInrDay: 6240,
     co2ReductionKgDay: 96,
-    paybackPeriod: '1.5 months',
+    paybackPeriod: '1.5 days',
     cost: '₹9,500',
     costInr: 9500,
     effort: '48 min maintenance window during planned changeover',
     downtime: '48 min (zero production penalty)',
     impact: 'High',
     risk: 'Low',
-    description: 'Replace defective flexible pneumatic coupling on Line 2 distribution manifold with high-pressure braided assembly, and reduce master compressor discharge setpoint from 7.2 bar to 6.5 bar. Delivers 1,840 kWh daily savings (₹6,240/day) with 1.5 months payback.',
+    description: 'Replace the defective Line 2 coupling and reduce the compressor setpoint from 7.2 to 6.5 bar. The case-study estimate is 1,840 kWh and ₹6,240 saved per working day.',
     savingsPerWeekInr: 43680,
     savingsPerMonthInr: 187200,
     evidenceRefs: ['ev_sec_calculation', 'ev_pressure_telemetry', 'ev_compressor_telemetry', 'ev_cmms_leakage_history'],
@@ -847,7 +847,7 @@ export const recommendations: Recommendation[] = [
     energySavingKwhDay: 1370,
     costSavingInrDay: 4650,
     co2ReductionKgDay: 71,
-    paybackPeriod: '1.8 months',
+    paybackPeriod: '1.8 days',
     cost: '₹8,500',
     costInr: 8500,
     effort: '42 min mechanical repair',
@@ -871,7 +871,7 @@ export const recommendations: Recommendation[] = [
     energySavingKwhDay: 720,
     costSavingInrDay: 2450,
     co2ReductionKgDay: 37,
-    paybackPeriod: '2.8 months',
+    paybackPeriod: '7.3 days',
     cost: '₹18,000',
     costInr: 18000,
     effort: '2 hours weekend retrofit',
@@ -897,7 +897,7 @@ export const businessImpact: BusinessImpact = {
   secImprovementPct: 18.0,
   dailyKwhSaved: 1840,
   annualCo2ReductionTons: 35.0,
-  paybackPeriod: '1.5 months',
+  paybackPeriod: '1.5 days',
   basis: '10.2 ton/day ductile iron casting output at ₹7.8/kWh industrial electricity tariff over 26 working days/month',
 };
 
@@ -952,10 +952,10 @@ export const agentTraceSteps = [
     durationMs: 620,
     model: 'Gemini 3.8 Flash (High Reasoning)',
     objective: 'Run what-if scenario simulations, optimize interventions, quantify ROI and recommend action',
-    summary: 'Executed multi-objective optimization across 4 scenarios (A: Leak repair, B: Setpoint optimization, C: Both A+B, D: No action). Tradeoff analysis identified Option C as optimal: SEC drops to 9.2 kWh/ton (-18.0%), saving 1,840 kWh/day (₹6,240/day) with 1.5 months payback and zero production downtime.',
+    summary: 'Compared leak repair, setpoint optimization, the combined option, and no action. The case-study estimate for the combined option is 9.2 kWh/ton SEC (-18%), ₹6,240 saved per day, and a simple payback of about 1.5 days.',
     keyOutputs: [
       'Recommended Action: Repair Line 2 leakage and optimize compressor setpoint to 6.5 bar',
-      'Financial ROI: ₹6,240 / day saving (₹1,87,200 / month) · Payback: 1.5 months',
+      'Financial estimate: ₹6,240 saved per day (₹1,87,200 over 30 days) · Simple payback: 1.5 days',
       'Carbon Abatement: 96 kg CO2 / day (28.8 tCO2e / year)',
       'Awaiting human operator approval gate before CMMS dispatch',
     ],
@@ -1021,7 +1021,7 @@ export const assistantResponses: Record<string, AssistantResponse> = {
   default: {
     intent: 'analyze_energy_anomaly',
     conclusion: 'Line 2 Specific Energy Consumption rose by 14.3% due to compressed-air leakage causing severe pressure drop (-1.1 bar) and compressor overcycling (+21% runtime).',
-    effect: 'Casting throughput (10.2t) and quality (97.6%) are unaffected, proving the energy surge is 100% addressable waste. Repairing the leak and optimizing setpoint to 6.5 bar reduces SEC by 18.0% (₹6,240/day savings, 1.5 mo payback).',
+    effect: 'Casting throughput (10.2t) and quality (97.6%) are preserved in this case-study estimate. Repairing the leak and optimizing the setpoint to 6.5 bar reduces SEC by 18% and saves ₹6,240/day, for a simple payback of about 1.5 days.',
     confidence: 0.94,
     evidenceRefs: ['ev_sec_calculation', 'ev_pressure_telemetry', 'ev_compressor_telemetry', 'ev_cmms_leakage_history'],
     assumptions: [
@@ -1064,7 +1064,7 @@ Crucially, MES production records confirmed casting throughput was nominal at **
 ForgeOps Energy simulated 4 interventions:
 1. **Intervention A (Repair Leakage):** SEC 9.7 kWh/ton (-13.4%), ₹4,650/day saved, ₹8,500 cost, 42 min downtime.
 2. **Intervention B (Optimize Setpoint to 6.5 bar):** SEC 10.1 kWh/ton (-9.8%), ₹3,400/day saved, ₹2,000 cost, 10 min downtime.
-3. **Intervention C (Both A + B - RECOMMENDED):** SEC 9.2 kWh/ton (-18.0%), **₹6,240/day saved (1,840 kWh/day)**, 96 kg $\\text{CO}_2$/day reduction, **₹9,500 cost, 1.5 months payback period**.
+3. **Intervention C (Both A + B - RECOMMENDED):** SEC 9.2 kWh/ton (-18%), **₹6,240/day saved (1,840 kWh/day)**, 96 kg $\\text{CO}_2$/day reduction, **₹9,500 cost, about 1.5 days simple payback**.
 4. **Intervention D (No Action):** Status quo loss of ₹1.87 Lakhs/month with severe risk of compressor trip.
 
 #### 4. Human Approval Gate
@@ -1076,7 +1076,7 @@ Action requires supervisor approval to dispatch CMMS Work Order WO-ENG-8821 for 
       {
         recipient: 'Plant Manager & Energy Auditor',
         subject: '[ACTION REQUIRED] Line 2 SEC Reduction Intervention Approval (₹6,240/day saving)',
-        body: 'ForgeOps Energy has isolated the root cause of the +14.3% SEC surge to Line 2 air leakage. Recommended intervention C delivers 18% SEC reduction with 1.5 months payback. Approval requested.',
+        body: 'ForgeOps Energy has isolated the +14.3% SEC surge to Line 2 air leakage. In the case-study estimate, intervention C delivers an 18% SEC reduction and a simple payback of about 1.5 days. Approval requested.',
         requiresApproval: true,
       },
     ],

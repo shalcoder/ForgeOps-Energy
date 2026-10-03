@@ -76,6 +76,20 @@ export const fallbackWorkbenchSnapshot: WorkbenchSnapshot = {
 export function normalizeWorkbenchData(rawValue: unknown): WorkbenchSnapshot {
   const raw = asObject(rawValue);
   const incidentRaw = asObject(raw.incident);
+  const incidentId = String(incidentRaw.incident_id ?? incidentRaw.id ?? '');
+  const batchId = String(incidentRaw.batch_id ?? '');
+  if (
+    Object.keys(incidentRaw).length > 0
+    && (incidentId !== featuredIncident.id || batchId !== featuredIncident.batchId)
+  ) {
+    return {
+      ...fallbackWorkbenchSnapshot,
+      errors: [
+        `Live API returned ${incidentId || 'an unidentified incident'} / ${batchId || 'an unidentified batch'}; this workspace expects ${featuredIncident.id} / ${featuredIncident.batchId}. Matching case-study data is shown instead.`,
+      ],
+      updatedAt: new Date().toISOString(),
+    };
+  }
   const timelineRaw = asObject(raw.timeline);
   const graphRaw = asObject(raw.graph);
   const recommendationRaw = asObject(raw.recommendations);

@@ -1,4 +1,4 @@
-import { assistantResponses, simulationPresets } from '../mockData';
+import { assistantResponses, featuredIncident, simulationPresets } from '../mockData';
 import type {
   AssistantResponse,
   Recommendation,
@@ -87,14 +87,21 @@ export async function getRuntimeStatus(): Promise<RuntimeStatus> {
 
 export async function getWorkbenchData(): Promise<WorkbenchSnapshot> {
   try {
-    const response = await fetch(`${apiBaseUrl}/api/agent/workbench`);
+    const params = new URLSearchParams({
+      incident_id: featuredIncident.id,
+      batch_id: featuredIncident.batchId,
+    });
+    const response = await fetch(`${apiBaseUrl}/api/agent/workbench?${params}`);
     if (!response.ok) throw new Error(`Workbench API returned ${response.status}`);
     return normalizeWorkbenchData(await response.json());
   } catch (error) {
+    const message = error instanceof Error ? error.message : 'MCP workbench unavailable';
     return {
       ...fallbackWorkbenchSnapshot,
       errors: [
-        error instanceof Error ? error.message : 'MCP workbench unavailable',
+        message.includes('409')
+          ? 'The live agent service is configured for a different incident. This workspace is showing its matching case-study data.'
+          : message,
       ],
       updatedAt: new Date().toISOString(),
     };
@@ -150,8 +157,8 @@ export async function askAgent(
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         query,
-        incident_id: 'INC-2407-001',
-        batch_id: 'B-2407-184',
+        incident_id: featuredIncident.id,
+        batch_id: featuredIncident.batchId,
         constraints,
       }),
     });
@@ -176,12 +183,13 @@ export async function askAgent(
   } catch (error) {
     return {
       ...fallback,
-      effect: `${fallback.effect} Tool API unavailable; using the synchronized handoff fixture.`,
+      effect: `${fallback.effect} This case study is not configured on the live agent service, so this response uses the matching local case-study data.`,
       assumptions: [
         ...fallback.assumptions,
         error instanceof Error ? error.message : 'MCP bridge unavailable',
       ],
       agentTrace: [],
+      toolTrace: [],
       pipelineMode: 'degraded_fallback',
       model: '',
       uiActions: [],
@@ -200,7 +208,7 @@ export async function approveDecision(
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      incident_id: 'INC-2407-001',
+      incident_id: featuredIncident.id,
       recommendation,
       approved_by: 'Vaishak',
       agent_conclusion: agentConclusion,

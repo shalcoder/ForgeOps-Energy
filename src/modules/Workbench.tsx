@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ActivityIcon, AlertTriangleIcon, ArrowRightIcon, BarChartIcon, CheckCircleIcon, ClockIcon, FileTextIcon, ShieldCheckIcon, SlidersIcon } from '../components/Icons';
+import { ActivityIcon, AlertTriangleIcon, ArrowRightIcon, ClockIcon, FileTextIcon, ShieldCheckIcon, SlidersIcon } from '../components/Icons';
 import { useFocusContext } from '../FocusContext';
 import { useWorkbenchData } from '../WorkbenchDataContext';
 import { AuditDossier, exportAuditDossier } from './AuditDossier';
@@ -75,8 +75,8 @@ export function Workbench({ onBack }: { onBack: () => void }) {
       <main className="decision-content">
         {activeTab === 'investigate' && <div className="decision-investigation"><GraphPanel /><EvidencePanel /></div>}
         {activeTab === 'timeline' && <div className="decision-timeline"><ReplayPanel /><TimelinePanel /></div>}
-        {activeTab === 'simulate' && <div className="decision-single-panel"><div className="decision-section-intro"><span className="decision-section-icon"><BarChartIcon size={17} /></span><div><h2>Explore possible interventions</h2><p>Adjust operating conditions and compare the projected result with plant guardrails.</p></div><CheckCircleIcon size={18} /></div><SimulatorPanel /></div>}
-        {activeTab === 'decision' && <div className="decision-single-panel"><div className="decision-section-intro"><span className="decision-section-icon"><ShieldCheckIcon size={17} /></span><div><h2>Record the operator decision</h2><p>Review costs, expected impact, and constraints before saving an approval.</p></div><CheckCircleIcon size={18} /></div><RecommendationsPanel /></div>}
+        {activeTab === 'simulate' && <SimulatorPanel />}
+        {activeTab === 'decision' && <RecommendationsPanel />}
       </main>
 
       <footer className="decision-footer"><button onClick={onBack}>← Back to operations overview</button><span>Decision support only · Operator approval is required for any action</span></footer>
