@@ -91,8 +91,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 }
 
 .app-sidebar {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  bottom: 0;
   display: flex;
   flex: 0 0 248px;
   flex-direction: column;
@@ -139,6 +141,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .workspace-column {
   display: flex;
   min-width: 0;
+  margin-left: 248px;
   min-height: 100vh;
   min-height: 100dvh;
   flex: 1;
@@ -516,6 +519,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 
 @media (max-width: 1050px) {
   .app-sidebar { flex-basis: 218px; width: 218px; }
+  .workspace-column { margin-left: 218px; }
   .app-header-modern { padding: 0 22px; }
   .overview-page { width: min(100% - 48px, 1120px); }
   .page-container { width: min(100% - 48px, 1380px); }
@@ -523,7 +527,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 }
 @media (max-width: 780px) {
   .app-shell { display: block; }
-  .app-sidebar { position: static; width: 100%; height: auto; padding: 11px 14px 9px; border-right: 0; border-bottom: 1px solid var(--glass-border); }
+  .app-sidebar { position: static; width: 100%; height: auto; max-height: none; padding: 11px 14px 9px; border-right: 0; border-bottom: 1px solid var(--glass-border); }
+  .workspace-column { margin-left: 0; }
   .brand-logo-btn { width: auto; min-height: 32px; }
   .brand-mark { width: 27px; height: 27px; }
   .sidebar-plant, .sidebar-section-label, .sidebar-spacer, .sidebar-user, .copilot-shortcut { display: none; }
@@ -1994,5 +1999,4 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   background: var(--glass-border);
   margin: 4px 0;
 }
-
 
