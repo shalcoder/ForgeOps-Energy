@@ -705,7 +705,7 @@ E:\ForgeOps-Energy\
 
 ## 12. Installation & Getting Started
 
-### 12.1 Render deployment (no-card free option)
+### 12.1 Render deployment (no-card free tier)
 
 The repository includes [`render.yaml`](./render.yaml) and [`Dockerfile`](./Dockerfile)
 for a deployable Render blueprint:
@@ -713,15 +713,14 @@ for a deployable Render blueprint:
 1. Create a Render account and connect this GitHub repository.
 2. Choose **Blueprint** and apply `render.yaml`.
 3. Render creates the Vite static frontend and Dockerized FastAPI backend.
-4. The free backend uses the container filesystem. SQLite audit and
-   verification data can be reset when Render restarts or redeploys the service.
+4. The backend uses the free plan and stores SQLite files under `/tmp`; these
+   files are ephemeral and can be lost when Render restarts or redeploys it.
 5. Set `FORGEOPS_MCP_URL`, `NITROCHAT_BASE_URL`, and any provider keys in the
    backend service environment before enabling live agents.
 
-This no-card deployment is suitable for demos and testing. It does not provide
-durable database storage. For retained audit history, use a managed PostgreSQL
-provider and migrate the SQLite repositories before production. A persistent
-Render disk requires billing information.
+This no-card configuration is suitable for demos and testing. For durable
+audit history, use a managed PostgreSQL database or a paid persistent disk
+before production deployment.
 
 ### Prerequisites
 - **Node.js**: `v18.0.0` or later

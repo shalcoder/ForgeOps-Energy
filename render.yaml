@@ -4,6 +4,15 @@ services:
     runtime: docker
     plan: free
     healthCheckPath: /api/health
+    envVars:
+      - key: FORGEOPS_DATA_DIR
+        value: /tmp/forgeops-data
+      - key: FORGEOPS_LIVE_AGENTS
+        value: "false"
+      - key: FORGEOPS_LOAD_DECISION2_WEIGHTS
+        value: "false"
+      - key: FORGEOPS_HTTP_TIMEOUT_SECONDS
+        value: "45"
 
   - type: web
     name: forgeops-energy-frontend
