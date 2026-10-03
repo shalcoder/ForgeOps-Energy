@@ -31,4 +31,4 @@ FORGEOPS_MCP_URL = os.getenv("FORGEOPS_MCP_URL", DEFAULT_MCP_URL).rstrip("/")
 FORGEOPS_MODEL = os.getenv("FORGEOPS_MODEL", DEFAULT_MODEL)
 LIVE_AGENTS_ENABLED = _as_bool(os.getenv("FORGEOPS_LIVE_AGENTS"), default=True)
 HTTP_TIMEOUT_SECONDS = float(os.getenv("FORGEOPS_HTTP_TIMEOUT_SECONDS", "45"))
-
+FORGEOPS_DATA_DIR = os.getenv("FORGEOPS_DATA_DIR", os.path.join(os.path.dirname(os.path.abspath(__file__)), "database"))

@@ -8,8 +8,9 @@ import json
 import os
 import hashlib
 from datetime import datetime, timezone
+from backend.config import FORGEOPS_DATA_DIR
 
-DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "audit_log.db")
+DB_PATH = os.path.join(FORGEOPS_DATA_DIR, "audit_log.db")
 
 
 def init_db():

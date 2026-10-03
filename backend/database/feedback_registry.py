@@ -4,11 +4,14 @@ from __future__ import annotations
 
 import json
 import sqlite3
+import os
 from pathlib import Path
 from typing import Any, Dict
 
 
-DEFAULT_REGISTRY_PATH = Path(__file__).with_name("feedback_registry.db")
+DEFAULT_REGISTRY_PATH = Path(
+    os.getenv("FORGEOPS_DATA_DIR", str(Path(__file__).parent))
+) / "feedback_registry.db"
 
 
 class FeedbackRegistry:
