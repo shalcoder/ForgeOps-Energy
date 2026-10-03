@@ -90,7 +90,7 @@ export function RecommendationsPanel({ agentResponse }: { agentResponse?: Assist
                   {isApproved && (
                     <span className="rec-status-tag approved flex items-center gap-1 font-mono">
                       <CheckCircleIcon size={12} />
-                      CMMS Dispatched
+                      Approval recorded
                     </span>
                   )}
                   {isRejected && (
@@ -102,7 +102,7 @@ export function RecommendationsPanel({ agentResponse }: { agentResponse?: Assist
                 </div>
                 <div className="rec-payback-tag">
                   <small>Payback Period</small>
-                  <strong className="font-mono text-emerald-400">{rec.paybackPeriod}</strong>
+                  <strong className="font-mono text-emerald-400">{rec.costSavingInrDay > 0 ? `${(rec.costInr / rec.costSavingInrDay).toFixed(1)} working days` : '—'}</strong>
                 </div>
               </div>
 

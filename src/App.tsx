@@ -37,7 +37,7 @@ function BrandMark() {
 
 function LiveDataLabel() {
   const { data } = useWorkbenchData();
-  return <div className="live-status-pill"><span className="pulsing-indicator" /><span>{data.live ? 'Edge connected' : 'Sample data'}</span></div>;
+  return <div className="live-status-pill" title={data.errors[0] ?? (data.live ? 'Connected to the live case data source.' : 'Using matching case-study data.')}><span className="pulsing-indicator" /><span>{data.live ? 'Live incident' : 'Case study'}</span></div>;
 }
 
 function ThemeToggle({ theme, setTheme }: { theme: Theme; setTheme: (theme: Theme) => void }) {

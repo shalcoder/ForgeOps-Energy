@@ -6,16 +6,23 @@ import {
   SlidersIcon,
   CheckCircleIcon,
   AlertTriangleIcon,
-  ShieldCheckIcon,
   ClockIcon,
-  ZapIcon,
 } from '../components/Icons';
 
 type PresetKey = 'both_repair_and_optimize' | 'repair_leakage' | 'optimize_setpoint' | 'no_action';
 
+function interpolate(value: number, points: Array<[number, number]>) {
+  const ordered = [...points].sort(([left], [right]) => left - right);
+  const upperIndex = ordered.findIndex(([x]) => x >= value);
+  const left = ordered[Math.max(0, upperIndex === -1 ? ordered.length - 2 : upperIndex - 1)];
+  const right = ordered[Math.max(1, upperIndex === -1 ? ordered.length - 1 : upperIndex)];
+  const fraction = (value - left[0]) / (right[0] - left[0]);
+  return Math.round(left[1] + (right[1] - left[1]) * fraction);
+}
+
 export function SimulatorPanel() {
   const { data } = useWorkbenchData();
-  const [selectedPreset, setSelectedPreset] = useState<PresetKey>('both_repair_and_optimize');
+  const [selectedPreset, setSelectedPreset] = useState<PresetKey | 'custom'>('both_repair_and_optimize');
 
   // Interactive Parameter Sliders
   const [setpointBar, setSetpointBar] = useState(6.5);
@@ -23,38 +30,62 @@ export function SimulatorPanel() {
   const [maintenanceMin, setMaintenanceMin] = useState(48);
   const [scheduledChangeover, setScheduledChangeover] = useState(true);
 
-  // Dynamic Energy Model Calculation
+  // Keep custom estimates anchored to the published options so the same inputs
+  // never produce a second set of savings figures elsewhere in the workbench.
   const simulation = useMemo<SimulationResult>(() => {
-    const baselineSec = 11.2;
-    const baselineKwh = 8500;
-    const tariff = 7.8; // ₹/kWh
+    const baselineSec = data.incident.currentSec;
+    const repair = simulationPresets.repair_leakage;
+    const setpoint = simulationPresets.optimize_setpoint;
+    const combined = simulationPresets.both_repair_and_optimize;
+    const leakSavingPct = repair.secReductionPct * (leakageFixPct / 90);
+    const pressureSavingPct = setpoint.secReductionPct * ((7.2 - setpointBar) / 0.7);
+    const overlapPct = Math.min(
+      leakSavingPct / repair.secReductionPct,
+      pressureSavingPct / setpoint.secReductionPct,
+    ) * (leakSavingPct > 0 && pressureSavingPct > 0 ? 5.2 : 0);
+    const secReductionPct = Number(Math.max(-25, Math.min(26, leakSavingPct + pressureSavingPct - overlapPct)).toFixed(1));
+    const predictedSec = Number((baselineSec * (1 - secReductionPct / 100)).toFixed(1));
+    const energySavedKwh = interpolate(secReductionPct, [
+      [0, 0], [setpoint.secReductionPct, setpoint.energySavingKwhDay],
+      [repair.secReductionPct, repair.energySavingKwhDay], [combined.secReductionPct, combined.energySavingKwhDay],
+    ]);
+    const costSavedInr = interpolate(secReductionPct, [
+      [0, 0], [setpoint.secReductionPct, setpoint.costSavingInrDay],
+      [repair.secReductionPct, repair.costSavingInrDay], [combined.secReductionPct, combined.costSavingInrDay],
+    ]);
+    const co2SavedKg = interpolate(secReductionPct, [
+      [0, 0], [setpoint.secReductionPct, setpoint.co2ReductionKgDay],
+      [repair.secReductionPct, repair.co2ReductionKgDay], [combined.secReductionPct, combined.co2ReductionKgDay],
+    ]);
 
-    // Physics-based model:
-    // Pressure impact: Every 0.5 bar drop below 7.2 bar reduces compressor work by ~3.5%
-    const pressureDelta = 7.2 - setpointBar;
-    const pressureSavingPct = Math.max(0, pressureDelta * 7.0);
-
-    // Leakage impact: 90% leak fix eliminates 14.2 m3/min load, saving up to ~14%
-    const leakSavingPct = (leakageFixPct / 100) * 14.2;
-
-    // Compound savings
-    const totalSavingPct = Math.min(26.0, pressureSavingPct + leakSavingPct);
-    const predictedSec = Math.max(8.0, Number((baselineSec * (1 - totalSavingPct / 100)).toFixed(2)));
-    const secReductionPct = Number((((baselineSec - predictedSec) / baselineSec) * 100).toFixed(1));
-
-    const energySavedKwh = Math.round(baselineKwh * (secReductionPct / 100));
-    const costSavedInr = Math.round(energySavedKwh * tariff);
-    const co2SavedKg = Math.round(energySavedKwh * 0.052);
-
-    const capex = (leakageFixPct > 0 ? 8000 : 0) + (pressureDelta > 0 ? 1500 : 0);
-    const netDailySaving = costSavedInr;
-    const paybackMonths = netDailySaving > 0 ? Number((capex / (netDailySaving * 26)).toFixed(1)) : 0;
+    const hasLeakRepair = leakageFixPct > 0;
+    const hasSetpointChange = setpointBar !== 7.2;
+    const capex = hasLeakRepair && hasSetpointChange
+      ? combined.costInr
+      : hasLeakRepair
+        ? repair.costInr
+        : hasSetpointChange
+          ? setpoint.costInr
+          : 0;
+    const paybackDays = costSavedInr > 0 ? Number((capex / costSavedInr).toFixed(1)) : 0;
+    const paybackMonths = Number((paybackDays / 26).toFixed(2));
+    const predictedYield = scheduledChangeover || maintenanceMin === 0
+      ? (hasLeakRepair ? 97.8 : 97.6)
+      : 97.4;
+    const safetyPreserved = setpointBar >= 6.2 && setpointBar <= 8.0;
+    const qualityPreserved = predictedYield >= 97.6;
+    const warnings = [
+      ...(setpointBar < 6.2 ? ['Below 6.2 bar: verify clamping pressure at the furthest moulding station.'] : []),
+      ...(setpointBar > 8.0 ? ['Above 8.0 bar is outside the validated operating range.'] : []),
+      ...(!scheduledChangeover && maintenanceMin > 0 ? ['An unscheduled maintenance window may reduce throughput and yield.'] : []),
+      ...(selectedPreset === 'no_action' ? ['Leaving the leak open keeps the plant exposed to energy waste and compressor stress.'] : []),
+    ];
 
     return {
       scenarioId: selectedPreset,
       scenarioName: simulationPresets[selectedPreset]?.scenarioName ?? 'Custom Simulation',
       baselineYield: 97.6,
-      predictedYield: scheduledChangeover ? 97.8 : 97.4,
+      predictedYield,
       baselineSec,
       predictedSec,
       secUnit: 'kWh/ton',
@@ -68,9 +99,11 @@ export function SimulatorPanel() {
       effort: `${maintenanceMin} min window`,
       downtimeMinutes: maintenanceMin,
       paybackMonths,
-      throughputImpact: scheduledChangeover ? '0% loss (10.2 t/day Preserved)' : '-1.5% during unscheduled stop',
-      qualityImpact: '97.8% (Preserved >= 97.0%)',
-      safetyPreserved: true,
+      throughputImpact: scheduledChangeover || maintenanceMin === 0
+        ? '10.2 ton/day preserved'
+        : 'Possible 1.5% loss during unscheduled work',
+      qualityImpact: `${predictedYield.toFixed(1)}% ${qualityPreserved ? '(baseline preserved)' : '(below 97.6% baseline)'}`,
+      safetyPreserved,
       assumptions: [
         `Compressor setpoint adjusted to ${setpointBar.toFixed(1)} bar (nominal 7.2 bar)`,
         `Pneumatic distribution leak reduction achieved at ${leakageFixPct}%`,
@@ -78,11 +111,13 @@ export function SimulatorPanel() {
       ],
       reasoning: `Adjusting setpoint to ${setpointBar.toFixed(1)} bar and reducing distribution leakage by ${leakageFixPct}% delivers ${secReductionPct}% SEC reduction (${energySavedKwh} kWh/day).`,
       inValidatedRange: setpointBar >= 6.0 && setpointBar <= 8.0,
-      warnings: setpointBar < 6.2 ? ['Setpoint below 6.2 bar may require verifying pneumatic clamp speeds on Line 2 Moulding bank.'] : [],
+      warnings,
       evidenceRefs: ['ev_sec_calculation', 'ev_pressure_telemetry', 'ev_compressor_telemetry'],
       modelVersion: 'ForgeOps-Energy-Harness-v2.4',
     };
-  }, [selectedPreset, setpointBar, leakageFixPct, maintenanceMin, scheduledChangeover]);
+  }, [data.incident.currentSec, selectedPreset, setpointBar, leakageFixPct, maintenanceMin, scheduledChangeover]);
+
+  const markCustom = () => setSelectedPreset('custom');
 
   const applyPreset = (key: PresetKey) => {
     setSelectedPreset(key);
@@ -113,8 +148,8 @@ export function SimulatorPanel() {
     <section id="scenario-comparison" className="module-panel energy-simulator-panel">
       <header className="module-header">
         <div>
-          <h2>What-If Simulator & Scenario Optimization</h2>
-          <span>Simulate interventions against the 11.2 kWh/ton anomaly baseline</span>
+          <h2>Compare intervention scenarios</h2>
+          <span>Adjust assumptions and review the estimated effect on this incident.</span>
         </div>
         <span className="objective-badge font-mono">
           min(SEC) | Throughput ≥ 10.2t | Quality ≥ 97.6%
@@ -190,7 +225,7 @@ export function SimulatorPanel() {
                 max="8.5"
                 step="0.1"
                 value={setpointBar}
-                onChange={(e) => setSetpointBar(Number(e.target.value))}
+                onChange={(e) => { markCustom(); setSetpointBar(Number(e.target.value)); }}
                 className="sim-slider"
               />
               <div className="slider-ticks font-mono text-[10px] text-slate-500">
@@ -212,7 +247,7 @@ export function SimulatorPanel() {
                 max="100"
                 step="5"
                 value={leakageFixPct}
-                onChange={(e) => setLeakageFixPct(Number(e.target.value))}
+                onChange={(e) => { markCustom(); setLeakageFixPct(Number(e.target.value)); }}
                 className="sim-slider"
               />
               <div className="slider-ticks font-mono text-[10px] text-slate-500">
@@ -230,15 +265,15 @@ export function SimulatorPanel() {
               </div>
               <input
                 type="range"
-                min="10"
+                min="0"
                 max="60"
                 step="2"
                 value={maintenanceMin}
-                onChange={(e) => setMaintenanceMin(Number(e.target.value))}
+                onChange={(e) => { markCustom(); setMaintenanceMin(Number(e.target.value)); }}
                 className="sim-slider"
               />
               <div className="slider-ticks font-mono text-[10px] text-slate-500">
-                <span>10 min</span>
+                <span>0 min</span>
                 <span>48 min (Changeover)</span>
                 <span>60 min</span>
               </div>
@@ -249,40 +284,42 @@ export function SimulatorPanel() {
                 <input
                   type="checkbox"
                   checked={scheduledChangeover}
-                  onChange={(e) => setScheduledChangeover(e.target.checked)}
+                  onChange={(e) => { markCustom(); setScheduledChangeover(e.target.checked); }}
                 />
                 <span className="text-xs text-slate-300">
-                  Execute strictly during planned shift changeover (Zero throughput penalty)
+                  Schedule work during planned shift changeover to preserve throughput
                 </span>
               </label>
             </div>
           </div>
         </div>
 
-        {/* Right Column: Live Simulated Impact & Comparison Table */}
+        {/* Current scenario estimate */}
         <div className="sim-results-col">
           <div className="sim-kpi-banner">
             <div className="sim-kpi-block highlight">
-              <small>Simulated SEC</small>
+              <small>{selectedPreset === 'custom' ? 'Custom estimate' : `${simulation.scenarioName} · estimate`}</small>
               <strong className="font-mono text-emerald-400">{simulation.predictedSec} <span>{simulation.secUnit}</span></strong>
-              <span className="sim-delta green-text font-mono">-{simulation.secReductionPct}%</span>
+              <span className="sim-delta green-text font-mono">{simulation.secReductionPct > 0 ? '−' : simulation.secReductionPct < 0 ? '+' : ''}{Math.abs(simulation.secReductionPct).toFixed(1)}% SEC</span>
             </div>
             <div className="sim-kpi-block">
-              <small>Energy Saved</small>
+              <small>{simulation.energySavingKwhDay >= 0 ? 'Energy saved' : 'Additional energy'}</small>
               <strong className="font-mono text-slate-100">{simulation.energySavingKwhDay.toLocaleString('en-IN')} <span>kWh/day</span></strong>
-              <span className="sim-delta font-mono">{Math.round(simulation.energySavingKwhDay * 26).toLocaleString('en-IN')} kWh/mo</span>
+              <span className="sim-delta font-mono">{Math.round(simulation.energySavingKwhDay * 26).toLocaleString('en-IN')} kWh / 26 workdays</span>
             </div>
             <div className="sim-kpi-block">
-              <small>Cost Savings</small>
+              <small>{simulation.costSavingInrDay >= 0 ? 'Cost saved' : 'Additional cost'}</small>
               <strong className="font-mono text-slate-100">&#8377;{simulation.costSavingInrDay.toLocaleString('en-IN')} <span>/ day</span></strong>
-              <span className="sim-delta font-mono">&#8377;{Math.round(simulation.costSavingInrDay * 26).toLocaleString('en-IN')} / mo</span>
+              <span className="sim-delta font-mono">&#8377;{Math.round(simulation.costSavingInrDay * 26).toLocaleString('en-IN')} / 26 workdays</span>
             </div>
             <div className="sim-kpi-block">
-              <small>CO2 Abatement</small>
+              <small>{simulation.co2ReductionKgDay >= 0 ? 'CO₂ reduction' : 'Additional CO₂'}</small>
               <strong className="font-mono text-cyan-400">{simulation.co2ReductionKgDay} <span>kg/day</span></strong>
-              <span className="sim-delta font-mono">{((simulation.co2ReductionKgDay * 26 * 12) / 1000).toFixed(1)} tCO2e/yr</span>
+              <span className="sim-delta font-mono">{((simulation.co2ReductionKgDay * 26 * 12) / 1000).toFixed(1)} tCO₂e/yr</span>
             </div>
           </div>
+
+          <p className="sim-assumption-note">Illustrative estimate based on the Belgaum case study. Confirm tariff, operating limits, and plant conditions before acting.</p>
 
           {/* Hard Constraints Verification Box */}
           <div className="constraints-validation-box">
@@ -290,92 +327,29 @@ export function SimulatorPanel() {
               Constrained Optimization Verification
             </h4>
             <div className="constraint-chips-row font-mono text-xs">
-              <span className="val-chip ok flex items-center gap-1">
-                <CheckCircleIcon size={12} className="text-emerald-400" />
+              <span className={`val-chip ${scheduledChangeover ? 'ok' : 'warning'} flex items-center gap-1`}>
+                {scheduledChangeover ? <CheckCircleIcon size={12} /> : <AlertTriangleIcon size={12} />}
                 Throughput: {simulation.throughputImpact}
               </span>
-              <span className="val-chip ok flex items-center gap-1">
-                <CheckCircleIcon size={12} className="text-emerald-400" />
+              <span className={`val-chip ${simulation.predictedYield >= 97.6 ? 'ok' : 'warning'} flex items-center gap-1`}>
+                {simulation.predictedYield >= 97.6 ? <CheckCircleIcon size={12} /> : <AlertTriangleIcon size={12} />}
                 Quality: {simulation.qualityImpact}
               </span>
-              <span className="val-chip ok flex items-center gap-1">
-                <CheckCircleIcon size={12} className="text-emerald-400" />
-                Safety: Preserved
+              <span className={`val-chip ${simulation.safetyPreserved ? 'ok' : 'warning'} flex items-center gap-1`}>
+                {simulation.safetyPreserved ? <CheckCircleIcon size={12} /> : <AlertTriangleIcon size={12} />}
+                Safety: {simulation.safetyPreserved ? 'Within validated range' : 'Outside validated range'}
               </span>
               <span className="val-chip info flex items-center gap-1">
                 <ClockIcon size={12} className="text-cyan-400" />
-                Payback: {simulation.paybackMonths} Months
+                Payback: {simulation.costInr > 0 && simulation.costSavingInrDay > 0 ? `${(simulation.costInr / simulation.costSavingInrDay).toFixed(1)} days` : '—'}
               </span>
             </div>
-          </div>
-
-          {/* Side-by-Side Interventions Matrix */}
-          <div className="scenarios-matrix-table">
-            <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
-              All Interventions Comparison Matrix
-            </h4>
-            <table>
-              <thead>
-                <tr>
-                  <th>Option</th>
-                  <th>Intervention Strategy</th>
-                  <th>SEC (kWh/t)</th>
-                  <th>SEC &Delta;</th>
-                  <th>Cost</th>
-                  <th>Downtime</th>
-                  <th>Daily Saving</th>
-                  <th>Payback</th>
-                </tr>
-              </thead>
-              <tbody className="font-mono text-xs">
-                <tr className={selectedPreset === 'repair_leakage' ? 'active-row' : ''}>
-                  <td><strong>A</strong></td>
-                  <td className="font-sans">Repair distribution leakage</td>
-                  <td>9.7</td>
-                  <td className="green-text">-13.4%</td>
-                  <td>&#8377;8,500</td>
-                  <td>42 min</td>
-                  <td>&#8377;4,650</td>
-                  <td>1.8 mo</td>
-                </tr>
-                <tr className={selectedPreset === 'optimize_setpoint' ? 'active-row' : ''}>
-                  <td><strong>B</strong></td>
-                  <td className="font-sans">Optimize setpoint to 6.5 bar</td>
-                  <td>10.1</td>
-                  <td className="green-text">-9.8%</td>
-                  <td>&#8377;2,000</td>
-                  <td>10 min</td>
-                  <td>&#8377;3,400</td>
-                  <td>0.6 mo</td>
-                </tr>
-                <tr className={`best-option-tr ${selectedPreset === 'both_repair_and_optimize' ? 'active-row' : ''}`}>
-                  <td><strong className="text-emerald-400">C</strong></td>
-                  <td className="font-sans"><strong className="text-emerald-400">Both A + B (Optimal)</strong></td>
-                  <td><strong className="text-emerald-400">9.2</strong></td>
-                  <td className="best-pct"><strong>-18.0%</strong></td>
-                  <td>&#8377;9,500</td>
-                  <td>48 min</td>
-                  <td className="green-text"><strong>&#8377;6,240</strong></td>
-                  <td><strong className="text-emerald-400">1.5 mo</strong></td>
-                </tr>
-                <tr className={selectedPreset === 'no_action' ? 'active-row' : ''}>
-                  <td><strong>D</strong></td>
-                  <td className="font-sans text-slate-500">No action (Status quo)</td>
-                  <td className="text-rose-400">11.2</td>
-                  <td>0.0%</td>
-                  <td>&#8377;0</td>
-                  <td>0 min</td>
-                  <td>&#8377;0</td>
-                  <td>—</td>
-                </tr>
-              </tbody>
-            </table>
           </div>
 
           {simulation.warnings.length > 0 && (
             <div className="sim-warning-banner flex items-center gap-2 font-mono text-xs text-amber-300">
               <AlertTriangleIcon size={14} className="text-amber-400 flex-shrink-0" />
-              <span>{simulation.warnings[0]}</span>
+              <span>{simulation.warnings.join(' ')}</span>
             </div>
           )}
         </div>

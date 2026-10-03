@@ -7,7 +7,7 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
@@ -55,6 +55,22 @@ class SimulationRequest(BaseModel):
     constraints: Dict[str, Any] = Field(default_factory=dict)
 
 
+SUPPORTED_INCIDENT_ID = "INC-2407-001"
+SUPPORTED_BATCH_ID = "B-2407-184"
+
+
+def require_supported_case(incident_id: str | None, batch_id: str | None) -> None:
+    if incident_id != SUPPORTED_INCIDENT_ID or batch_id != SUPPORTED_BATCH_ID:
+        raise HTTPException(
+            status_code=409,
+            detail=(
+                "Live agents currently support only "
+                f"{SUPPORTED_INCIDENT_ID} / {SUPPORTED_BATCH_ID}; "
+                "this request belongs to a different case."
+            ),
+        )
+
+
 def _health_payload():
     mcp_attached = False
     tool_count = 0
@@ -79,6 +95,10 @@ def _health_payload():
             "toolCount": tool_count,
             "error": mcp_error,
         },
+        "supportedCase": {
+            "incidentId": SUPPORTED_INCIDENT_ID,
+            "batchId": SUPPORTED_BATCH_ID,
+        },
     }
 
 
@@ -95,6 +115,7 @@ def agent_health():
 @app.post("/api/agent/pipeline")
 def pipeline_query(req: QueryRequest):
     """Run the full 4-agent pipeline for a user query."""
+    require_supported_case(req.incident_id, req.batch_id)
     result = run_pipeline(
         user_query=req.query,
         incident_id=req.incident_id,
@@ -111,6 +132,7 @@ def pipeline_stream(
     batch_id: str = "B-2407-184",
 ):
     """Run the 4-agent pipeline and stream real-time phase updates via SSE."""
+    require_supported_case(incident_id, batch_id)
     return StreamingResponse(
         stream_pipeline(user_query=query, incident_id=incident_id, batch_id=batch_id),
         media_type="text/event-stream"
@@ -123,6 +145,7 @@ def workbench_data(
     batch_id: str = "B-2407-184",
 ):
     """Return the frontend's current incident data from the deployed MCP."""
+    require_supported_case(incident_id, batch_id)
     return load_live_workbench(incident_id=incident_id, batch_id=batch_id)
 
 

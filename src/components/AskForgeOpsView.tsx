@@ -66,7 +66,7 @@ export function AskForgeOpsView({ onNavigate }: {
           'Hard constraints satisfied: Throughput ≥ 10.0 ton/hr, Quality ≥ 97.5%',
         ],
         confidence: 0.96,
-        impact: 'Annualized recurring savings of ₹22.46 Lakhs with a 1.5 month simple payback.',
+        impact: 'Estimated savings of ₹6,240 per day with a simple payback of about 1.5 days on ₹9,500 CapEx.',
         nextAction: 'Approve intervention package Option C for CMMS work order dispatch.',
         actionLabel: 'Open Decision Gate in Workbench →',
         actionTarget: 'workbench',
