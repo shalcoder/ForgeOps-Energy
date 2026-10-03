@@ -22,6 +22,7 @@ An enterprise-grade **agentic industrial decision-intelligence platform** specif
 12. [Installation & Getting Started](#12-installation--getting-started)
 13. [Testing & Verification](#13-testing--verification)
 14. [Deployment & Production Readiness](#14-deployment--production-readiness)
+15. [Implementation Status & Handoff](#15-implementation-status--handoff)
 
 ---
 
@@ -711,7 +712,7 @@ E:\ForgeOps-Energy\
 
 ### Step 1: Clone the Repository
 ```bash
-git clone https://github.com/shalcoder/ZenOps.git E:\ForgeOps-Energy
+git clone https://github.com/shalcoder/ForgeOps-Energy.git E:\ForgeOps-Energy
 cd E:\ForgeOps-Energy
 ```
 
@@ -725,36 +726,65 @@ npm run dev
 ```
 The application will start immediately at `http://localhost:5173/`.
 
-### Step 3: Run the Model Context Protocol (MCP) Server
+### Step 3: Install and Run Backend (FastAPI Agent Engine)
 In a separate terminal window:
-```bash
-cd E:\ForgeOps-Energy\forgeops-mcp
-npm install
-npm run build
-npm start
-```
-The MCP server initializes on `http://localhost:3001` or standard stdio protocol.
-
-### Step 4: Install and Run Backend (FastAPI Agent Engine)
-In a third terminal window:
 ```bash
 cd E:\ForgeOps-Energy
 python -m venv .venv
-# On Windows:
-.venv\Scripts\activate
-# On Linux/macOS:
+# Windows PowerShell:
+.venv\Scripts\Activate.ps1
+# Linux/macOS:
 source .venv/bin/activate
 
 pip install -r backend/requirements.txt
 python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
 ```
-The FastAPI interactive documentation will be available at `http://localhost:8000/docs`.
+The FastAPI interactive documentation is available at `http://localhost:8000/docs`.
+
+### Step 4: Run the local MCP server (optional)
+
+The repository also contains a local NitroStack MCP service:
+
+```bash
+cd E:\ForgeOps-Energy\forgeops-mcp
+npm install
+npm run api
+```
+
+Run the MCP verification suite with:
+
+```bash
+npm run verify
+```
+
+### Step 5: Configure optional live services
+
+The repository works offline with deterministic calibrated fallbacks. Configure
+live agent/MCP services only when their endpoints and credentials are available:
+
+```bash
+# PowerShell:
+$env:FORGEOPS_LIVE_AGENTS = "true"
+$env:FORGEOPS_MCP_URL = "https://your-mcp-endpoint/mcp"
+$env:FORGEOPS_DECISION2_MODEL_PATH = "C:\models\Decision-2.0-Sol-2B"
+```
+
+The native Decision 2.0 loader is opt-in:
+
+```bash
+$env:FORGEOPS_LOAD_DECISION2_WEIGHTS = "true"
+```
+
+Without local model weights, the application reports the calibrated fallback
+engine rather than silently claiming native model execution.
 
 ---
 
 ## 13. Testing & Verification
 
-ForgeOps Energy includes an automated test suite verifying agent output determinism, constraint compliance, and MCP tool interfaces.
+ForgeOps Energy includes automated tests for agent contracts, edge anomaly
+screening, safety guardrails, MCP tools, physics, economics, M&V, and simulation
+boundaries.
 
 ### Run Python Backend Tests
 ```bash
@@ -764,6 +794,17 @@ pytest backend/tests/ -v
 - `test_agent_pipeline.py`: Validates that Planner correctly breaks down intents, Research executes only read-only tools, Analysis builds valid DAG graphs, and Execution respects throughput constraints.
 - `test_decision_approval.py`: Validates SQLite audit trail logging and atomic state transitions upon operator approval.
 - `test_nitrochat_client.py`: Verifies resilience and deterministic fallback behavior during LLM latency spikes.
+- `test_closed_loop_harness.py`: Validates factory state, equipment envelopes, System 1 anomaly detection, competing hypotheses, MCP tools, payback, and feedback persistence.
+- `test_decision2_engine.py`: Validates typed Decision 2.0 responses, fast tool routing, and pressure/vibration interlocks.
+- `test_physics_simulation.py`: Validates thermodynamics, compressor/furnace models, Pareto selection, tariffs, ADEETIE economics, IPMVP normalization, carbon calculations, and simulation guardrails.
+
+Focused validation command:
+
+```bash
+pytest -q backend/tests/test_closed_loop_harness.py backend/tests/test_decision2_engine.py backend/tests/test_physics_simulation.py
+```
+
+The current focused suite passes with **24 tests**.
 
 ### Validate Frontend Production Build
 ```bash
@@ -778,7 +819,9 @@ Generates an optimized, tree-shaken static production bundle in `dist/`.
 ### Production Environment Options:
 1. **Frontend**: The Vite frontend can be deployed directly to **Vercel**, **Cloudflare Pages**, or **AWS S3 + CloudFront**.
 2. **Edge Gateway**: The gateway service runs on local industrial PCs (Advantech, Moxa, or Raspberry Pi CM4) running Ubuntu Core.
-3. **Backend & MCP**: Packaged as lightweight Docker containers deployable via Docker Compose or Kubernetes:
+3. **Backend and MCP boundary**: Package the FastAPI service for Docker or
+   Kubernetes. The controlled tools live under `backend/mcp/` and can connect
+   to an external MCP endpoint through `FORGEOPS_MCP_URL`:
 
 ```yaml
 # docker-compose.yml example
@@ -795,15 +838,62 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - FORGEOPS_MCP_URL=http://forgeops-mcp:3001
-    restart: always
-
-  forgeops-mcp:
-    build: ./forgeops-mcp
-    ports:
-      - "3001:3001"
+      - FORGEOPS_MCP_URL=https://your-mcp-endpoint/mcp
     restart: always
 ```
+
+### Prototype boundary
+
+The current implementation is a tested prototype using synthetic pilot
+telemetry and controlled/read-only tool boundaries. It does not directly write
+to PLCs, MES, CMMS, QMS, or plant controllers. Production deployment requires
+authenticated adapters, authorization, network segmentation, field
+commissioning, and a safety review before enabling control actions.
+
+---
+
+## 15. Implementation Status & Handoff
+
+The architecture is implemented end-to-end at prototype level:
+
+| Layer | Status | Current implementation |
+|---|---|---|
+| Factory telemetry, MES, CMMS, quality | **Partial / simulated** | Controlled MCP tools model these sources; live PLC, Modbus, OPC-UA, MQTT, MES, CMMS, and QMS adapters remain to be integrated. |
+| Edge ingestion and baseline | **Implemented locally** | Equipment-specific envelopes and anomaly screening are implemented in `backend/edge/baseline_service.py`; field ingestion and durable buffering remain future integration work. |
+| System 1 fast loop | **Implemented** | `backend/decision2/decision2_engine.py` provides structured low-latency decisions, safety checks, native model loading when configured, and deterministic fallback. |
+| System 2 deep loop | **Implemented** | Planner → Research → Analysis → Execution is orchestrated by `backend/pipeline.py`. |
+| Engineering truth | **Implemented** | `simulation/engine.py` and `simulation/engine.ts` provide compressed-air, compressor, furnace, tariff, carbon, and verification models. |
+| What-if and Pareto optimization | **Implemented** | Scenario validation and A–D Pareto recommendations are available through the simulation and MCP layers. |
+| Energy and economics | **Implemented** | Savings, payback, ToD arbitrage, ADEETIE DPR, fuel switching, and BRSR-aligned metrics are calculated. |
+| Human approval and audit | **Implemented** | FastAPI approval and audit-export endpoints persist decision records in SQLite. |
+| Controlled action | **Partial / simulated** | Work-order creation is represented as a read-only simulated CMMS dispatch; no live plant mutation occurs. |
+| Measure and verify | **Implemented locally** | IPMVP Option B/C normalization, verified savings, confidence, and prediction error are calculated. |
+| Feedback to baseline/models | **Implemented locally** | Verification feedback is persisted in `backend/database/feedback_registry.db`; automated retraining and external model-registry sync remain future work. |
+
+### Current role personas
+
+| Person | Role | Primary responsibilities |
+|---|---|---|
+| Vishal | Plant Manager | Executive cockpit, opportunities, approval gates, and verified savings |
+| Vaishak | Energy Manager | SEC baselines, tariff arbitrage, and carbon reporting |
+| Keerthi | Maintenance Engineer | Asset telemetry, root-cause evidence, and CMMS work orders |
+| Sham | Shopfloor Operator | Live operations, process graph, and interlock checks |
+
+### Delivered commits
+
+- Platform implementation: `46a882c` — `Update ForgeOps energy platform`
+- Handoff documentation: `30dbd5e` — `Add ForgeOps handoff document`
+- Both commits were pushed to `origin/main`.
+- Detailed delivery record: [`HANDOFF_46A882C.md`](HANDOFF_46A882C.md)
+
+### Production completion checklist
+
+1. Add live Modbus/OPC-UA/MQTT telemetry ingestion and edge buffering.
+2. Add authenticated MES, CMMS, QMS, ERP, and tariff adapters.
+3. Add durable external baseline/model-registry synchronization.
+4. Add real CMMS work-order integration with authorization and idempotency.
+5. Complete plant-specific safety review and network segmentation.
+6. Add integration, failure-recovery, and deployment tests for each external system.
 
 ---
 

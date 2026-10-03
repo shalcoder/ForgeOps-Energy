@@ -13,6 +13,7 @@ from datetime import datetime, timezone
 import math
 
 from backend.edge.baseline_service import EdgeBaselineService, FACTORY_BASELINES
+from backend.database.feedback_registry import FeedbackRegistry
 from simulation.engine import (
     calculate_compressor_power,
     calculate_orifice_flow,
@@ -26,6 +27,7 @@ class ForgeOpsMCPTools:
 
     def __init__(self):
         self.edge_baseline = EdgeBaselineService()
+        self.feedback_registry = FeedbackRegistry()
 
     # 1. Telemetry Tools
     def get_equipment_state(self, equipment_id: str = "CMP-01") -> Dict[str, Any]:
@@ -322,7 +324,7 @@ class ForgeOpsMCPTools:
         actual_delta = round(verification["measured_post_repair_sec"] - verification["adjusted_baseline_sec"], 2)
         prediction_error_pct = round(abs((actual_delta - predicted_delta) / predicted_delta) * 100.0, 1)
 
-        return {
+        feedback = {
             "incident_id": incident_id,
             "verification_data": verification,
             "predicted_sec_delta": predicted_delta,
@@ -334,6 +336,14 @@ class ForgeOpsMCPTools:
                 "calibrated_target_sec": 8.5,
                 "model_accuracy_pct": round(100.0 - prediction_error_pct, 1),
                 "timestamp": datetime.now(timezone.utc).isoformat(),
+            },
+        }
+        persisted = self.feedback_registry.record(feedback)
+        return {
+            **feedback,
+            "feedback_registry": {
+                "status": persisted["status"],
+                "feedback_id": persisted["feedback_id"],
             },
         }
 

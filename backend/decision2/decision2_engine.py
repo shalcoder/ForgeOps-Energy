@@ -24,8 +24,10 @@ class Decision2Engine:
     def __init__(self, model_id: str = "vllm-sr/Decision-2.0-Sol-2B", device: str = "auto"):
         self.model_id = model_id
         self.device = device
+        self.model_path = os.environ.get("FORGEOPS_DECISION2_MODEL_PATH", model_id)
         self._model = None
         self._is_live_loaded = False
+        self._load_error: str | None = None
         self._attempt_load()
 
     def _attempt_load(self):
@@ -37,7 +39,7 @@ class Decision2Engine:
                 from transformers import AutoModel
                 print(f"[Decision 2.0] Loading {self.model_id} onto {self.device}...")
                 self._model = AutoModel.from_pretrained(
-                    self.model_id,
+                    self.model_path,
                     trust_remote_code=True,
                     device_map=self.device,
                     torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
@@ -48,6 +50,17 @@ class Decision2Engine:
             # High-performance calibrated fallback is maintained for deterministic offline execution
             self._is_live_loaded = False
             self._model = None
+            self._load_error = f"{type(exc).__name__}: {exc}"
+
+    def health(self) -> Dict[str, Any]:
+        """Expose model loading state without hiding deterministic fallback use."""
+        return {
+            "model": self.model_id,
+            "model_path": self.model_path,
+            "live_loaded": self._is_live_loaded,
+            "engine": "vllm-sr-decision-2.0-native" if self._is_live_loaded else "vllm-sr-decision-2.0-calibrated",
+            "load_error": self._load_error,
+        }
 
     def system_one(
         self,
