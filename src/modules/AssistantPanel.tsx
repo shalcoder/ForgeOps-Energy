@@ -12,7 +12,6 @@ import {
   SendIcon,
   ChevronDownIcon,
   ChevronRightIcon,
-  SparklesIcon,
   CpuIcon,
   ShieldCheckIcon,
   ActivityIcon,

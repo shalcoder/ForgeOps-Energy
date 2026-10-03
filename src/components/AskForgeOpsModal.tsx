@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import {
-  SparklesIcon,
+  ActivityIcon,
   XIcon,
   SendIcon,
   ShieldCheckIcon,
-  ActivityIcon,
   ArrowRightIcon,
   SlidersIcon,
   CheckCircleIcon,
@@ -134,7 +133,7 @@ export function AskForgeOpsModal({
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'linear-gradient(135deg, #00e02c, #00843d)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <SparklesIcon size={16} />
+              <ActivityIcon size={16} />
             </div>
             <div>
               <strong style={{ fontSize: '14px', color: '#f9fafb' }}>Ask ForgeOps • Contextual AI Decision Copilot</strong>

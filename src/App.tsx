@@ -21,7 +21,6 @@ import {
   GaugeIcon,
   MoonIcon,
   ShieldCheckIcon,
-  SparklesIcon,
   SunIcon,
   ZapIcon,
   ClockIcon,
@@ -310,7 +309,7 @@ function App() {
               onClick={() => setCommandPaletteOpen(true)}
               aria-label="Open Ask ForgeOps command palette"
             >
-              <SparklesIcon size={16} />
+              <ActivityIcon size={16} />
               <span>Ask ForgeOps</span>
               <span className="copilot-shortcut">⌘ K</span>
             </button>
@@ -426,7 +425,7 @@ function App() {
                   onClick={() => setCommandPaletteOpen(true)}
                   title="Ask ForgeOps AI"
                 >
-                  <SparklesIcon size={15} style={{ color: '#bd6249' }} />
+                  <ActivityIcon size={15} style={{ color: '#bd6249' }} />
                 </button>
 
                 {/* Profile avatar — icon based */}

@@ -10,7 +10,7 @@ import {
   ClockIcon,
   SlidersIcon,
   CheckCircleIcon,
-  SparklesIcon,
+  ActivityIcon,
 } from './Icons';
 
 type CommandResult = {
@@ -151,7 +151,7 @@ export function CommandPalette({
           />
           {query && (
             <button className="btn-secondary-action" style={{ padding: '3px 8px', fontSize: '10px' }} onClick={() => handleAskQuestion(query)}>
-              <SparklesIcon size={12} />
+              <ActivityIcon size={12} />
               <span>Ask AI</span>
             </button>
           )}
@@ -164,7 +164,7 @@ export function CommandPalette({
         {aiAnswer && (
           <div className="command-palette-answer-card">
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#bd6249', fontWeight: 700 }}>
-              <SparklesIcon size={13} />
+              <ActivityIcon size={13} />
               <span>ForgeOps Context Response</span>
             </div>
             <p>{aiAnswer.text}</p>

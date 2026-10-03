@@ -1,4 +1,4 @@
-import { AlertTriangleIcon, ArrowRightIcon, BarChartIcon, CheckCircleIcon, CpuIcon, GaugeIcon, ShieldCheckIcon } from '../components/Icons';
+import { ActivityIcon, AlertTriangleIcon, ArrowRightIcon, BarChartIcon, CheckCircleIcon, CpuIcon, GaugeIcon, ShieldCheckIcon } from '../components/Icons';
 import { useWorkbenchData } from '../WorkbenchDataContext';
 import type { AppView } from '../App';
 
@@ -93,7 +93,7 @@ export function HomeDashboard({ onNavigate }: { onNavigate: (view: AppView) => v
             {!data.incidentEvents.length && <div className="activity-empty"><CheckCircleIcon size={17} /> No recent alerts. Plant is operating within its target range.</div>}
           </div>
         </div>
-        <aside className="overview-note"><span className="note-symbol">✳</span><p>ForgeOps brings plant signals, engineering context, and operational decisions together in one place.</p><button onClick={() => onNavigate('opportunities')}>Ask ForgeOps <ArrowRightIcon size={14} /></button></aside>
+        <aside className="overview-note"><span className="note-symbol"><ActivityIcon size={17} /></span><p>ForgeOps brings plant signals, engineering context, and operational decisions together in one place.</p><button onClick={() => onNavigate('opportunities')}>Ask ForgeOps <ArrowRightIcon size={14} /></button></aside>
       </section>
       <footer className="overview-footer">Updated {new Date(data.updatedAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })} <span>·</span> {data.source === 'degraded_fallback' ? 'Showing sample plant data' : 'Connected to plant data'}</footer>
     </div>
