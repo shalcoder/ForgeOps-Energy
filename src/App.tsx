@@ -9,12 +9,12 @@ import { VerificationView } from './modules/VerificationView';
 import { AskForgeOpsView } from './components/AskForgeOpsView';
 import {
   AlertTriangleIcon,
+  ActivityIcon,
   BarChartIcon,
   CpuIcon,
   GaugeIcon,
   MoonIcon,
   ShieldCheckIcon,
-  SparklesIcon,
   SunIcon,
   ZapIcon,
 } from './components/Icons';
@@ -92,7 +92,7 @@ function App() {
             </nav>
             <div className="sidebar-spacer" />
             <button className={`sidebar-link copilot-link${view === 'copilot' ? ' active' : ''}`} onClick={() => navigate('copilot')} aria-current={view === 'copilot' ? 'page' : undefined}>
-              <SparklesIcon size={17} /><span>Ask ForgeOps</span><span className="copilot-shortcut">⌘ K</span>
+              <ActivityIcon size={17} /><span>Ask ForgeOps</span><span className="copilot-shortcut">⌘ K</span>
             </button>
             <div className="sidebar-user"><span className="user-avatar">VA</span><span><strong>Vaishak</strong><small>Plant engineer</small></span><button aria-label="Account options">···</button></div>
           </aside>

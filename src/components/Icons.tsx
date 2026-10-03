@@ -181,12 +181,6 @@ export const ChevronRightIcon: React.FC<IconProps> = ({ size = 16, className, ..
   </svg>
 );
 
-export const SparklesIcon: React.FC<IconProps> = ({ size = 16, className, ...props }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className={className} {...props}>
-    <path d="M12 2v4m0 12v4M2 12h4m12 0h4m-3.17-6.83l-2.83 2.83m-8 8l-2.83 2.83m0-13.66l2.83 2.83m8 8l2.83 2.83" />
-  </svg>
-);
-
 export const GaugeIcon: React.FC<IconProps> = ({ size = 16, className, ...props }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className={className} {...props}>
     <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />

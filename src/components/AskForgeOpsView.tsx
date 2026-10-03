@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import {
-  SparklesIcon,
+  ActivityIcon,
   SendIcon,
   ArrowRightIcon,
   ZapIcon,
@@ -151,7 +151,7 @@ export function AskForgeOpsView({ onNavigate }: {
         backdropFilter: 'blur(12px)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--schneider-green)' }}>
-          <SparklesIcon size={18} />
+          <ActivityIcon size={18} />
         </div>
         <input
           type="text"
@@ -216,7 +216,7 @@ export function AskForgeOpsView({ onNavigate }: {
                 background: 'linear-gradient(135deg, #00e02c, #00843d)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
-                <SparklesIcon size={13} color="#fff" />
+                <ActivityIcon size={13} color="#fff" />
               </div>
               <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-primary)' }}>
                 ForgeOps AI Response
