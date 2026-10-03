@@ -14,3 +14,4 @@ forgeops-mcp-deploy.zip
 
 .pytest_cache/
 *.zip
+backend/database/*.db
