@@ -68,14 +68,44 @@
   --text-muted: #99968e;
 }
 
-html, body, #root { min-width: 320px; min-height: 100%; background: var(--bg-canvas) !important; color: var(--text-primary) !important; }
+html, body, #root {
+  min-width: 320px;
+  min-height: 100%;
+  height: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background: var(--bg-canvas) !important;
+  color: var(--text-primary) !important;
+}
 body { font-family: var(--font-sans) !important; font-size: 14px !important; letter-spacing: 0 !important; }
 button, input, select, textarea { font: inherit; }
 button { -webkit-tap-highlight-color: transparent; }
 button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid #bd6249 !important; outline-offset: 2px; }
-.app-shell { min-height: 100vh; display: flex; flex-direction: row; background: var(--bg-canvas); }
+.app-shell {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  background: var(--bg-canvas);
+}
 
-.app-sidebar { position: sticky; top: 0; display: flex; flex: 0 0 248px; flex-direction: column; width: 248px; height: 100vh; padding: 22px 14px 14px; background: #f3f1ec; border-right: 1px solid var(--glass-border); color: var(--text-primary); }
+.app-sidebar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex: 0 0 248px;
+  flex-direction: column;
+  width: 248px;
+  height: 100vh;
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow-y: auto;
+  padding: 22px 14px 14px;
+  background: #f3f1ec;
+  border-right: 1px solid var(--glass-border);
+  color: var(--text-primary);
+}
 :root[data-theme="dark"] .app-sidebar { background: #252522; }
 .brand-logo-btn { display: flex; align-items: center; gap: 11px; width: 100%; min-height: 38px; padding: 0 8px; border: 0; background: transparent; text-align: left; cursor: pointer; }
 .brand-mark { display: grid; width: 30px; height: 30px; place-items: center; flex: 0 0 auto; border-radius: 9px 9px 9px 3px; background: #bf674e; color: white; font-family: Georgia, serif; font-size: 18px; font-weight: 700; }
@@ -106,7 +136,14 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .user-avatar, .header-user-avatar { display: grid; width: 30px; height: 30px; flex: 0 0 auto; place-items: center; border-radius: 50%; background: #e7ded1; color: #6b5143; font-size: 10px; font-weight: 700; }
 .sidebar-user > button { margin-left: auto; border: 0; background: transparent; color: var(--text-muted); font-size: 20px; cursor: pointer; }
 
-.workspace-column { display: flex; min-width: 0; flex: 1; flex-direction: column; }
+.workspace-column {
+  display: flex;
+  min-width: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  flex: 1;
+  flex-direction: column;
+}
 .app-header-modern { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; justify-content: space-between; gap: 20px; width: 100%; height: 60px; padding: 0 34px; border-bottom: 1px solid var(--glass-border); background: color-mix(in srgb, var(--bg-canvas) 94%, transparent); backdrop-filter: blur(14px); box-shadow: none; overflow: visible; }
 .breadcrumbs { display: flex; align-items: center; gap: 10px; color: var(--text-muted); font-size: 12px; }
 .breadcrumbs strong { color: var(--text-primary); font-weight: 600; }
@@ -120,7 +157,13 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .header-user-avatar { width: 28px; height: 28px; cursor: pointer; }
 .header-icon-btn { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border: 1px solid var(--glass-border); border-radius: 7px; background: transparent; cursor: pointer; transition: background 0.15s ease; }
 .header-icon-btn:hover { background: var(--glass-surface-hover); }
-.workspace-main { width: 100%; min-width: 0; flex: 1; }
+.workspace-main {
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  flex: 1 0 auto;
+  overflow: visible;
+}
 
 .overview-page { width: min(100% - 72px, 1120px); margin: 0 auto; padding: 44px 0 35px; color: var(--text-primary); }
 .overview-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 28px; }
@@ -1951,6 +1994,5 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   background: var(--glass-border);
   margin: 4px 0;
 }
-
 
 
