@@ -1,0 +1,199 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1240" viewBox="0 0 1600 1240" role="img" aria-labelledby="title desc">
+  <title id="title">ForgeOps Energy technical architecture and technology stack</title>
+  <desc id="desc">Architecture diagram showing the React and TypeScript browser app, Vite routing, the Python FastAPI four-agent service, NitroChat model gateway, NitroStack TypeScript MCP tools, local simulation bridge, demo data, SQLite audit log, and planned plant system integrations.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0 10 5 0 10Z" fill="#9b6250"/></marker>
+    <marker id="arrow-muted" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0 10 5 0 10Z" fill="#8a9297"/></marker>
+    <style>
+      text { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; fill: #202a31; }
+      .title { font-size: 34px; font-weight: 700; letter-spacing: -0.7px; }
+      .subtitle { font-size: 15px; fill: #637079; }
+      .lane-title { font-size: 11px; font-weight: 700; letter-spacing: 1.4px; fill: #8c7162; }
+      .card-title { font-size: 18px; font-weight: 700; }
+      .card-copy { font-size: 13px; fill: #58656d; }
+      .small { font-size: 11px; fill: #68757c; }
+      .chip { font-size: 11px; font-weight: 600; fill: #745648; }
+      .agent-title { font-size: 14px; font-weight: 700; }
+      .agent-copy { font-size: 11px; fill: #657078; }
+      .port { font-size: 11px; font-weight: 650; fill: #985b47; }
+      .flow-label { font-size: 10px; font-weight: 650; fill: #806354; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="1240" fill="#f7f6f2"/>
+  <circle cx="1500" cy="78" r="110" fill="#efe8e0" opacity=".55"/>
+  <circle cx="1500" cy="78" r="72" fill="#f7f6f2" opacity=".8"/>
+
+  <text x="64" y="68" class="title">ForgeOps Energy</text>
+  <text x="64" y="99" class="subtitle">Technical architecture · runtime services, data flow, and technology stack</text>
+  <g transform="translate(1185 43)">
+    <rect width="350" height="38" rx="19" fill="#e7efe8" stroke="#c7d9ca"/>
+    <circle cx="20" cy="19" r="5" fill="#568166"/>
+    <text x="34" y="23" font-size="12" font-weight="650" fill="#45694f">Human approval required · no direct plant control</text>
+  </g>
+
+  <!-- Layer bands -->
+  <rect x="48" y="126" width="1504" height="104" rx="16" fill="#f0ede8"/>
+  <rect x="48" y="244" width="1504" height="142" rx="16" fill="#fff" stroke="#e5e1da"/>
+  <rect x="48" y="400" width="1504" height="274" rx="16" fill="#f1ece7"/>
+  <rect x="48" y="688" width="1504" height="168" rx="16" fill="#fff" stroke="#e5e1da"/>
+  <rect x="48" y="870" width="1504" height="144" rx="16" fill="#f1ece7"/>
+  <rect x="48" y="1028" width="1504" height="164" rx="16" fill="#faf9f6" stroke="#c8b9ac" stroke-dasharray="7 6"/>
+
+  <text x="68" y="151" class="lane-title">01 · PEOPLE</text>
+  <text x="68" y="270" class="lane-title">02 · WEB EXPERIENCE</text>
+  <text x="68" y="426" class="lane-title">03 · AGENT API &amp; REASONING</text>
+  <text x="68" y="714" class="lane-title">04 · TOOLING &amp; INTEGRATION</text>
+  <text x="68" y="896" class="lane-title">05 · DATA &amp; AUDIT</text>
+  <text x="68" y="1054" class="lane-title">06 · PLANT SYSTEMS</text>
+
+  <!-- Human / client -->
+  <g>
+    <rect x="600" y="145" width="400" height="68" rx="13" fill="#fff" stroke="#ded8cf"/>
+    <circle cx="634" cy="179" r="16" fill="#eee4da"/>
+    <path d="M628 181a6 6 0 1 1 12 0m-15 10c1-5 5-7 9-7s8 2 9 7" fill="none" stroke="#97664f" stroke-width="1.8" stroke-linecap="round"/>
+    <text x="662" y="174" class="card-title" font-size="16">Plant engineer / operator</text>
+    <text x="662" y="194" class="card-copy">Investigates evidence · explores scenarios · approves actions</text>
+  </g>
+
+  <!-- Frontend -->
+  <g>
+    <rect x="330" y="286" width="510" height="76" rx="13" fill="#fff" stroke="#d9d3ca"/>
+    <rect x="350" y="303" width="38" height="38" rx="10" fill="#e8f0eb"/>
+    <path d="M359 314h20v15h-20zm5-5h10m-5 0v5" fill="none" stroke="#52765f" stroke-width="1.8" stroke-linejoin="round"/>
+    <text x="402" y="315" class="card-title">ForgeOps Workbench</text>
+    <text x="402" y="337" class="card-copy">React 18 · TypeScript · responsive UI · local case-study fallback</text>
+    <g transform="translate(704 297)"><rect width="112" height="23" rx="11" fill="#f1ece7"/><text x="56" y="16" class="chip" text-anchor="middle">Browser SPA</text></g>
+  </g>
+  <g>
+    <rect x="930" y="286" width="330" height="76" rx="13" fill="#fff" stroke="#d9d3ca"/>
+    <text x="954" y="315" class="card-title">Vite dev server</text>
+    <text x="954" y="337" class="card-copy">HMR · static build · API path proxy</text>
+    <text x="1234" y="315" class="port" text-anchor="end">:4173</text>
+  </g>
+  <g>
+    <rect x="1290" y="286" width="226" height="76" rx="13" fill="#f9f6f1" stroke="#e1d8cd"/>
+    <text x="1310" y="315" class="card-title" font-size="15">UI data adapter</text>
+    <text x="1310" y="337" class="card-copy">Fetch · normalize · fallback</text>
+  </g>
+
+  <!-- API and agent pipeline -->
+  <g>
+    <rect x="96" y="447" width="1040" height="196" rx="14" fill="#fff" stroke="#ded6ce"/>
+    <text x="120" y="477" class="card-title">Agent service</text>
+    <text x="1110" y="477" class="port" text-anchor="end">Python · FastAPI · Uvicorn :8000</text>
+    <text x="120" y="499" class="card-copy">REST endpoints · server-sent events · typed Pydantic contracts</text>
+    <g transform="translate(120 523)">
+      <rect width="220" height="88" rx="11" fill="#fbf8f4" stroke="#e7ddd3"/>
+      <circle cx="24" cy="25" r="13" fill="#ead9cc"/><text x="24" y="29" font-size="11" font-weight="700" text-anchor="middle" fill="#7b5141">1</text>
+      <text x="47" y="29" class="agent-title">Planner</text><text x="18" y="57" class="agent-copy">Intent · constraints · tool plan</text><text x="18" y="74" class="agent-copy">No manufacturing facts invented</text>
+    </g>
+    <g transform="translate(360 523)">
+      <rect width="220" height="88" rx="11" fill="#fbf8f4" stroke="#e7ddd3"/>
+      <circle cx="24" cy="25" r="13" fill="#ead9cc"/><text x="24" y="29" font-size="11" font-weight="700" text-anchor="middle" fill="#7b5141">2</text>
+      <text x="47" y="29" class="agent-title">Research</text><text x="18" y="57" class="agent-copy">Selects read-only MCP tools</text><text x="18" y="74" class="agent-copy">Builds traceable evidence bundle</text>
+    </g>
+    <g transform="translate(600 523)">
+      <rect width="220" height="88" rx="11" fill="#fbf8f4" stroke="#e7ddd3"/>
+      <circle cx="24" cy="25" r="13" fill="#ead9cc"/><text x="24" y="29" font-size="11" font-weight="700" text-anchor="middle" fill="#7b5141">3</text>
+      <text x="47" y="29" class="agent-title">Analysis</text><text x="18" y="57" class="agent-copy">Causal review · what-if runs</text><text x="18" y="74" class="agent-copy">Checks evidence and constraints</text>
+    </g>
+    <g transform="translate(840 523)">
+      <rect width="270" height="88" rx="11" fill="#fbf8f4" stroke="#e7ddd3"/>
+      <circle cx="24" cy="25" r="13" fill="#ead9cc"/><text x="24" y="29" font-size="11" font-weight="700" text-anchor="middle" fill="#7b5141">4</text>
+      <text x="47" y="29" class="agent-title">Execution / presentation</text><text x="18" y="57" class="agent-copy">Recommendations · reports · UI actions</text><text x="18" y="74" class="agent-copy">Approval is recorded, never dispatched</text>
+    </g>
+    <path d="M340 567h16m224 0h16m224 0h16" fill="none" stroke="#a16c56" stroke-width="2" marker-end="url(#arrow)"/>
+  </g>
+
+  <!-- Model gateway -->
+  <g>
+    <rect x="1170" y="447" width="346" height="196" rx="14" fill="#eaf0eb" stroke="#cbd9cc"/>
+    <text x="1194" y="480" class="card-title" font-size="17">Model gateway</text>
+    <text x="1194" y="506" class="card-copy">NitroChat · server-side HTTP</text>
+    <text x="1194" y="527" class="card-copy">Configured model: Gemini 3.5 Flash Lite</text>
+    <rect x="1194" y="550" width="295" height="1" fill="#cbd9cc"/>
+    <text x="1194" y="576" class="small">Used by agent roles for structured JSON replies.</text>
+    <text x="1194" y="597" class="small">Provider credentials stay on the server.</text>
+    <text x="1194" y="622" class="small">Fallback logic keeps the workflow bounded.</text>
+  </g>
+
+  <!-- Integration row -->
+  <g>
+    <rect x="96" y="735" width="315" height="106" rx="13" fill="#fbf8f4" stroke="#e1d9d0"/>
+    <text x="118" y="766" class="card-title" font-size="16">MCP client adapter</text>
+    <text x="118" y="790" class="card-copy">Python httpx · Streamable HTTP</text>
+    <text x="118" y="812" class="card-copy">Session + tool calls from agent roles</text>
+  </g>
+  <g>
+    <rect x="440" y="735" width="365" height="106" rx="13" fill="#fbf8f4" stroke="#e1d9d0"/>
+    <text x="462" y="766" class="card-title" font-size="16">Local API &amp; simulation bridge</text>
+    <text x="462" y="790" class="card-copy">Node.js · TypeScript · HTTP :8787</text>
+    <text x="462" y="812" class="card-copy">Scenario runs · deterministic fixtures</text>
+  </g>
+  <g>
+    <rect x="834" y="718" width="682" height="124" rx="13" fill="#fff" stroke="#ded6ce"/>
+    <text x="858" y="749" class="card-title" font-size="17">ForgeOps MCP server</text>
+    <text x="1492" y="749" class="port" text-anchor="end">TypeScript · NitroStack · MCP</text>
+    <text x="858" y="772" class="card-copy">Typed tools grouped by manufacturing domain</text>
+    <g transform="translate(858 790)">
+      <rect width="116" height="30" rx="8" fill="#f1ece7"/><text x="58" y="19" class="chip" text-anchor="middle">MES</text>
+      <rect x="126" width="116" height="30" rx="8" fill="#f1ece7"/><text x="184" y="19" class="chip" text-anchor="middle">Maintenance</text>
+      <rect x="252" width="116" height="30" rx="8" fill="#f1ece7"/><text x="310" y="19" class="chip" text-anchor="middle">Quality</text>
+      <rect x="378" width="116" height="30" rx="8" fill="#f1ece7"/><text x="436" y="19" class="chip" text-anchor="middle">Materials</text>
+      <rect x="504" width="116" height="30" rx="8" fill="#f1ece7"/><text x="562" y="19" class="chip" text-anchor="middle">Simulation</text>
+    </g>
+  </g>
+
+  <!-- Data stores -->
+  <g>
+    <rect x="96" y="918" width="450" height="72" rx="12" fill="#fff" stroke="#ded8cf"/>
+    <text x="118" y="947" class="card-title" font-size="16">Case-study source data</text>
+    <text x="118" y="970" class="card-copy">TypeScript fixtures · incident-data.ts · browser fallback</text>
+  </g>
+  <g>
+    <rect x="576" y="918" width="420" height="72" rx="12" fill="#fff" stroke="#ded8cf"/>
+    <text x="598" y="947" class="card-title" font-size="16">Simulation engines</text>
+    <text x="598" y="970" class="card-copy">TypeScript + Python · deterministic what-if calculations</text>
+  </g>
+  <g>
+    <rect x="1026" y="918" width="490" height="72" rx="12" fill="#fff" stroke="#ded8cf"/>
+    <text x="1048" y="947" class="card-title" font-size="16">Audit &amp; approvals</text>
+    <text x="1048" y="970" class="card-copy">SQLite · pipeline history · approval records only</text>
+  </g>
+
+  <!-- Plant integration target -->
+  <g>
+    <rect x="96" y="1075" width="1420" height="84" rx="13" fill="#fff" stroke="#c8b9ac" stroke-dasharray="6 5"/>
+    <text x="120" y="1106" class="card-title" font-size="16">Factory and enterprise systems</text>
+    <text x="120" y="1131" class="card-copy">PLC / SCADA · energy meters · MES · CMMS · quality · materials</text>
+    <g transform="translate(1162 1095)"><rect width="326" height="34" rx="17" fill="#f5eee8" stroke="#e5d6ca"/><text x="163" y="22" text-anchor="middle" class="chip">Target integration boundary · not wired to live OT today</text></g>
+  </g>
+
+  <!-- Connectors and flow labels -->
+  <path d="M800 213v61" fill="none" stroke="#9b6250" stroke-width="2" marker-end="url(#arrow)"/>
+  <path d="M840 324h90" fill="none" stroke="#9b6250" stroke-width="2" marker-end="url(#arrow)"/>
+  <path d="M1260 324h30" fill="none" stroke="#9b6250" stroke-width="1.7" marker-end="url(#arrow)"/>
+  <path d="M1095 363v22h-500v56" fill="none" stroke="#9b6250" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="847" y="379" class="flow-label">/api/agent/* · REST / SSE</text>
+  <path d="M1516 348h18v372h-729v15" fill="none" stroke="#8a9297" stroke-width="1.7" marker-end="url(#arrow-muted)"/>
+  <text x="1130" y="712" class="flow-label">/api/* local bridge routes</text>
+  <path d="M1000 145v-20h-770v170h90" fill="none" stroke="#9b6250" stroke-width="1.7" marker-end="url(#arrow)"/>
+  <text x="170" y="281" class="flow-label">browser</text>
+  <path d="M1136 551h25" fill="none" stroke="#698570" stroke-width="1.7" stroke-dasharray="4 4" marker-end="url(#arrow-muted)"/>
+  <text x="1128" y="540" class="flow-label" text-anchor="end">structured calls</text>
+  <path d="M472 643v72h-220v16" fill="none" stroke="#9b6250" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <text x="266" y="705" class="flow-label">MCP HTTP</text>
+  <path d="M252 841v15h570v-76h12" fill="none" stroke="#9b6250" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <text x="615" y="852" class="flow-label" text-anchor="middle">remote tool protocol</text>
+  <path d="M330 842v64" fill="none" stroke="#8a9297" stroke-width="1.5" marker-end="url(#arrow-muted)"/>
+  <path d="M623 842v64" fill="none" stroke="#8a9297" stroke-width="1.5" marker-end="url(#arrow-muted)"/>
+  <path d="M1170 842v64" fill="none" stroke="#8a9297" stroke-width="1.5" marker-end="url(#arrow-muted)"/>
+  <path d="M1050 842v38H786v38" fill="none" stroke="#8a9297" stroke-width="1.4" marker-end="url(#arrow-muted)"/>
+  <path d="M1350 842v76" fill="none" stroke="#8a9297" stroke-width="1.4" marker-end="url(#arrow-muted)"/>
+  <path d="M900 842v18h-360v58" fill="none" stroke="#8a9297" stroke-width="1.4" marker-end="url(#arrow-muted)"/>
+  <path d="M1500 1075v-57h34V860h-34v-18" fill="none" stroke="#8a9297" stroke-width="1.6" stroke-dasharray="5 5" marker-end="url(#arrow-muted)"/>
+  <text x="1508" y="1007" class="flow-label" transform="rotate(-90 1508 1007)">planned plant connectors</text>
+
+  <text x="64" y="1218" class="small">Stack shown reflects this repository’s implemented runtime. Cloud services are configurable; plant OT connectivity remains an integration target.</text>
+</svg>
