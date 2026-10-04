@@ -244,7 +244,7 @@ export function EnergyCarbonView({ onNavigate }: EnergyCarbonProps) {
 
             <div className="card-clean" style={{ padding: '18px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <div>
-                <span className="provenance-badge provenance-verified">PF REBATE</span>
+                <span className="provenance-badge provenance-simulated">Illustrative PF tariff effect</span>
                 <h4 style={{ margin: '8px 0 2px', fontSize: '14px', color: 'var(--text-primary)' }}>APFC Capacitor Tuning</h4>
                 <p style={{ margin: 0, fontSize: '11px', color: 'var(--text-secondary)' }}>
                   Maintain 0.99 power factor continuously to maximize maximum DISCOM rebate.

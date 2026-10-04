@@ -169,7 +169,7 @@ export function AssetsView({ onNavigate, selectedAssetId }: AssetsProps) {
           ) : (
             <div className="live-status-pill">
               <span className="pulsing-indicator" />
-              <span>6 Meters Online</span>
+              <span>6 Demo Assets</span>
             </div>
           )}
         </div>
@@ -184,10 +184,10 @@ export function AssetsView({ onNavigate, selectedAssetId }: AssetsProps) {
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <span className="font-mono" style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-muted)' }}>{asset.feeder}</span>
-                  <span className={`provenance-badge ${asset.status === 'alert' ? 'provenance-simulated' : 'provenance-measured'}`}>
-                    {asset.status === 'alert' ? 'ANOMALY DETECTED' : 'RUNNING NORMAL'}
+                  <span className="provenance-badge provenance-simulated">
+                    {asset.status === 'alert' ? 'DEMO ANOMALY' : 'DEMO STATUS'}
                   </span>
-                  <span className="provenance-badge provenance-measured">Edge Gateway Connected</span>
+                  <span className="provenance-badge provenance-simulated">Synthetic asset fixture</span>
                 </div>
                 <h2 style={{ margin: '8px 0 2px', fontFamily: 'var(--font-serif)', fontSize: '22px', color: 'var(--text-primary)' }}>
                   {asset.name}
@@ -200,7 +200,7 @@ export function AssetsView({ onNavigate, selectedAssetId }: AssetsProps) {
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                 <button className="btn-secondary-action" onClick={() => onNavigate('live-operations')}>
                   <ZapIcon size={14} />
-                  <span>View Telemetry</span>
+                  <span>View fixture signals</span>
                 </button>
                 <button className="btn-primary-action" onClick={() => onNavigate('investigations', 'INV-1024')}>
                   <span>Investigate Anomaly &rarr;</span>
@@ -294,14 +294,14 @@ export function AssetsView({ onNavigate, selectedAssetId }: AssetsProps) {
                     Machine-learned operating baseline showing why ForgeOps flags this asset as abnormal.
                   </p>
                 </div>
-                <span className="provenance-badge provenance-measured">L1 Learned Envelope</span>
+                <span className="provenance-badge provenance-simulated">Illustrative envelope</span>
               </div>
 
               {/* Envelope Band Visual */}
               <div style={{ padding: '16px', borderRadius: '8px', background: 'var(--bg-ground)', border: '1px solid var(--glass-border)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'var(--text-secondary)' }}>
                   <span>Expected Operating Envelope: <strong>{asset.expectedPowerBand}</strong></span>
-                  <span>Actual Measured Power: <strong style={{ color: '#bd6249' }}>{asset.powerKw} kW (+16.8% deviation)</strong></span>
+                  <span>Scenario power input: <strong style={{ color: '#bd6249' }}>{asset.powerKw} kW (+16.8% vs fixture envelope)</strong></span>
                 </div>
 
                 <div className="envelope-band-wrap">
@@ -347,25 +347,25 @@ export function AssetsView({ onNavigate, selectedAssetId }: AssetsProps) {
           {/* Subtab Content: Maintenance & History */}
           {detailTab === 'maintenance' && (
             <div className="card-clean" style={{ padding: '20px' }}>
-              <h3 style={{ margin: '0 0 12px', fontFamily: 'var(--font-serif)', fontSize: '18px', color: 'var(--text-primary)' }}>
-                CMMS Work Orders & History
+                <h3 style={{ margin: '0 0 12px', fontFamily: 'var(--font-serif)', fontSize: '18px', color: 'var(--text-primary)' }}>
+                Proposed Work Orders & Fixture History
               </h3>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <div style={{ padding: '12px 14px', borderRadius: '6px', border: '1px solid var(--alert-border)', background: 'var(--alert-subtle)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
                     <strong style={{ fontSize: '12px', color: 'var(--text-primary)' }}>WO-ENG-7922: Replace Flexible Coupling</strong>
-                    <div style={{ fontSize: '10.5px', color: 'var(--text-secondary)' }}>Status: Scheduled for 14:30 Today &bull; Assigned to Shift B</div>
+                    <div style={{ fontSize: '10.5px', color: 'var(--text-secondary)' }}>Proposed draft only &bull; time and crew require plant review</div>
                   </div>
-                  <span className="provenance-badge provenance-measured">Scheduled</span>
+                  <span className="provenance-badge provenance-simulated">Draft</span>
                 </div>
 
                 <div style={{ padding: '12px 14px', borderRadius: '6px', border: '1px solid var(--glass-border)', background: 'var(--bg-ground)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
                     <strong style={{ fontSize: '12px', color: 'var(--text-primary)' }}>WR-6891: Temporary Clamp on Manifold Drop</strong>
-                    <div style={{ fontSize: '10.5px', color: 'var(--text-secondary)' }}>Logged 14 days ago by Operator Sham &bull; Completed temporary fix</div>
+                    <div style={{ fontSize: '10.5px', color: 'var(--text-secondary)' }}>Synthetic fixture history &bull; no maintenance action is confirmed</div>
                   </div>
-                  <span className="provenance-badge provenance-verified">Historical</span>
+                  <span className="provenance-badge provenance-simulated">Fixture history</span>
                 </div>
               </div>
             </div>
@@ -413,8 +413,8 @@ export function AssetsView({ onNavigate, selectedAssetId }: AssetsProps) {
                     <td><span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{item.category}</span></td>
                     <td><span className="font-mono">{item.feeder}</span></td>
                     <td>
-                      <span className={`provenance-badge ${item.status === 'alert' ? 'provenance-simulated' : item.status === 'warning' ? 'provenance-estimated' : 'provenance-measured'}`}>
-                        {item.status.toUpperCase()}
+                      <span className="provenance-badge provenance-simulated">
+                        {item.status === 'alert' ? 'DEMO ALERT' : item.status === 'warning' ? 'DEMO WARNING' : 'DEMO STATUS'}
                       </span>
                     </td>
                     <td>

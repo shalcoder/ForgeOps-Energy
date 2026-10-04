@@ -170,7 +170,7 @@ export function OpportunitiesView({ onNavigate, selectedDetailId }: Opportunitie
           <div style={{ fontSize: '18px', fontWeight: 650, color: '#5e7e60', marginTop: '2px' }}>2 executing</div>
         </div>
         <div className="card-clean" style={{ padding: '12px 14px' }}>
-          <span style={{ fontSize: '10px', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Closed / Verified</span>
+          <span style={{ fontSize: '10px', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Closed demo examples</span>
           <div style={{ fontSize: '18px', fontWeight: 650, color: 'var(--text-muted)', marginTop: '2px' }}>5 closed</div>
         </div>
       </div>
@@ -191,7 +191,7 @@ export function OpportunitiesView({ onNavigate, selectedDetailId }: Opportunitie
         </div>
 
         <span className="font-mono text-muted" style={{ fontSize: '11.5px' }}>
-          Showing {filtered.length} opportunities • Total potential: ₹1.53L/mo
+          Showing {filtered.length} synthetic opportunities • Fixture scenario potential: ₹1.53L/mo
         </span>
       </div>
 
@@ -204,7 +204,7 @@ export function OpportunitiesView({ onNavigate, selectedDetailId }: Opportunitie
               <th>Asset</th>
               <th>Evidence</th>
               <th>Expected SEC</th>
-              <th>Monthly Savings</th>
+              <th>Modelled monthly impact</th>
               <th>Effort</th>
               <th>Status</th>
               <th>Action</th>
@@ -219,7 +219,7 @@ export function OpportunitiesView({ onNavigate, selectedDetailId }: Opportunitie
                 </td>
                 <td><span className="font-mono">{opp.asset}</span></td>
                 <td>
-                  <span className="provenance-badge provenance-measured">{opp.evidenceCount} sources</span>
+                  <span className="provenance-badge provenance-simulated">{opp.evidenceCount} fixture records</span>
                 </td>
                 <td><strong style={{ color: '#5e7e60' }}>{opp.expectedSecDelta}</strong></td>
                 <td><strong>{opp.monthlySavings}</strong></td>
@@ -229,7 +229,7 @@ export function OpportunitiesView({ onNavigate, selectedDetailId }: Opportunitie
                     opp.status === 'Ready' ? 'provenance-simulated' :
                     opp.status === 'Decision' ? 'provenance-estimated' :
                     opp.status === 'Investigating' ? 'provenance-modelled' :
-                    'provenance-measured'
+                    'provenance-simulated'
                   }`}>
                     {opp.status}
                   </span>
@@ -265,7 +265,7 @@ export function OpportunitiesView({ onNavigate, selectedDetailId }: Opportunitie
                   {activeOpportunity.title}
                 </h2>
                 <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
-                  Detected 14 minutes ago • Status: <strong>{activeOpportunity.status}</strong>
+                  Synthetic case-study example • Status: <strong>{activeOpportunity.status}</strong>
                 </span>
               </div>
               <button className="header-icon-btn" onClick={() => setActiveOpportunity(null)}>
@@ -307,7 +307,7 @@ export function OpportunitiesView({ onNavigate, selectedDetailId }: Opportunitie
               {/* Evidence Strip (6 sources) */}
               <div>
                 <span style={{ fontSize: '11px', fontWeight: 650, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '8px' }}>
-                  {activeOpportunity.evidenceSources.length} Correlated Evidence Sources
+                  {activeOpportunity.evidenceSources.length} Synthetic Evidence Fixtures
                 </span>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '8px' }}>
                   {activeOpportunity.evidenceSources.map((ev) => (

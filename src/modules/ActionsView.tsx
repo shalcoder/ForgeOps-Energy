@@ -19,12 +19,12 @@ export function ActionsView({ onNavigate, selectedActionId = 'WO-ENG-7922' }: Ac
 
   const executionSteps = [
     { time: '10:32 AM', title: 'Investigation completed', desc: 'INV-1024 synthesized causal evidence pack', done: true },
-    { time: '10:41 AM', title: 'Scenario approved', desc: 'Scenario A selected by Plant Engineer Vaishak', done: true },
+    { time: '10:41 AM', title: 'Demo decision recorded', desc: 'Synthetic scenario A selected in the prototype', done: true },
     { time: '10:45 AM', title: 'Demo work-order record', desc: 'Prototype-only record; no CMMS connection or dispatch occurred', done: true },
-    { time: '11:00 AM', title: 'Technician started', desc: 'Shift B maintenance technician arrived at Line 2 Moulding bank', done: true },
-    { time: '11:32 AM', title: 'Leak repaired', desc: 'Replaced braided coupling with reinforced flexible connector', done: true },
-    { time: '11:48 AM', title: 'Equipment returned', desc: 'Air header pressurized to 6.5 bar; soap bubble test passed', done: true },
-    { time: '12:00 PM', title: 'Verification started', desc: 'Modbus submeter logged post-repair baseline for IPMVP audit', done: true },
+    { time: '11:00 AM', title: 'Proposed maintenance window', desc: 'Timing and crew are illustrative placeholders; no technician was dispatched', done: true },
+    { time: '11:32 AM', title: 'Repair step (scenario)', desc: 'Assumed braided coupling replacement; no physical repair occurred', done: true },
+    { time: '11:48 AM', title: 'Post-action check (scenario)', desc: 'Example 6.5 bar value; no field pressure test occurred', done: true },
+    { time: '12:00 PM', title: 'Scenario review opened', desc: 'Illustrative normalization calculation; no post-repair Modbus data is connected', done: true },
   ];
 
   return (
@@ -52,16 +52,16 @@ export function ActionsView({ onNavigate, selectedActionId = 'WO-ENG-7922' }: Ac
       {/* ── Tabs (Section 26 of Spec) ── */}
       <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid var(--glass-border)', paddingBottom: '10px' }}>
         <button className={`btn-subtab ${activeTab === 'approved' ? 'active' : ''}`} onClick={() => setActiveTab('approved')}>
-          Approved (1)
+          Demo decision (1)
         </button>
         <button className={`btn-subtab ${activeTab === 'in_progress' ? 'active' : ''}`} onClick={() => setActiveTab('in_progress')}>
-          In Progress (1)
+          Proposed draft (1)
         </button>
         <button className={`btn-subtab ${activeTab === 'completed' ? 'active' : ''}`} onClick={() => setActiveTab('completed')}>
-          Completed (18)
+          Demo steps (6)
         </button>
         <button className={`btn-subtab ${activeTab === 'all' ? 'active' : ''}`} onClick={() => setActiveTab('all')}>
-          All Actions (20)
+          All fixture steps (7)
         </button>
       </div>
 
@@ -71,7 +71,7 @@ export function ActionsView({ onNavigate, selectedActionId = 'WO-ENG-7922' }: Ac
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <span className="kicker-tag" style={{ border: '1px solid #d4e4d2', background: '#edf4ec', color: '#3b663b' }}>
-                SCHEDULED &bull; WO-ENG-7922
+                PROPOSED DRAFT &bull; WO-ENG-7922
               </span>
               <span className="provenance-badge provenance-simulated">Demo work-order record</span>
             </div>
@@ -84,9 +84,9 @@ export function ActionsView({ onNavigate, selectedActionId = 'WO-ENG-7922' }: Ac
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Scheduled: <strong>14:30–15:15</strong></span>
-            <span className="provenance-badge provenance-measured" style={{ background: '#edf4ec', color: '#3b663b' }}>
-              Zero Throughput Loss
+            <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Timing: <strong>Requires plant-team review</strong></span>
+            <span className="provenance-badge provenance-simulated" style={{ background: '#edf4ec', color: '#3b663b' }}>
+              Throughput guardrail is modelled
             </span>
           </div>
         </div>
@@ -95,19 +95,19 @@ export function ActionsView({ onNavigate, selectedActionId = 'WO-ENG-7922' }: Ac
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '12px', margin: '18px 0', padding: '14px', borderRadius: '8px', background: 'var(--bg-ground)', border: '1px solid var(--glass-border)' }}>
           <div>
             <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Approved By</span>
-            <div style={{ fontSize: '13px', fontWeight: 650, color: 'var(--text-primary)', marginTop: '2px' }}>Plant Engineer (Vaishak)</div>
+            <div style={{ fontSize: '13px', fontWeight: 650, color: 'var(--text-primary)', marginTop: '2px' }}>Demo approval placeholder</div>
           </div>
           <div>
             <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Assigned Crew</span>
-            <div style={{ fontSize: '13px', fontWeight: 650, color: 'var(--text-primary)', marginTop: '2px' }}>Maintenance Shift B</div>
+            <div style={{ fontSize: '13px', fontWeight: 650, color: 'var(--text-primary)', marginTop: '2px' }}>Unassigned (demo)</div>
           </div>
           <div>
             <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Downtime Window</span>
-            <div style={{ fontSize: '13px', fontWeight: 650, color: 'var(--text-primary)', marginTop: '2px' }}>42 min (Shift Changeover)</div>
+            <div style={{ fontSize: '13px', fontWeight: 650, color: 'var(--text-primary)', marginTop: '2px' }}>42 min planning assumption</div>
           </div>
           <div>
-            <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Expected Savings</span>
-            <div style={{ fontSize: '13px', fontWeight: 650, color: '#5e7e60', marginTop: '2px' }}>-1.5 kWh/t (₹48k/mo)</div>
+            <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Modelled scenario impact</span>
+            <div style={{ fontSize: '13px', fontWeight: 650, color: '#5e7e60', marginTop: '2px' }}>-1.5 kWh/t (₹48k/mo fixture estimate)</div>
           </div>
         </div>
 
@@ -176,7 +176,7 @@ export function ActionsView({ onNavigate, selectedActionId = 'WO-ENG-7922' }: Ac
                   <strong style={{ fontSize: '12px', color: 'var(--text-primary)' }}>{step.title}</strong>
                   <span style={{ fontSize: '11px', color: 'var(--text-secondary)', marginLeft: '8px' }}>&bull; {step.desc}</span>
                 </div>
-                <span className="provenance-badge provenance-measured">Done</span>
+              <span className="provenance-badge provenance-simulated">Demo step</span>
               </div>
             ))}
           </div>

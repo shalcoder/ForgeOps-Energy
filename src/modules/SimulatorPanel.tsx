@@ -337,7 +337,7 @@ export function SimulatorPanel() {
               </span>
               <span className={`val-chip ${simulation.safetyPreserved ? 'ok' : 'warning'} flex items-center gap-1`}>
                 {simulation.safetyPreserved ? <CheckCircleIcon size={12} /> : <AlertTriangleIcon size={12} />}
-                Safety: {simulation.safetyPreserved ? 'Within validated range' : 'Outside validated range'}
+                Safety: {simulation.safetyPreserved ? 'Within configured demo bounds' : 'Outside configured demo bounds'}
               </span>
               <span className="val-chip info flex items-center gap-1">
                 <ClockIcon size={12} className="text-cyan-400" />

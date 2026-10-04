@@ -317,7 +317,7 @@ export function ArchitectureView({ onOpenWorkbench }: { onOpenWorkbench: () => v
                 <span className="font-mono" style={{ fontSize: '11px', color: '#06b6d4', fontWeight: 700 }}>L1 • EDGE GATEWAY</span>
                 <strong style={{ fontSize: '13px', color: '#f9fafb', display: 'block', margin: '4px 0' }}>Signal & Baseline</strong>
                 <p style={{ fontSize: '11.5px', color: '#9ca3af', margin: 0 }}>
-                  Telemetry ingestion, local ring buffering (72h), signal normalization, feature extraction, and equipment-specific learned envelope.
+                  Proposed deployment target: telemetry ingestion, locally sized buffering, signal normalization, and equipment-specific baselines. These integrations are not active in this demo.
                 </p>
               </div>
 
@@ -360,9 +360,9 @@ export function ArchitectureView({ onOpenWorkbench }: { onOpenWorkbench: () => v
               {/* L6 */}
               <div style={{ background: 'rgba(11, 17, 30, 0.85)', padding: '14px', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
                 <span className="font-mono" style={{ fontSize: '11px', color: '#38bdf8', fontWeight: 700 }}>L6 • HUMAN GATE</span>
-                <strong style={{ fontSize: '13px', color: '#f9fafb', display: 'block', margin: '4px 0' }}>Approval & Safe Dispatch</strong>
+                <strong style={{ fontSize: '13px', color: '#f9fafb', display: 'block', margin: '4px 0' }}>Human Review & Draft Action</strong>
                 <p style={{ fontSize: '11.5px', color: '#9ca3af', margin: 0 }}>
-                  Operator dashboard provides evidence and recommended options. Engineer approves before issuing CMMS Work Order or simulated setpoint.
+                  Prototype records a local demo approval and draft recommendation. No CMMS work order, plant setpoint, or actuator command is issued.
                 </p>
               </div>
 
@@ -371,7 +371,7 @@ export function ArchitectureView({ onOpenWorkbench }: { onOpenWorkbench: () => v
                 <span className="font-mono" style={{ fontSize: '11px', color: '#a855f7', fontWeight: 700 }}>L7 • VERIFICATION</span>
                 <strong style={{ fontSize: '13px', color: '#f9fafb', display: 'block', margin: '4px 0' }}>Measure & Learn</strong>
                 <p style={{ fontSize: '11.5px', color: '#9ca3af', margin: 0 }}>
-                  Post-intervention telemetry normalized for throughput & weather (IPMVP Option B/C). Prediction error fed back to model registry.
+                  Planned deployment: collect post-action meter and production data, normalize under an agreed M&V plan, then independently verify savings. No field data is connected here.
                 </p>
               </div>
             </div>
@@ -385,7 +385,7 @@ export function ArchitectureView({ onOpenWorkbench }: { onOpenWorkbench: () => v
                   <FileTextIcon size={16} className="text-emerald" />
                   <span>The Canonical FactoryState Contract (Section 15)</span>
                 </h3>
-                <p className="card-subtitle-clean">Every agent, model, and tool consumes this immutable state representation rather than inventing its own</p>
+                <p className="card-subtitle-clean">Illustrative shared data contract for the prototype; persistence and tamper-evident audit guarantees require production deployment.</p>
               </div>
               <span className="kpi-badge success">Zero Parsing Errors</span>
             </div>
@@ -468,7 +468,7 @@ export function ArchitectureView({ onOpenWorkbench }: { onOpenWorkbench: () => v
                   <div style={{ fontSize: '11px', color: '#06b6d4', fontWeight: 700, marginBottom: '4px' }}>EDGE INDUSTRIAL GATEWAY</div>
                   <div style={{ fontSize: '11px', color: '#cbd5e1', lineHeight: '1.5' }}>
                     • Telemetry Ingestion (Modbus/OPC-UA)<br />
-                    • 72h Offline Ring Buffer Store<br />
+                    • Proposed offline buffering (capacity to be sized at deployment)<br />
                     • Signal Normalization & Filtering<br />
                     • Equipment-Specific Learned Baseline
                   </div>
@@ -479,7 +479,7 @@ export function ArchitectureView({ onOpenWorkbench }: { onOpenWorkbench: () => v
                 <div style={{ background: 'rgba(15, 23, 42, 0.9)', padding: '12px', borderRadius: '8px', border: '1px solid rgba(129, 140, 248, 0.3)' }}>
                   <div style={{ fontSize: '11px', color: '#818cf8', fontWeight: 700, marginBottom: '4px' }}>SYSTEM 1 — FAST DECISION LOOP</div>
                   <div style={{ fontSize: '11px', color: '#cbd5e1', lineHeight: '1.5' }}>
-                    • Decision-2.0-Sol-2B Model (&lt;10ms)<br />
+                    • Configurable model gateway (runtime status shown separately)<br />
                     • Anomaly & Envelope Screening<br />
                     • Deterministic Safety Guardrails (P &ge; 5.5 bar)<br />
                     • Tool / Investigation Router
@@ -595,12 +595,12 @@ export function ArchitectureView({ onOpenWorkbench }: { onOpenWorkbench: () => v
                 <div style={{ textAlign: 'center', color: '#00d328', fontWeight: 800 }}>&rarr;</div>
 
                 <div style={{ background: 'rgba(15, 23, 42, 0.9)', padding: '12px', borderRadius: '8px', border: '1px solid rgba(168, 85, 247, 0.4)' }}>
-                  <div style={{ fontSize: '11px', color: '#a855f7', fontWeight: 700, marginBottom: '4px' }}>CONTINUOUS LEARNING (CLOSES LOOP)</div>
+                  <div style={{ fontSize: '11px', color: '#a855f7', fontWeight: 700, marginBottom: '4px' }}>PLANNED LEARNING LOOP (NOT IMPLEMENTED)</div>
                   <div style={{ fontSize: '11px', color: '#cbd5e1', lineHeight: '1.5' }}>
-                    • Prediction Error (14.3%) Feedback<br />
-                    • Model & Operating Envelope Registry Update<br />
-                    • Baseline Re-Anchoring (Target: 8.5 kWh/t)<br />
-                    • Immutable Decision Audit Log (FO-2026-00182)
+                    • Synthetic example variance only<br />
+                    • Governed model update is a future target<br />
+                    • Example intensity target: 8.5 kWh/t<br />
+                    • Demo audit records are not tamper-proof
                   </div>
                 </div>
               </div>
@@ -807,17 +807,17 @@ export function ArchitectureView({ onOpenWorkbench }: { onOpenWorkbench: () => v
             {/* Hypothesis A */}
             <div style={{ background: 'rgba(16, 185, 129, 0.06)', padding: '16px', borderRadius: '10px', border: '1px solid rgba(16, 185, 129, 0.4)', boxShadow: 'var(--neu-sunken)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                <span className="font-mono text-emerald" style={{ fontWeight: 800, fontSize: '13px' }}>HYPOTHESIS A (CONFIRMED)</span>
-                <span className="kpi-badge success">82% Confidence</span>
+                <span className="font-mono text-emerald" style={{ fontWeight: 800, fontSize: '13px' }}>HYPOTHESIS A (SCENARIO LEADER)</span>
+                <span className="kpi-badge success">Fixture score: 82%</span>
               </div>
               <h4 style={{ fontSize: '14px', fontWeight: 700, color: '#f9fafb', margin: '0 0 6px 0' }}>
                 Compressed-Air Distribution Main Leakage
               </h4>
               <p style={{ fontSize: '12px', color: '#cbd5e1', lineHeight: '1.4', margin: '0 0 10px 0' }}>
-                Flow increased to 397 CFM while delivery pressure dropped to 6.1 bar despite nominal production throughput.
+                Synthetic scenario inputs pair 397 CFM flow with 6.1 bar delivery pressure. Field readings and production context are not connected.
               </p>
               <div style={{ background: '#0b111e', padding: '10px', borderRadius: '6px', fontSize: '11px', color: '#9ca3af', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
-                <strong style={{ color: '#00d328' }}>Physics Model Test:</strong> Orifice sonic choked mass flow formula confirms a 5.0mm coupling leak at 6.1 bar dissipates 64.2 CFM (11.8 kW equivalent loss), matching the exact observed power spike.
+                <strong style={{ color: '#00d328' }}>Illustrative physics calculation:</strong> the orifice-flow model estimates the effect of an assumed 5.0 mm leak at 6.1 bar. Inspect the plant and compare with calibrated meter data before relying on the result.
                 <div style={{ marginTop: '6px', color: '#6b7280' }}>
                   Evidence Sources: E1 (Power Trend), E2 (Pressure Trend), E5 (Leak Inspection History)
                 </div>
@@ -837,7 +837,7 @@ export function ArchitectureView({ onOpenWorkbench }: { onOpenWorkbench: () => v
                 Operator artificially elevated discharge receiver pressure above rated 6.5 bar operating envelope.
               </p>
               <div style={{ background: '#0b111e', padding: '10px', borderRadius: '6px', fontSize: '11px', color: '#9ca3af', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
-                <strong style={{ color: '#f87171' }}>Rejection Rationale:</strong> Pressure ratio model P &prop; (P₂/P₁)^((k-1)/k). Fails because measured delivery pressure is 6.1 bar (sub-nominal), directly disproving high setpoint.
+                <strong style={{ color: '#f87171' }}>Scenario comparison:</strong> the pressure-ratio model does not rank this explanation as highly under the assumed 6.1 bar input; it does not disprove a site condition.
                 <div style={{ marginTop: '6px', color: '#6b7280' }}>
                   Evidence Sources: E2 (Line Pressure Trend)
                 </div>
@@ -857,7 +857,7 @@ export function ArchitectureView({ onOpenWorkbench }: { onOpenWorkbench: () => v
                 Mechanical friction or isentropic degradation inside rotary screw element causing electrical parasitic drag.
               </p>
               <div style={{ background: '#0b111e', padding: '10px', borderRadius: '6px', fontSize: '11px', color: '#9ca3af', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
-                <strong style={{ color: '#38bdf8' }}>Physics Model Test:</strong> ISO 10816-3 Vibration Envelope. Measured RMS vibration 1.7 mm/s is well below the 2.5 mm/s alarm threshold. Motor temp is normal at 68.2 °C.
+                <strong style={{ color: '#38bdf8' }}>Illustrative physics check:</strong> sample vibration and temperature values are compared with example limits. No live vibration sensor or motor-temperature feed is connected.
                 <div style={{ marginTop: '6px', color: '#6b7280' }}>
                   Evidence Sources: E1 (Power Trend), E3 (CMMS Overhaul History)
                 </div>
@@ -877,7 +877,7 @@ export function ArchitectureView({ onOpenWorkbench }: { onOpenWorkbench: () => v
                 Production cadence surge on moulding line consuming additional pneumatic actuator pulses.
               </p>
               <div style={{ background: '#0b111e', padding: '10px', borderRadius: '6px', fontSize: '11px', color: '#9ca3af', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
-                <strong style={{ color: '#f87171' }}>Rejection Rationale:</strong> Mass-Energy Balance. MES telemetry demonstrates line throughput remained flat at 10.2 t/h. SEC surged +14.3% with zero production yield increase.
+                <strong style={{ color: '#f87171' }}>Scenario comparison:</strong> fixture throughput is held at 10.2 t/day while SEC changes. No MES telemetry is connected, so field throughput must be checked.
                 <div style={{ marginTop: '6px', color: '#6b7280' }}>
                   Evidence Sources: E4 (MES Production Counter)
                 </div>
@@ -914,11 +914,11 @@ export function ArchitectureView({ onOpenWorkbench }: { onOpenWorkbench: () => v
               <div style={{ textAlign: 'center', color: '#00d328', fontWeight: 800 }}>&rarr; Action &rarr;</div>
 
               <div style={{ background: 'var(--glass-surface)', padding: '14px', borderRadius: '8px', border: '1px solid rgba(16, 185, 129, 0.3)', textAlign: 'center' }}>
-                <span style={{ fontSize: '10.5px', color: '#9ca3af' }}>AFTER (MEASURED)</span>
+                <span style={{ fontSize: '10.5px', color: '#9ca3af' }}>AFTER (MODELLED)</span>
                 <div className="font-mono text-emerald" style={{ fontSize: '20px', fontWeight: 800, marginTop: '4px' }}>
                   9.8 kWh/t
                 </div>
-                <div style={{ fontSize: '10px', color: '#00d328', marginTop: '2px' }}>Feeder F-03 Verified</div>
+                <div style={{ fontSize: '10px', color: '#00d328', marginTop: '2px' }}>Synthetic fixture example</div>
               </div>
 
               <div style={{ textAlign: 'center', color: '#00d328', fontWeight: 800 }}>&rarr; Normalized &rarr;</div>
@@ -928,19 +928,19 @@ export function ArchitectureView({ onOpenWorkbench }: { onOpenWorkbench: () => v
                 <div className="font-mono text-cyan" style={{ fontSize: '20px', fontWeight: 800, marginTop: '4px' }}>
                   14.3%
                 </div>
-                <div style={{ fontSize: '10px', color: '#22d3ee', marginTop: '2px' }}>Predicted: -1.4 | Actual: -1.2</div>
+                <div style={{ fontSize: '10px', color: '#22d3ee', marginTop: '2px' }}>Scenario A: -1.4 | Scenario B: -1.2</div>
               </div>
             </div>
 
             <div style={{ marginTop: '16px', background: '#0b111e', padding: '14px', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
-                  <strong style={{ fontSize: '13px', color: '#f9fafb' }}>Continuous Learning Loopback to Model Registry</strong>
+                  <strong style={{ fontSize: '13px', color: '#f9fafb' }}>Illustrative Learning Loop (deployment target)</strong>
                   <p style={{ fontSize: '11.5px', color: '#9ca3af', margin: '2px 0 0 0' }}>
-                    Prediction variance (14.3%) automatically recalibrates Line 2 operating envelope and trains future counterfactual scenarios.
+                    Synthetic example variance only. Automatic recalibration is not implemented; future updates require governed review and validated plant data.
                   </p>
                 </div>
-                <span className="kpi-badge success">Target Re-Anchored: 8.5 kWh/t</span>
+                <span className="kpi-badge success">Example target: 8.5 kWh/t</span>
               </div>
             </div>
           </div>

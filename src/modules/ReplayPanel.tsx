@@ -53,7 +53,7 @@ export function ReplayPanel() {
       <header className="module-header compact-header">
         <div>
           <h2>Replay production</h2>
-          <span>Reconstruction from live MCP timeline · {formatDuration(duration)}</span>
+          <span>Synthetic case-study replay · {formatDuration(duration)}</span>
         </div>
         <button className={`toggle-button${overlay ? ' active' : ''}`} onClick={() => setOverlay((value) => !value)} aria-pressed={overlay}>
           <i /> Anomaly overlay

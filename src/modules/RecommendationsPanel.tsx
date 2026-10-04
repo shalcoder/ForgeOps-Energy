@@ -45,7 +45,7 @@ export function RecommendationsPanel({ agentResponse }: { agentResponse?: Assist
       <header className="module-header">
         <div>
           <h2>Actionable Recommendations & Operator Approval</h2>
-          <span>Human approval is saved on this device and synchronized to the audit API when available.</span>
+          <span>Approvals are saved locally; API acknowledgement is attempted when available. No plant or CMMS integration is configured.</span>
         </div>
         <button className="btn-secondary-action dossier-export-button" onClick={() => exportAuditDossier(data, focus)}><FileTextIcon size={14} /> Export dossier</button>
         <span className="objective-badge font-mono">
@@ -61,7 +61,7 @@ export function RecommendationsPanel({ agentResponse }: { agentResponse?: Assist
           <div>
             <strong>Operator Approval Recorded</strong>
             <p>
-              Work order reference <strong className="font-mono text-emerald-300">{dispatchedOrder}</strong> saved locally. It will sync when the edge gateway is online; this records approval only and does not claim physical execution.
+              Demo reference <strong className="font-mono text-emerald-300">{dispatchedOrder}</strong> saved locally. API acknowledgement may be attempted; this records a demo approval only and does not create a CMMS work order or claim physical execution.
             </p>
           </div>
           <button className="dismiss-btn" onClick={() => setDispatchedOrder(null)} aria-label="Dismiss">
@@ -139,15 +139,15 @@ export function RecommendationsPanel({ agentResponse }: { agentResponse?: Assist
               <div className="rec-constraints-strip font-mono text-xs">
                 <div className="constraint-check-item">
                   <CheckCircleIcon size={13} className="text-emerald-400" />
-                  <span>Throughput: <strong className="text-slate-200">10.2 ton/day Preserved (0% loss)</strong></span>
+                  <span>Throughput: <strong className="text-slate-200">10.2 ton/day fixture guardrail; preservation unverified</strong></span>
                 </div>
                 <div className="constraint-check-item">
                   <CheckCircleIcon size={13} className="text-emerald-400" />
-                  <span>Quality Yield: <strong className="text-slate-200">{rec.predictedYield}% Preserved</strong></span>
+                  <span>Quality Yield: <strong className="text-slate-200">{rec.predictedYield}% scenario assumption; validate with QMS data</strong></span>
                 </div>
                 <div className="constraint-check-item">
                   <CheckCircleIcon size={13} className="text-emerald-400" />
-                  <span>Safety: <strong className="text-slate-200">Pneumatic pressure in envelope (6.5 bar)</strong></span>
+                  <span>Safety: <strong className="text-slate-200">6.5 bar example input; not a live safety interlock</strong></span>
                 </div>
               </div>
 
@@ -155,7 +155,7 @@ export function RecommendationsPanel({ agentResponse }: { agentResponse?: Assist
               <div className="rec-approval-actions">
                 <div className="rec-approval-left">
                   <span className="text-xs font-semibold text-slate-300">Operator Decision Gate</span>
-                  <small className="text-slate-400 text-[11px] block">No autonomous actuator dispatch without plant supervisor sign-off.</small>
+                    <small className="text-slate-400 text-[11px] block">Prototype approval only; no actuator dispatch or CMMS connection exists.</small>
                 </div>
                 <div className="rec-approval-buttons">
                   <button
@@ -166,7 +166,7 @@ export function RecommendationsPanel({ agentResponse }: { agentResponse?: Assist
                     {isApproved ? (
                       <>
                         <CheckIcon size={14} />
-                        <span>APPROVED & DISPATCHED</span>
+                        <span>DEMO APPROVAL RECORDED</span>
                       </>
                     ) : (
                       <>

@@ -398,7 +398,7 @@ export function LandingPageView({ onEnterApp, onLogin, theme, setTheme }: Landin
               Compressors run continuously on-load to overcome distribution drop. ForgeOps identifies micro-leaks via sonic orifice equations without manual ultrasonic audits.
             </p>
             <div style={{ marginTop: '14px', paddingTop: '10px', borderTop: '1px solid var(--glass-border)', fontSize: '11px', color: '#5e7e60', fontWeight: 600 }}>
-              &bull; Typical recovery: ₹35,000–₹65,000 / month per compressor
+      &bull; Scenario opportunity varies by duty cycle, leakage, tariff, and repair cost; validate at site
             </div>
           </div>
 
@@ -410,16 +410,16 @@ export function LandingPageView({ onEnterApp, onLogin, theme, setTheme }: Landin
               Time-of-Day (ToD) Surcharge Avoidance
             </h3>
             <p style={{ fontSize: '12.5px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-              Peak tariffs (₹10.80/kWh during 18:00–22:00) inflate casting costs. ForgeOps aligns heavy melting cycles with solar off-peak windows (₹6.20/kWh) with zero throughput hit.
+              Load-shifting analysis can compare a plant’s tariff periods and renewable availability against furnace, batch, and quality constraints. No tariff, dispatch schedule, or production result is connected in this prototype.
             </p>
             <div style={{ marginTop: '14px', paddingTop: '10px', borderTop: '1px solid var(--glass-border)', fontSize: '11px', color: '#5e7e60', fontWeight: 600 }}>
-              &bull; Up to 18% reduction in monthly DISCOM demand charges
+              &bull; Savings depend on the local DISCOM tariff and an operations-approved schedule
             </div>
           </div>
 
           <div className="card-clean" style={{ padding: '24px' }}>
             <span className="kicker-tag" style={{ border: '1px solid #d4e4d2', background: '#edf4ec', color: '#3b663b' }}>
-              BEE ADEETIE SCHEME ALIGNED
+              BEE ADEETIE PROJECT-INPUT SUPPORT
             </span>
             <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '18px', margin: '10px 0 6px' }}>
               Audit Preparation Support
@@ -474,7 +474,7 @@ export function LandingPageView({ onEnterApp, onLogin, theme, setTheme }: Landin
                 <li><strong>Planner:</strong> Formulates hypothesis test plan & retrieves CMMS context</li>
                 <li><strong>Research:</strong> Retrieves available MCP evidence or demo fixtures</li>
                 <li><strong>Analysis:</strong> Competing Bayesian hypotheses + thermodynamic physics</li>
-                <li><strong>Execution:</strong> Prepares Pareto-optimal dispatch orders for human approval</li>
+                <li><strong>Execution:</strong> Ranks scenario options and prepares a proposed action for human review</li>
               </ul>
               <span className="provenance-badge provenance-modelled">4-agent prototype</span>
             </div>

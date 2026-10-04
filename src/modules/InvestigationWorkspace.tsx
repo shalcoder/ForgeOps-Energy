@@ -46,62 +46,62 @@ export function InvestigationWorkspace({
     {
       id: 'E1',
       title: 'E1 Power trend telemetry',
-      summary: 'Power increased from 49 kW to 61 kW (+16.8%) on Feeder F-03 submeter.',
-      detail: 'Measured continuously on Schneider PM8000 submeter. Normal operating band for CMP-01 is 45–53 kW. Machine entered continuous on-load modulation at 08:34 AM.',
-      provenance: 'Measured',
+      summary: 'Fixture power input changes from 49 kW to 61 kW (+16.8%) on Feeder F-03.',
+      detail: 'Synthetic demonstration values only. No Schneider PM8000 submeter is connected; validate the power band using calibrated site measurements.',
+      provenance: 'Synthetic fixture',
       timestamp: '08:34 AM',
     },
     {
       id: 'E2',
       title: 'E2 Pressure transducer trend',
-      summary: 'Header pressure remained stable at 6.5 bar (±0.1 bar).',
-      detail: 'Pressure sensor PT-02 at main receiver header showed no supply starvation. Confirms that compressor worked harder to maintain nominal setpoint.',
-      provenance: 'Measured',
+      summary: 'Fixture header-pressure input is 6.5 bar (±0.1 bar).',
+      detail: 'Synthetic pressure example only. Sensor PT-02 is not connected, and this does not confirm a plant operating condition.',
+      provenance: 'Synthetic fixture',
       timestamp: '08:37 AM',
     },
     {
       id: 'E3',
       title: 'E3 Air flow meter trend',
-      summary: 'Flow remained constant at 397 CFM into Moulding Line 2.',
-      detail: 'Flow meter FT-01 measured nominal consumption. The delta power is not explained by increased legitimate pneumatic tool usage.',
-      provenance: 'Measured',
+      summary: 'Fixture flow input is 397 CFM into Moulding Line 2.',
+      detail: 'Synthetic flow example only. Flow meter FT-01 and downstream tool demand are not connected.',
+      provenance: 'Synthetic fixture',
       timestamp: '08:38 AM',
     },
     {
       id: 'E4',
       title: 'E4 MES production throughput',
-      summary: 'Line 2 production demand unchanged at 10.2 tons/hour.',
-      detail: 'MES ERP job orders confirmed mold cycle count remained at nominal rate of 42 molds/hr. Zero production demand surge.',
-      provenance: 'Verified',
+      summary: 'Fixture production guardrail is held at 10.2 tons/day.',
+      detail: 'Synthetic production assumption only. MES/ERP job orders and mould-cycle counts are not connected, so throughput preservation is unproven.',
+      provenance: 'Synthetic fixture',
       timestamp: '08:40 AM',
     },
     {
       id: 'E5',
       title: 'E5 CMMS maintenance history',
-      summary: '3 leakage complaints logged in CMMS over past 14 days on Line 2 Moulding Bank.',
-      detail: 'Work request WR-6891 flagged worn flexible braided coupling on manifold drop #4. Temporary clamp installed last Tuesday has loosened.',
-      provenance: 'Verified',
+      summary: 'The fixture includes three sample leakage records for Line 2.',
+      detail: 'Synthetic maintenance history only. Work request WR-6891 is a demo identifier; no live CMMS record was retrieved.',
+      provenance: 'Synthetic fixture',
       timestamp: '08:48 AM',
     },
     {
       id: 'E6',
       title: 'E6 Quality inspection log',
-      summary: 'Zero scrap rate increase or casting defect correlation.',
-      detail: 'Quality station confirmed metallurgical density 97.6% and dimensional tolerance compliant. Problem is purely energetic waste.',
-      provenance: 'Verified',
+      summary: 'Fixture quality guardrail is held at 97.6%.',
+      detail: 'Synthetic quality assumption only. No QMS inspection record is connected, so product quality impact is not verified.',
+      provenance: 'Synthetic fixture',
       timestamp: '08:50 AM',
     },
   ];
 
   const timelineEvents = [
-    { time: '08:20 AM', type: 'production', label: 'Production cycle started (10.2 t/h)', source: 'MES' },
-    { time: '08:34 AM', type: 'telemetry', label: 'CMP-01 power draw escalated: 49 kW → 61 kW', source: 'PM8000' },
-    { time: '08:37 AM', type: 'telemetry', label: 'Header pressure transducer confirmed stable at 6.5 bar', source: 'PT-02' },
+    { time: '08:20 AM', type: 'production', label: 'Demo production fixture starts (10.2 t/day guardrail)', source: 'Synthetic example' },
+    { time: '08:34 AM', type: 'telemetry', label: 'Fixture CMP-01 power input changes: 49 kW → 61 kW', source: 'Synthetic example' },
+    { time: '08:37 AM', type: 'telemetry', label: 'Fixture header pressure input: 6.5 bar', source: 'Synthetic example' },
     { time: '08:41 AM', type: 'telemetry', label: 'Power deviation detected (+16.8% over baseline envelope)', source: 'L1 Baseline' },
-    { time: '08:45 AM', type: 'agent', label: 'System 1 triggered investigation (Safety interlocks checked: PASS)', source: 'Sol-2B' },
+    { time: '08:45 AM', type: 'agent', label: 'Demo rule triggered investigation (fixture safety bounds evaluated)', source: 'Deterministic demo' },
     { time: '08:46 AM', type: 'agent', label: 'System 2 Planner agent initiated evidence synthesis', source: 'Planner' },
-    { time: '08:48 AM', type: 'maintenance', label: 'CMMS maintenance record retrieved: WR-6891 coupling leak', source: 'CMMS' },
-    { time: '08:51 AM', type: 'agent', label: 'Thermodynamic physics sonic orifice test completed (PASS)', source: 'Physics' },
+    { time: '08:48 AM', type: 'maintenance', label: 'Synthetic case-study record: WR-6891 coupling leak', source: 'Fixture' },
+    { time: '08:51 AM', type: 'agent', label: 'Illustrative orifice calculation completed (not a field test)', source: 'Scenario model' },
   ];
 
   const filteredTimeline = timelineEvents.filter((ev) => {
@@ -120,12 +120,12 @@ export function InvestigationWorkspace({
       <header className="page-header-clean">
         <div>
           <div className="page-kicker">
-            <span className="kicker-tag">INVESTIGATION WORKSPACE</span>
+            <span className="kicker-tag">SYNTHETIC CASE STUDY</span>
             <span>Case Reference: {investigationId}</span>
           </div>
-          <h1 className="page-title">CMP-01 Abnormal Energy Consumption</h1>
+          <h1 className="page-title">CMP-01 Scenario Investigation</h1>
           <p className="page-subtitle">
-            Autonomous multi-source causal investigation, thermodynamic physics validation, and counterfactual scenario evaluation.
+            Explore a fixture-based root-cause hypothesis and thermodynamic scenarios. No live plant sources are connected.
           </p>
         </div>
 
@@ -143,7 +143,7 @@ export function InvestigationWorkspace({
       <div className="card-clean" style={{ padding: '14px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '14px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span style={{ fontSize: '10.5px', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>
-            4-AGENT PIPELINE
+            4-ROLE DEMONSTRATION TRACE
           </span>
         </div>
 
@@ -169,7 +169,7 @@ export function InvestigationWorkspace({
           </div>
         </div>
 
-        <span className="provenance-badge provenance-measured">Latency: 280ms • MCP Connected</span>
+        <span className="provenance-badge provenance-simulated">Deterministic fixture trace • MCP not connected</span>
       </div>
 
       {/* ── Sub-Navigation Tabs ── */}
@@ -202,29 +202,29 @@ export function InvestigationWorkspace({
               Primary Finding
             </h3>
             <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-              Compressed-air distribution leakage on the Assembly Line 2 manifold drop is the leading explanation for elevated CMP-01 power draw. The compressor is working continuously on-load to overcome the pressure delta.
+              Synthetic fixture analysis ranks compressed-air leakage as a hypothesis for the example CMP-01 power increase. Inspect and measure onsite before treating it as a plant finding.
             </p>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '10px', marginTop: '20px' }}>
               <div style={{ padding: '12px', borderRadius: '7px', background: 'var(--bg-ground)', border: '1px solid var(--glass-border)' }}>
                 <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Confidence</span>
                 <div style={{ fontSize: '17px', fontWeight: 700, color: '#5e7e60', marginTop: '2px' }}>82%</div>
-                <span className="provenance-badge provenance-modelled" style={{ marginTop: '4px' }}>Calibrated</span>
+                <span className="provenance-badge provenance-modelled" style={{ marginTop: '4px' }}>Fixture score</span>
               </div>
               <div style={{ padding: '12px', borderRadius: '7px', background: 'var(--bg-ground)', border: '1px solid var(--glass-border)' }}>
                 <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Evidence</span>
                 <div style={{ fontSize: '17px', fontWeight: 700, color: 'var(--text-primary)', marginTop: '2px' }}>6 sources</div>
-                <span className="provenance-badge provenance-measured" style={{ marginTop: '4px' }}>Correlated</span>
+                <span className="provenance-badge provenance-simulated" style={{ marginTop: '4px' }}>Fixture records</span>
               </div>
               <div style={{ padding: '12px', borderRadius: '7px', background: 'var(--bg-ground)', border: '1px solid var(--glass-border)' }}>
                 <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Production Impact</span>
-                <div style={{ fontSize: '14px', fontWeight: 650, color: '#5e7e60', marginTop: '4px' }}>None detected</div>
-                <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>10.2 t/h intact</span>
+                <div style={{ fontSize: '14px', fontWeight: 650, color: '#a8793e', marginTop: '4px' }}>Not measured</div>
+                <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>Fixture: 10.2 t/day</span>
               </div>
               <div style={{ padding: '12px', borderRadius: '7px', background: 'var(--bg-ground)', border: '1px solid var(--glass-border)' }}>
                 <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Safety Interlocks</span>
-                <div style={{ fontSize: '14px', fontWeight: 650, color: '#5e7e60', marginTop: '4px' }}>PASS</div>
-                <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>P &ge; 5.5 bar</span>
+                <div style={{ fontSize: '14px', fontWeight: 650, color: '#a8793e', marginTop: '4px' }}>Model check</div>
+                <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>not a plant interlock</span>
               </div>
             </div>
 
@@ -265,7 +265,7 @@ export function InvestigationWorkspace({
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '9px 12px', borderRadius: '6px', background: '#edf4ec', border: '1px solid #d4e4d2' }}>
                 <span style={{ fontSize: '12px', color: '#3b663b', fontWeight: 600 }}>CMMS Leak History</span>
-                <strong style={{ color: '#3b663b', fontSize: '12px' }}>&check; Confirmed (WR-6891)</strong>
+                <strong style={{ color: '#a8793e', fontSize: '12px' }}>Fixture record (WR-6891)</strong>
               </div>
             </div>
           </div>
@@ -297,7 +297,7 @@ export function InvestigationWorkspace({
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <strong style={{ fontSize: '12px', color: 'var(--text-primary)' }}>{ev.title}</strong>
-                    <span className="provenance-badge provenance-measured">{ev.provenance}</span>
+                    <span className="provenance-badge provenance-simulated">{ev.provenance}</span>
                   </div>
                   <p style={{ margin: '4px 0 0', fontSize: '11px', color: 'var(--text-secondary)', lineHeight: 1.4 }}>
                     {ev.summary}
@@ -484,7 +484,7 @@ export function InvestigationWorkspace({
                   <div>
                     <span style={{ fontSize: '10px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>EVIDENCE</span>
                     <p style={{ margin: '4px 0 0', fontSize: '12px', color: 'var(--text-primary)' }}>
-                      E1 (Power +16.8%) + E2 (Pressure 6.5 bar constant) + E5 (CMMS WR-6891 coupling leak).
+                      Fixture E1 (Power +16.8%) + E2 (Pressure 6.5 bar) + E5 (synthetic maintenance record WR-6891).
                     </p>
                   </div>
 
@@ -500,7 +500,7 @@ export function InvestigationWorkspace({
                     <div style={{ padding: '10px 12px', borderRadius: '6px', background: 'var(--bg-ground)', fontSize: '11px', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '4px' }}>
                       <div>Expected additional flow: <strong>14.2 CFM</strong> (Sonic orifice eq)</div>
                       <div>Expected power impact: <strong>+11.8 kW</strong> (Isentropic curve)</div>
-                      <div>Observed power impact: <strong>+12.0 kW</strong> (Measured delta)</div>
+                      <div>Scenario power impact: <strong>+12.0 kW</strong> (fixture-model comparison)</div>
                     </div>
                   </div>
 
@@ -530,7 +530,7 @@ export function InvestigationWorkspace({
               <p className="eyebrow">COUNTERFACTUAL SIMULATION</p>
               <h2>What happens if we intervene?</h2>
             </div>
-            <span className="provenance-badge provenance-measured">Current Baseline: 11.2 kWh/t</span>
+            <span className="provenance-badge provenance-simulated">Fixture baseline: 11.2 kWh/t</span>
           </div>
 
           {/* Interactive What-If Simulation Sandbox */}
@@ -733,9 +733,9 @@ export function InvestigationWorkspace({
                 <tr style={{ background: 'var(--bg-ground)' }}>
                   <td><strong>Constraints Gate</strong></td>
                   <td>—</td>
-                  <td><span className="provenance-badge provenance-measured">ALL PASS</span></td>
-                  <td><span className="provenance-badge provenance-measured">ALL PASS</span></td>
-                  <td><span className="provenance-badge provenance-measured">ALL PASS</span></td>
+                  <td><span className="provenance-badge provenance-simulated">Model check</span></td>
+                  <td><span className="provenance-badge provenance-simulated">Model check</span></td>
+                  <td><span className="provenance-badge provenance-simulated">Model check</span></td>
                 </tr>
                 <tr>
                   <td><strong>Select Option</strong></td>

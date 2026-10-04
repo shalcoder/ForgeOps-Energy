@@ -38,9 +38,9 @@ export function OfflineStatusBanner() {
   return (
     <aside className={`edge-status-banner${online ? ' reconnecting' : ' offline'}`} role="status" aria-live="polite">
       <span className="edge-status-dot" />
-      <strong>{online ? 'Edge gateway connected' : 'Edge gateway offline'}</strong>
-      <span>{pending ? `${pending} approval${pending === 1 ? '' : 's'} ${online ? 'syncing' : 'saved on this device'}` : 'Waiting for connection to restore.'}</span>
-      {online && pending > 0 && <button onClick={() => void syncPendingApprovals()}>Retry sync</button>}
+      <strong>{online ? 'Agent API reachable' : 'Agent API unavailable'}</strong>
+      <span>{pending ? `${pending} approval${pending === 1 ? '' : 's'} awaiting API acknowledgement; plant integrations are not configured.` : 'Factory edge gateway is not connected in this demo.'}</span>
+      {online && pending > 0 && <button onClick={() => void syncPendingApprovals()}>Retry API acknowledgement</button>}
     </aside>
   );
 }

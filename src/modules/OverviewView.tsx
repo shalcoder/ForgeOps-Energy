@@ -49,7 +49,7 @@ export function OverviewView({ onNavigate }: OverviewProps) {
             <strong>9.8</strong>
             <small>kWh/t</small>
           </div>
-          <p><span className="metric-change" style={{ color: '#5e7e60' }}>-8.4%</span> from 10.7 kWh/t target</p>
+          <p><span className="metric-change" style={{ color: '#5e7e60' }}>-8.4%</span> vs illustrative 10.7 kWh/t baseline</p>
         </article>
 
         <article className="overview-metric">
@@ -61,7 +61,7 @@ export function OverviewView({ onNavigate }: OverviewProps) {
             <strong>₹1.84L</strong>
             <small>est.</small>
           </div>
-          <p>HT-2A industrial tariff at ₹7.8/kWh</p>
+          <p>Illustrative HT-2A tariff assumption: ₹7.8/kWh</p>
         </article>
 
         <article className="overview-metric">
@@ -73,7 +73,7 @@ export function OverviewView({ onNavigate }: OverviewProps) {
             <strong>762</strong>
             <small>t/day</small>
           </div>
-          <p>Moulding Lines 1 & 2 full capacity</p>
+          <p>Fixture production scenario; not MES data</p>
         </article>
 
         <article className="overview-metric">
@@ -85,7 +85,7 @@ export function OverviewView({ onNavigate }: OverviewProps) {
             <strong>97.6%</strong>
             <small>first-pass</small>
           </div>
-          <p>Above 97.0% plant minimum guardrail</p>
+          <p>Illustrative quality assumption; plant limit not validated</p>
         </article>
       </section>
 
@@ -93,7 +93,7 @@ export function OverviewView({ onNavigate }: OverviewProps) {
       <div className="pipeline-pulse-strip">
         <button className="pipeline-pulse-item" onClick={() => onNavigate('opportunities')}>
           <span className="pipeline-pulse-num alert-col">12</span>
-          <span className="pipeline-pulse-label">Opportunities</span>
+          <span className="pipeline-pulse-label">Demo opportunities</span>
         </button>
         <span className="pipeline-pulse-divider" />
         <button className="pipeline-pulse-item" onClick={() => onNavigate('investigations')}>
@@ -145,7 +145,7 @@ export function OverviewView({ onNavigate }: OverviewProps) {
               <span>Demand: <strong>Normal</strong></span>
               <span>Pressure: <strong>Normal (6.5 bar)</strong></span>
               <span>Power: <strong style={{ color: '#bd6249' }}>Elevated (61 kW)</strong></span>
-              <span>Confidence: <strong>0.91</strong></span>
+              <span>Demo rule score: <strong>0.91</strong></span>
             </div>
 
             <div className="attention-card-footer">
@@ -181,7 +181,7 @@ export function OverviewView({ onNavigate }: OverviewProps) {
 
             <div className="attention-card-footer">
               <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
-                Lid seal thermal bleed identified by thermography telemetry.
+                Fixture hypothesis: idle furnace loss may relate to lid sealing; inspect onsite to validate.
               </span>
               <button className="btn-secondary-action" style={{ padding: '6px 14px', fontSize: '11.5px' }} onClick={() => onNavigate('opportunities', 'opp-3')}>
                 <span>View opportunity</span>
@@ -207,19 +207,19 @@ export function OverviewView({ onNavigate }: OverviewProps) {
         {/* 4 Pipeline Stat Pills */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '10px', marginBottom: '14px' }}>
           <div style={{ padding: '12px 14px', borderRadius: '8px', border: '1px solid var(--glass-border)', background: 'var(--bg-surface)' }}>
-            <span style={{ fontSize: '10px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Identified</span>
+            <span style={{ fontSize: '10px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Demo fixture set</span>
             <div style={{ fontSize: '18px', fontWeight: 650, color: 'var(--text-primary)', marginTop: '2px' }}>12 opportunities</div>
           </div>
           <div style={{ padding: '12px 14px', borderRadius: '8px', border: '1px solid var(--glass-border)', background: 'var(--bg-surface)' }}>
-            <span style={{ fontSize: '10px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Potential savings</span>
+            <span style={{ fontSize: '10px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Modelled potential impact</span>
             <div style={{ fontSize: '18px', fontWeight: 650, color: '#5e7e60', marginTop: '2px' }}>₹3.8L <small style={{ fontSize: '11px', fontWeight: 500 }}>/ month</small></div>
           </div>
           <div style={{ padding: '12px 14px', borderRadius: '8px', border: '1px solid var(--glass-border)', background: 'var(--bg-surface)' }}>
-            <span style={{ fontSize: '10px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Awaiting decision</span>
+            <span style={{ fontSize: '10px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Demo decisions</span>
             <div style={{ fontSize: '18px', fontWeight: 650, color: '#bd6249', marginTop: '2px' }}>4 ready</div>
           </div>
           <div style={{ padding: '12px 14px', borderRadius: '8px', border: '1px solid var(--glass-border)', background: 'var(--bg-surface)' }}>
-            <span style={{ fontSize: '10px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Under verification</span>
+            <span style={{ fontSize: '10px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Scenario examples</span>
             <div style={{ fontSize: '18px', fontWeight: 650, color: '#5c438f', marginTop: '2px' }}>2 active</div>
           </div>
         </div>
@@ -241,7 +241,7 @@ export function OverviewView({ onNavigate }: OverviewProps) {
               <tr>
                 <td>
                   <strong>Compressor pressure optimization</strong>
-                  <div style={{ fontSize: '10.5px', color: 'var(--text-secondary)' }}>Tune setpoint 7.2 &rarr; 6.5 bar with zero throughput loss</div>
+                  <div style={{ fontSize: '10.5px', color: 'var(--text-secondary)' }}>Scenario setpoint 7.2 &rarr; 6.5 bar; production impact requires plant validation</div>
                 </td>
                 <td><span className="font-mono">CMP-01</span></td>
                 <td><span style={{ color: '#bd6249', fontWeight: 600 }}>+16.8%</span></td>
@@ -302,7 +302,7 @@ export function OverviewView({ onNavigate }: OverviewProps) {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' }}>
             <div style={{ display: 'flex', gap: '16px', fontSize: '11px', color: 'var(--text-secondary)' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span style={{ width: '12px', height: '2px', background: '#bd6249' }} /> Actual SEC (kWh/t)
+                <span style={{ width: '12px', height: '2px', background: '#bd6249' }} /> Synthetic SEC series (kWh/t)
               </span>
               <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <span style={{ width: '12px', height: '8px', background: 'rgba(94, 126, 96, 0.25)', border: '1px solid rgba(94, 126, 96, 0.5)' }} /> Expected Baseline Band (9.2–10.4)
@@ -433,7 +433,7 @@ export function OverviewView({ onNavigate }: OverviewProps) {
               <span className="loop-dot green" />
               <span>Verifying</span>
             </div>
-            <div className="loop-status-count">2 IPMVP tests</div>
+            <div className="loop-status-count">2 demo normalization examples</div>
           </div>
         </div>
       </section>
