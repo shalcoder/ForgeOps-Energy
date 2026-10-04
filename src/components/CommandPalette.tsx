@@ -10,7 +10,6 @@ import {
   ClockIcon,
   SlidersIcon,
   CheckCircleIcon,
-  ActivityIcon,
 } from './Icons';
 
 type CommandResult = {
