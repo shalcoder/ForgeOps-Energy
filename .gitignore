@@ -11,6 +11,8 @@ __pycache__/
 *.py[cod]
 .tmp-*.log
 forgeops-mcp-deploy.zip
+# Multi-GB local Hugging Face model snapshot; fetch/keep outside source control.
+models/Decision-2.0-Sol-2B/
 
 .pytest_cache/
 *.zip

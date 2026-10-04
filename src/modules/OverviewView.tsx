@@ -21,20 +21,20 @@ export function OverviewView({ onNavigate }: OverviewProps) {
       {/* ── Above the Fold: Plant Status & KPI Cards ── */}
       <header className="overview-heading">
         <div>
-          <p className="eyebrow">PLANT STATUS <span>·</span> BELGAUM FOUNDRY COMPLEX</p>
+          <p className="eyebrow">DEMO SCENARIO <span>·</span> BELGAUM FOUNDRY FIXTURE</p>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '14px', flexWrap: 'wrap' }}>
             <h1>Belgaum Foundry</h1>
             <span style={{ fontSize: '13px', color: '#5e7e60', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
-              <span className="status-dot" style={{ background: '#5e7e60' }} /> Plant operating normally
+              <span className="status-dot" style={{ background: '#d5a04e' }} /> Synthetic scenario
             </span>
           </div>
           <p className="overview-subtitle">
-            Energy performance <strong>9.8 kWh/t</strong> <span style={{ color: '#5e7e60', fontWeight: 600 }}>↓ 8.4% vs baseline</span> • Today's operational cycle
+            Demo energy intensity <strong>9.8 kWh/t</strong> • Fixture values are illustrative, not field measurements
           </p>
         </div>
 
         <div className="overview-date">
-          <span className="status-dot" /> Edge connection <strong>Live</strong>
+          <span className="status-dot" style={{ background: '#d5a04e' }} /> Data source <strong>Demo fixture</strong>
         </div>
       </header>
 
@@ -43,7 +43,7 @@ export function OverviewView({ onNavigate }: OverviewProps) {
         <article className="overview-metric">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span>Specific Energy (SEC)</span>
-            <span className="provenance-badge provenance-measured">Measured</span>
+            <span className="provenance-badge provenance-simulated">Demo</span>
           </div>
           <div>
             <strong>9.8</strong>
@@ -67,7 +67,7 @@ export function OverviewView({ onNavigate }: OverviewProps) {
         <article className="overview-metric">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span>Daily Throughput</span>
-            <span className="provenance-badge provenance-measured">Measured</span>
+            <span className="provenance-badge provenance-simulated">Demo</span>
           </div>
           <div>
             <strong>762</strong>
@@ -79,7 +79,7 @@ export function OverviewView({ onNavigate }: OverviewProps) {
         <article className="overview-metric">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span>Metallurgical Quality</span>
-            <span className="provenance-badge provenance-verified">Verified</span>
+            <span className="provenance-badge provenance-simulated">Demo</span>
           </div>
           <div>
             <strong>97.6%</strong>
@@ -98,22 +98,22 @@ export function OverviewView({ onNavigate }: OverviewProps) {
         <span className="pipeline-pulse-divider" />
         <button className="pipeline-pulse-item" onClick={() => onNavigate('investigations')}>
           <span className="pipeline-pulse-num cyan-col">3</span>
-          <span className="pipeline-pulse-label">Investigating</span>
+          <span className="pipeline-pulse-label">Demo cases to review</span>
         </button>
         <span className="pipeline-pulse-divider" />
         <button className="pipeline-pulse-item" onClick={() => onNavigate('actions')}>
           <span className="pipeline-pulse-num amber-col">4</span>
-          <span className="pipeline-pulse-label">Awaiting decision</span>
+          <span className="pipeline-pulse-label">Demo approvals</span>
         </button>
         <span className="pipeline-pulse-divider" />
         <button className="pipeline-pulse-item" onClick={() => onNavigate('verification')}>
           <span className="pipeline-pulse-num green-col">₹3.8L</span>
-          <span className="pipeline-pulse-label">Savings / month</span>
+          <span className="pipeline-pulse-label">Modelled potential / month</span>
         </button>
         <span className="pipeline-pulse-divider" />
         <button className="pipeline-pulse-item" onClick={() => onNavigate('verification')}>
           <span className="pipeline-pulse-num indigo-col">2</span>
-          <span className="pipeline-pulse-label">Under verification</span>
+          <span className="pipeline-pulse-label">Scenario calculations</span>
         </button>
       </div>
 
@@ -138,7 +138,7 @@ export function OverviewView({ onNavigate }: OverviewProps) {
                 <h3 className="attention-card-title" style={{ marginTop: '5px' }}>Compressor CMP-01</h3>
                 <p className="attention-card-sub">Energy consumption 16.8% above operating baseline</p>
               </div>
-              <span className="provenance-badge provenance-measured">Detected 14m ago</span>
+              <span className="provenance-badge provenance-simulated">Demo event</span>
             </div>
 
             <div className="attention-meta-strip">
@@ -150,7 +150,7 @@ export function OverviewView({ onNavigate }: OverviewProps) {
 
             <div className="attention-card-footer">
               <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
-                System 1 fast triage confirmed safety interlocks pass.
+                Demo safety rules passed; no plant interlocks are connected.
               </span>
               <button className="btn-primary-action" style={{ padding: '6px 14px', fontSize: '11.5px' }} onClick={() => onNavigate('investigations', 'INV-1024')}>
                 <span>Investigate</span>
@@ -311,11 +311,11 @@ export function OverviewView({ onNavigate }: OverviewProps) {
                 <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#bd6249' }} /> Anomaly Excursion
               </span>
               <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#5e7e60' }} /> Verified Intervention
+                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#5e7e60' }} /> Modelled scenario
               </span>
             </div>
 
-            <span className="provenance-badge provenance-measured">ISO 50001 Baseline</span>
+            <span className="provenance-badge provenance-simulated">Illustrative baseline</span>
           </div>
 
           {/* SVG Trend Band Chart */}
@@ -346,7 +346,7 @@ export function OverviewView({ onNavigate }: OverviewProps) {
                 fill="url(#bandGradient)"
               />
 
-              {/* Actual Measured SEC Line */}
+              {/* Scenario SEC series */}
               <polyline
                 points="40,95 140,92 240,88 340,42 440,48 540,105 680,108"
                 fill="none"

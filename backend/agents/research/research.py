@@ -7,7 +7,7 @@ from typing import Any
 from backend.llm.nitrochat_client import NitroChatClient
 from backend.mcp.nitro_mcp_client import NitroMCPClient
 from backend.schemas.research_models import ResearchInput, EvidenceBundle
-from backend.decision2.decision2_engine import Decision2Engine
+from backend.decision2 import get_decision2_engine
 
 
 
@@ -49,7 +49,7 @@ WORKBENCH_TOOLS = [
 class ResearchAgent:
     def __init__(self, llm: NitroChatClient | None = None) -> None:
         self.llm = llm or NitroChatClient()
-        self.decision2 = Decision2Engine()
+        self.decision2 = get_decision2_engine()
         self.last_trace: dict[str, Any] = {}
 
     def retrieve(self, inp: ResearchInput) -> EvidenceBundle:

@@ -31,10 +31,10 @@ const REPORT_TEMPLATES = [
   },
   {
     id: 'rep-mv',
-    title: 'IPMVP Option B Verified Savings Certificate',
+    title: 'Scenario M&V Calculation Report',
     period: 'INC-ENG-2401 (Line 2 Manifold)',
-    desc: 'Statistically normalized measurement and verification certificate signed under ISO 50015.',
-    badge: 'Certified',
+    desc: 'Synthetic-input baseline normalization example; not a certificate or field verification.',
+    badge: 'Demo only',
     size: '640 KB',
   },
   {
@@ -74,7 +74,7 @@ export function ReportsView({ onNavigate, selectedReportId }: ReportsProps) {
           </div>
           <h1 className="page-title">Plant Reports & Decision Dossiers</h1>
           <p className="page-subtitle">
-            Export certified reports for plant management, energy auditors, DISCOM tariff verification, and Tier-1 automotive OEM carbon disclosures.
+            Export demonstration reports for review. They are not certified, audited, or suitable as independent OEM or regulatory disclosures.
           </p>
         </div>
       </header>

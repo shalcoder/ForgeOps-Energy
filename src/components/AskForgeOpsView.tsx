@@ -21,7 +21,7 @@ type CopilotResponse = {
 const PRESET_QUESTIONS = [
   { label: 'Why did SEC increase this morning?', query: 'Why did Line 2 SEC increase this morning?' },
   { label: 'Simulate setpoint 6.5 bar', query: 'What happens if I reduce compressor setpoint to 6.5 bar?' },
-  { label: 'Verified IPMVP savings', query: 'Show me verified before vs after IPMVP savings' },
+  { label: 'Modelled scenario savings', query: 'Show me the modelled before and after scenario' },
   { label: 'Best intervention for COMP-02?', query: 'What is the best intervention for COMP-02 leak?' },
   { label: 'ROI of BEE upgrade?', query: 'What is the ROI of the BEE hardware upgrade?' },
 ];
@@ -42,8 +42,8 @@ const SUGGESTION_CARDS = [
   {
     icon: <ShieldCheckIcon size={16} />,
     title: 'IPMVP Savings Verification',
-    desc: 'Get a summary of post-intervention normalized energy savings with statistical confidence.',
-    query: 'Show me verified before vs after IPMVP savings',
+    desc: 'Explore an illustrative baseline-normalization example. It is not field measurement or independent verification.',
+    query: 'Show me the modelled before and after scenario',
   },
 ];
 
@@ -59,57 +59,57 @@ export function AskForgeOpsView({ onNavigate }: {
 
     if (q.toLowerCase().includes('setpoint') || q.toLowerCase().includes('simulate')) {
       setActiveResponse({
-        answer: 'Simulating setpoint reduction from 7.2 to 6.5 bar alongside 100% leak elimination yields an optimal SEC of 9.2 kWh/ton (-18.0% reduction).',
+        answer: 'In the synthetic Belgaum case study, the simulation estimates 9.2 kWh/t after a 6.5 bar setpoint and assumed leak repair (-18% vs the incident input). This is a scenario result, not a plant measurement or operating instruction.',
         evidence: [
-          'CapEx requirement: ₹9,500 for braided coupling replacement',
-          'Downtime window required: 48 min (fits within 11:00 AM mold changeover)',
-          'Hard constraints satisfied: Throughput ≥ 10.0 ton/hr, Quality ≥ 97.5%',
+          'Fixture assumption: ₹9,500 repair cost; confirm against site quotes',
+          'Downtime and production timing require plant-team validation',
+          'Throughput, quality, and safety constraints are modelled guardrails only',
         ],
         confidence: 0.96,
-        impact: 'Estimated savings of ₹6,240 per day with a simple payback of about 1.5 days on ₹9,500 CapEx.',
-        nextAction: 'Approve intervention package Option C for CMMS work order dispatch.',
+        impact: 'The fixture estimates ₹6,240/day avoided cost under its assumptions; no realized savings or site payback is established.',
+        nextAction: 'Review assumptions with the plant team and draft a proposed work order if appropriate.',
         actionLabel: 'Open Decision Gate in Workbench →',
         actionTarget: 'workbench',
       });
     } else if (q.toLowerCase().includes('ipmvp') || q.toLowerCase().includes('savings') || q.toLowerCase().includes('verified')) {
       setActiveResponse({
-        answer: 'Post-maintenance submeter telemetry on Feeder F-03 confirms SEC dropped to 9.2 kWh/ton, achieving -17.9% verified energy reduction.',
+        answer: 'This prototype can calculate an illustrative before/after scenario from synthetic inputs. It has no post-maintenance plant meter data and cannot verify savings or issue an IPMVP certificate.',
         evidence: [
-          'Throughput verified at 10.2 ton/hr (100% baseline preserved)',
-          'Metallurgical yield confirmed at 97.8% (+0.2% yield improvement)',
-          'Carbon abatement verified at 96 kg CO₂/day (35 tCO₂e/year)',
+          'The demo holds throughput and quality guardrail inputs constant; no actual production record is connected',
+          'Independent post-action meter and production data are required for a savings claim',
+          'Carbon output is indicative and depends on a site-specific emissions factor',
         ],
-        confidence: 0.99,
-        impact: 'Savings officially logged to plant energy audit ledger and certified under IPMVP.',
-        nextAction: 'Download official BEE Measurement & Verification dossier.',
+        confidence: 0.72,
+        impact: 'Modelled scenario only; not certified, field verified, or logged to a real plant ledger.',
+        nextAction: 'Review the illustrative normalization example and M&V requirements.',
         actionLabel: 'View Verification Center →',
         actionTarget: 'verification',
       });
     } else if (q.toLowerCase().includes('roi') || q.toLowerCase().includes('bee') || q.toLowerCase().includes('economics')) {
       setActiveResponse({
-        answer: 'Standard hardware tier (₹8L install) delivers ₹2.52 Lakhs/month savings at 5% SEC reduction. ROI payback: 3.2 months.',
+        answer: 'Use the economics view as a planning calculator: enter site energy, tariff, expected efficiency, installation, and recurring service assumptions. Its outputs are not a quote or guaranteed saving.',
         evidence: [
           'Schneider PM8000 sub-meter + edge gateway: ₹4.8L',
           'Agent pipeline compute: ₹1.2L/year (cloud)',
-          'PAT scheme compliance: qualifies for ₹1.5L in BEE incentives',
+          'BEE/ADEETIE eligibility and loan benefits must be confirmed with BEE and the lender; no grant is assumed',
         ],
-        confidence: 0.92,
-        impact: '317.9 tCO₂e/year avoided. 5-year NPV: ₹1.26 Cr.',
-        nextAction: 'Review full ROI model and select hardware tier.',
+        confidence: 0.68,
+        impact: 'Indicative scenario economics only. No customer savings or NPV has been validated.',
+        nextAction: 'Review the assumptions and obtain site-specific installation quotes.',
         actionLabel: 'Open Economics & BEE →',
         actionTarget: 'economics',
       });
     } else {
       setActiveResponse({
-        answer: 'Primary root cause: Compressed-air leakage on Line 2 distribution manifold causing continuous compressor overcycling (+14.3% SEC from 9.8 to 11.2 kWh/ton).',
+        answer: 'The synthetic case study points to compressed-air leakage as a root-cause hypothesis. Confirm it with calibrated site meters, pressure readings, operating context, and a maintenance inspection.',
         evidence: [
           '3 leak complaints logged in CMMS over past 14 days on Line 2 Moulding Bank',
           'Header pressure deficit: 1.1 bar loss across delivery manifold',
           'COMP-02 continuous on-load draw: 68 kW (+21% duty cycle above nominal)',
         ],
-        confidence: 0.94,
-        impact: '₹780/hr excess energy bleed — ₹1.87 Lakhs monthly if unaddressed.',
-        nextAction: 'Execute work order WO-ENG-7922 during scheduled changeover window.',
+        confidence: 0.72,
+        impact: 'Fixture-only cost estimate; actual exposure depends on measured site energy and tariff.',
+        nextAction: 'Inspect the evidence, validate the hypothesis, and prepare a draft work order for human review.',
         actionLabel: 'Investigate in Workbench →',
         actionTarget: 'workbench',
       });
@@ -136,7 +136,7 @@ export function AskForgeOpsView({ onNavigate }: {
           Ask ForgeOps
         </h1>
         <p style={{ fontSize: '13.5px', color: 'var(--text-secondary)', marginTop: '6px' }}>
-          Context-aware AI answering energy anomalies, what-if simulation, and IPMVP verification — always grounded in live plant telemetry.
+          Prototype decision support over a synthetic foundry case study. It can model scenarios; it is not connected to live plant telemetry and does not verify savings.
         </p>
       </div>
 

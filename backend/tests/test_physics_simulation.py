@@ -8,7 +8,7 @@ Tests:
   3. Induction Furnace SEC Models (Scrap Density & Holding Loss)
   4. Multi-Objective Pareto Frontier Optimizer (calculate_pareto_front)
   5. Indian DISCOM Tariff Engine (ToD Peak/Normal/Off-peak & PF Penalties/Incentives)
-  6. BEE ADEETIE Capital Subsidy & IPMVP Verification Baseline Adjustments
+  6. Scenario Economics & Illustrative Baseline Normalization
 """
 
 import unittest
@@ -94,21 +94,37 @@ class TestDiscomTariffAndEconomics(unittest.TestCase):
         self.assertTrue(res["power_factor_adjustment_inr"] > 0)
         self.assertIn("Penalty", res["pf_status"])
 
-    def test_bee_adeetie_dpr(self):
-        """Test BEE ADEETIE subsidy DPR calculation."""
+    def test_scenario_economics_are_not_scheme_subsidy_claims(self):
+        """Default economics are illustrative and do not assume a grant."""
         dpr = calculate_bee_adeetie_dpr(
             capex_inr=120000.0,
-            annual_savings_inr=2993000.0,
-            annual_kwh_saved=383718.0,
-            subsidy_rate_pct=25.0
+            annual_savings_inr=1146600.0,
+            annual_kwh_saved=147000.0,
         )
-        self.assertEqual(dpr["subsidy_amount_inr"], 30000.0)
-        self.assertEqual(dpr["net_capex_inr"], 90000.0)
-        self.assertTrue(dpr["payback_months_net"] < 1.0)
-        self.assertTrue(dpr["scope2_co2_abatement_tons_yr"] > 300.0)
+        self.assertEqual(dpr["subsidy_rate_pct"], 0.0)
+        self.assertEqual(dpr["subsidy_amount_inr"], 0.0)
+        self.assertEqual(dpr["net_capex_inr"], 120000.0)
+        self.assertEqual(dpr["payback_months_gross"], 1.26)
+        self.assertEqual(dpr["annual_energy_saved_kwh"], 147000.0)
+        self.assertNotIn("Bankable", dpr["bankability_status"])
+
+    def test_pitch_site_economics_arithmetic(self):
+        """Keep the deck's whole-site planning case internally consistent."""
+        annual_kwh = 3_650_000
+        tariff = 7.80
+        gross_savings = annual_kwh * 0.10 * tariff
+        net_annual_benefit = gross_savings - (6000 * 12)
+        payback_months = 120_000 / (net_annual_benefit / 12)
+        co2_tonnes = annual_kwh * 0.10 * 0.82 / 1000
+
+        self.assertEqual(annual_kwh * tariff, 28_470_000)
+        self.assertEqual(gross_savings, 2_847_000)
+        self.assertEqual(net_annual_benefit, 2_775_000)
+        self.assertAlmostEqual(payback_months, 0.52, places=2)
+        self.assertAlmostEqual(co2_tonnes, 299.3, places=1)
 
     def test_ipmvp_normalization(self):
-        """Test IPMVP Option B/C baseline weather and tonnage normalization."""
+        """Test an illustrative normalization formula without claiming M&V."""
         verif = calculate_ipmvp_option_bc_verification(
             baseline_sec=11.2,
             post_repair_sec=9.2,
@@ -120,7 +136,8 @@ class TestDiscomTariffAndEconomics(unittest.TestCase):
         self.assertEqual(verif["ambient_temp_delta_c"], 3.5)
         self.assertTrue(verif["adjusted_baseline_sec"] > 11.2)
         self.assertTrue(verif["verified_sec_reduction_pct"] > 18.0)
-        self.assertEqual(verif["verification_status"], "APPROVED_VERIFIED")
+        self.assertEqual(verif["verification_status"], "MODELLED_SCENARIO_ONLY")
+        self.assertIsNone(verif["statistical_confidence_pct"])
 
     def test_load_shifting_arbitrage(self):
         """Test Time-of-Day peak-to-solar load shifting cost arbitrage."""

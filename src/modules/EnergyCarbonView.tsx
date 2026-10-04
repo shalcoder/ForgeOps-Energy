@@ -51,7 +51,7 @@ export function EnergyCarbonView({ onNavigate }: EnergyCarbonProps) {
         <div className="card-clean" style={{ padding: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '10.5px', color: 'var(--text-secondary)', textTransform: 'uppercase', fontWeight: 600 }}>Plant SEC</span>
-            <span className="provenance-badge provenance-measured">Measured</span>
+            <span className="provenance-badge provenance-simulated">Demo fixture</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginTop: '6px' }}>
             <strong style={{ fontFamily: 'var(--font-serif)', fontSize: '24px', color: 'var(--text-primary)' }}>9.8</strong>
@@ -63,7 +63,7 @@ export function EnergyCarbonView({ onNavigate }: EnergyCarbonProps) {
         <div className="card-clean" style={{ padding: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '10.5px', color: 'var(--text-secondary)', textTransform: 'uppercase', fontWeight: 600 }}>Monthly Energy</span>
-            <span className="provenance-badge provenance-measured">Measured</span>
+            <span className="provenance-badge provenance-simulated">Demo fixture</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginTop: '6px' }}>
             <strong style={{ fontFamily: 'var(--font-serif)', fontSize: '24px', color: 'var(--text-primary)' }}>387,692</strong>
@@ -123,7 +123,7 @@ export function EnergyCarbonView({ onNavigate }: EnergyCarbonProps) {
                   Share of monthly electrical load centers. Click any equipment category to view correlated opportunities.
                 </p>
               </div>
-              <span className="provenance-badge provenance-measured">Direct Modbus PM8000</span>
+              <span className="provenance-badge provenance-simulated">Synthetic fixture</span>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -289,9 +289,9 @@ export function EnergyCarbonView({ onNavigate }: EnergyCarbonProps) {
               </div>
 
               <div style={{ padding: '14px', borderRadius: '7px', background: 'var(--bg-ground)', border: '1px solid var(--glass-border)' }}>
-                <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Verified Abatement</span>
+                <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Modelled abatement</span>
                 <div style={{ fontSize: '20px', fontWeight: 700, color: '#5e7e60', marginTop: '2px' }}>35.2 tCO₂e/yr</div>
-                <small style={{ color: '#5e7e60' }}>Certified under IPMVP</small>
+                <small style={{ color: '#5e7e60' }}>Modelled from fixture inputs; not certified</small>
               </div>
             </div>
           </div>

@@ -49,6 +49,44 @@ export type RuntimeStatus = {
   mcpServerAttached: boolean;
 };
 
+export type SystemRuntimeStatus = {
+  deployment_stage: string;
+  data_mode: string;
+  data_note: string;
+  system1: {
+    model: string;
+    model_path: string;
+    runtime: string;
+    status: string;
+    live_loaded: boolean;
+    weights_present: boolean;
+    load_enabled: boolean;
+    packages: Record<string, string | null>;
+    load_error?: string | null;
+  };
+  system2: {
+    agents: string[];
+    provider_model: string;
+    live_provider_enabled: boolean;
+    status: string;
+  };
+  integrations: {
+    remote_mcp: { configured: boolean; reachable: boolean; tool_count: number };
+    factory_ot_adapters: { configured: boolean; status: string; protocols_supported_by_design: string[] };
+    mes_cmms_qms_erp: { configured: boolean; status: string };
+  };
+};
+
+export async function getSystemRuntimeStatus(): Promise<SystemRuntimeStatus | null> {
+  try {
+    const response = await fetch(`${apiBaseUrl}/api/system/status`);
+    if (!response.ok) return null;
+    return await response.json() as SystemRuntimeStatus;
+  } catch {
+    return null;
+  }
+}
+
 export async function getRuntimeStatus(): Promise<RuntimeStatus> {
   try {
     const response = await fetch(`${apiBaseUrl}/api/agent/health`);

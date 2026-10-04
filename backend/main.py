@@ -19,6 +19,7 @@ from backend.config import FORGEOPS_MCP_URL, FORGEOPS_MODEL, LIVE_AGENTS_ENABLED
 from backend.mcp.nitro_mcp_client import NitroMCPClient
 from backend.simulation_reasoning import reconcile_simulation
 from backend.workbench import load_live_workbench
+from backend.decision2 import get_decision2_engine
 
 app = FastAPI(
     title="ForgeOps 4-Agent Pipeline API",
@@ -110,6 +111,39 @@ def health():
 @app.get("/api/agent/health")
 def agent_health():
     return _health_payload()
+
+
+@app.get("/api/system/status")
+def system_status():
+    """Return honest runtime, model, and integration provenance for the UI."""
+    model = get_decision2_engine().health()
+    remote_mcp = _health_payload()["mcp"]
+    return {
+        "application": "ForgeOps Energy",
+        "deployment_stage": "prototype",
+        "data_mode": "synthetic_demo",
+        "data_note": "Factory telemetry and operational records shown in this deployment are demonstration fixtures unless a separately verified adapter is configured.",
+        "system1": model,
+        "system2": {
+            "agents": ["planner", "research", "analysis", "execution"],
+            "provider_model": FORGEOPS_MODEL,
+            "live_provider_enabled": LIVE_AGENTS_ENABLED,
+            "status": "provider_configured_not_health_checked" if LIVE_AGENTS_ENABLED else "deterministic_fallback",
+        },
+        "integrations": {
+            "remote_mcp": {
+                "configured": bool(FORGEOPS_MCP_URL),
+                "reachable": remote_mcp["attached"],
+                "tool_count": remote_mcp["toolCount"],
+            },
+            "factory_ot_adapters": {
+                "configured": False,
+                "status": "not_connected",
+                "protocols_supported_by_design": ["Modbus RTU/TCP", "OPC-UA", "MQTT", "4-20mA"],
+            },
+            "mes_cmms_qms_erp": {"configured": False, "status": "demo_fixtures"},
+        },
+    }
 
 
 @app.get("/api/v1/sim/health")

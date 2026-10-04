@@ -19,21 +19,21 @@ import {
 } from '../../simulation/engine';
 
 const clusters = [
-  { id: 'foundry', name: 'Foundry & Castings (Belgaum, Coimbatore, Rajkot)', typicalBillLakhs: 18, typicalSavingPct: 14, co2Factor: 0.82 },
-  { id: 'forging', name: 'Forging & Stamping (Pune, Ludhiana, Chennai)', typicalBillLakhs: 22, typicalSavingPct: 14, co2Factor: 0.85 },
-  { id: 'textiles', name: 'Textiles & Dyeing (Surat, Tirupur, Panipat)', typicalBillLakhs: 12, typicalSavingPct: 12, co2Factor: 0.78 },
-  { id: 'ceramics', name: 'Ceramics & Tiles (Morbi, Khurja)', typicalBillLakhs: 28, typicalSavingPct: 16, co2Factor: 0.90 },
-  { id: 'food', name: 'Food Processing & Cold Chain (Nashik, Indore)', typicalBillLakhs: 8, typicalSavingPct: 11, co2Factor: 0.72 },
-  { id: 'chemicals', name: 'Specialty Chemicals (Vapi, Ankleshwar)', typicalBillLakhs: 20, typicalSavingPct: 13, co2Factor: 0.80 },
+  { id: 'foundry', name: 'Foundry & Castings (Belgaum, Coimbatore, Rajkot)', planningBillLakhs: 23.73, planningSavingPct: 10, co2Factor: 0.82 },
+  { id: 'forging', name: 'Forging & Stamping (Pune, Ludhiana, Chennai)', planningBillLakhs: 22, planningSavingPct: 14, co2Factor: 0.85 },
+  { id: 'textiles', name: 'Textiles & Dyeing (Surat, Tirupur, Panipat)', planningBillLakhs: 12, planningSavingPct: 12, co2Factor: 0.78 },
+  { id: 'ceramics', name: 'Ceramics & Tiles (Morbi, Khurja)', planningBillLakhs: 28, planningSavingPct: 16, co2Factor: 0.90 },
+  { id: 'food', name: 'Food Processing & Cold Chain (Nashik, Indore)', planningBillLakhs: 8, planningSavingPct: 11, co2Factor: 0.72 },
+  { id: 'chemicals', name: 'Specialty Chemicals (Vapi, Ankleshwar)', planningBillLakhs: 20, planningSavingPct: 13, co2Factor: 0.80 },
 ];
 
 export function SmeEconomicsView({ onOpenWorkbench }: { onOpenWorkbench: () => void }) {
   const [activeSection, setActiveSection] = useState<'bee_dpr' | 'load_shifting' | 'fuel_switching' | 'brsr_esg'>('bee_dpr');
   const [selectedCluster, setSelectedCluster] = useState('foundry');
-  const [monthlyBillLakhs, setMonthlyBillLakhs] = useState(18);
-  const [secReductionPct, setSecReductionPct] = useState(14);
+  const [monthlyBillLakhs, setMonthlyBillLakhs] = useState(23.73);
+  const [secReductionPct, setSecReductionPct] = useState(10);
   const [powerFactor, setPowerFactor] = useState(0.98);
-  const [subsidyRatePct, setSubsidyRatePct] = useState(25);
+  const [subsidyRatePct, setSubsidyRatePct] = useState(0);
   const [hardwareTier, setHardwareTier] = useState<'basic' | 'standard' | 'enterprise'>('standard');
   const [showDprModal, setShowDprModal] = useState(false);
 
@@ -47,7 +47,7 @@ export function SmeEconomicsView({ onOpenWorkbench }: { onOpenWorkbench: () => v
 
   const currentCluster = clusters.find((c) => c.id === selectedCluster) ?? clusters[0];
 
-  const hardwareCostInr = hardwareTier === 'basic' ? 25000 : hardwareTier === 'standard' ? 45000 : 60000;
+  const hardwareCostInr = hardwareTier === 'basic' ? 75000 : hardwareTier === 'standard' ? 120000 : 200000;
   const softwareSubscriptionMonthlyInr = hardwareTier === 'basic' ? 3500 : hardwareTier === 'standard' ? 6000 : 9500;
 
   const monthlyBillInr = monthlyBillLakhs * 100000;
@@ -55,7 +55,7 @@ export function SmeEconomicsView({ onOpenWorkbench }: { onOpenWorkbench: () => v
   const annualSavingsInr = monthlySavingsInr * 12;
 
   const netMonthlyGain = monthlySavingsInr - softwareSubscriptionMonthlyInr;
-  const paybackMonths = netMonthlyGain > 0 ? (hardwareCostInr / netMonthlyGain).toFixed(1) : '0.2';
+  const paybackMonths = netMonthlyGain > 0 ? (hardwareCostInr / netMonthlyGain).toFixed(1) : 'N/A';
 
   const monthlyKwhSaved = monthlySavingsInr / DEFAULT_BASE_TARIFF_INR_KWH;
   const annualKwhSaved = monthlyKwhSaved * 12;
@@ -64,7 +64,7 @@ export function SmeEconomicsView({ onOpenWorkbench }: { onOpenWorkbench: () => v
   // BEE ADEETIE DPR Model
   const dpr = calculateBeeAdeetieDpr(
     hardwareCostInr,
-    annualSavingsInr,
+    Math.max(0, netMonthlyGain * 12),
     annualKwhSaved,
     currentCluster.name,
     subsidyRatePct
@@ -84,9 +84,9 @@ export function SmeEconomicsView({ onOpenWorkbench }: { onOpenWorkbench: () => v
 
   const handleDownloadDpr = () => {
     const text = `========================================================================
-BEE ADEETIE DETAILED PROJECT REPORT (DPR) & INVESTMENT-GRADE AUDIT
-Scheme: Assistance in Deploying Energy Efficient Technologies in Industries (ADEETIE)
-Prepared by: ForgeOps Energy Decision-Intelligence Platform (Dev 3 Physics Engine)
+FORGEOPS ENERGY — ILLUSTRATIVE SCENARIO ECONOMICS
+Not a DPR, investment-grade audit, eligibility determination, or savings verification
+Prepared by: ForgeOps Energy prototype
 Date: ${new Date().toLocaleDateString('en-IN')}
 ========================================================================
 
@@ -102,23 +102,23 @@ Operating Power Factor: ${powerFactor} (${tariff.pf_status})
 Baseline Monthly Energy Bill: ₹${monthlyBillLakhs.toFixed(2)} Lakhs (₹${monthlyBillInr.toLocaleString('en-IN')})
 Specific Energy (SEC) Reduction: ${secReductionPct}%
 Gross Hardware CapEx: ₹${hardwareCostInr.toLocaleString('en-IN')} (${hardwareTier.toUpperCase()} Package)
-BEE/SIDBI Capital Subsidy: ${subsidyRatePct}% (₹${dpr.subsidy_amount_inr.toLocaleString('en-IN')})
-Net Out-of-Pocket CapEx: ₹${dpr.net_capex_inr.toLocaleString('en-IN')}
+Optional CapEx credit sensitivity (not an ADEETIE benefit): ${subsidyRatePct}% (₹${dpr.subsidy_amount_inr.toLocaleString('en-IN')})
+Net modeled CapEx after optional credit assumption: ₹${dpr.net_capex_inr.toLocaleString('en-IN')}
 
-3. VERIFIED SAVINGS & PAYBACK METRICS
+3. MODELLED SAVINGS & PAYBACK ESTIMATES
 ------------------------------------------------------------------------
 Monthly Energy Cost Avoided: ₹${monthlySavingsInr.toLocaleString('en-IN')} / month
 Annual Financial Savings (P&L): ₹${annualSavingsInr.toLocaleString('en-IN')} / year
 Annual Electrical Energy Saved: ${Math.round(annualKwhSaved).toLocaleString('en-IN')} kWh/year
 Simple Payback (Gross): ${dpr.payback_months_gross} Months (< 60 Days)
 Simple Payback (Post-BEE Subsidy): ${dpr.payback_months_net} Months
-Internal Rate of Return (IRR): ${dpr.irr_annual_pct}%
+Annual net savings / modeled net CapEx ratio: ${dpr.annual_net_savings_to_capex_pct}%
 Bankability Rating: ${dpr.bankability_status}
 
 4. SCOPE 2 CARBON ABATEMENT
 ------------------------------------------------------------------------
 Total Scope 2 GHG Reduction: ${dpr.scope2_co2_abatement_tons_yr} Metric Tons CO2e/year
-Environmental Compliance: ISO 50001 & BEE Energy Conservation Act Aligned
+This estimate is not an emissions inventory, ISO 50001 or BEE compliance attestation.
 ========================================================================
 Generated by ForgeOps Energy Autonomous Engineering System
 `;
@@ -126,7 +126,7 @@ Generated by ForgeOps Energy Autonomous Engineering System
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `BEE_ADEETIE_DPR_${selectedCluster.toUpperCase()}_2026.txt`;
+    link.download = `ForgeOps_Energy_Scenario_Economics_${selectedCluster.toUpperCase()}.txt`;
     link.click();
     URL.revokeObjectURL(url);
   };
@@ -217,19 +217,19 @@ Generated by ForgeOps Energy Autonomous Decision-Intelligence Platform
       <header className="page-header-clean">
         <div>
           <div className="page-kicker">
-            <span className="kicker-tag">BEE ADEETIE & Decarbonisation</span>
-            <span>National SME Energy Mission • 60 Industrial Clusters</span>
+            <span className="kicker-tag">SME ENERGY ECONOMICS</span>
+            <span>Illustrative scenario calculator</span>
           </div>
           <h1 className="page-title">SME Energy Economics, Arbitrage & Decarbonisation</h1>
           <p className="page-subtitle">
-            Engineered for rapid payback (&lt; 2 months), ToD solar arbitrage, Scope 1 fuel-switching, and SEBI BRSR Core supply-chain disclosure across Indian SME clusters.
+            Explore tariff, installation, and energy-saving assumptions. Outputs are estimates; this prototype does not verify savings, certify disclosures, or determine scheme eligibility.
           </p>
         </div>
 
         <div className="header-controls-group" style={{ flexWrap: 'wrap', gap: '8px' }}>
-          <button className="btn-secondary-action" onClick={handleDownloadDpr} title="Export Detailed Project Report for BEE / SIDBI subsidy">
+          <button className="btn-secondary-action" onClick={handleDownloadDpr} title="Export an illustrative scenario economics report">
             <FileTextIcon size={14} />
-            <span>BEE DPR (.txt)</span>
+            <span>Scenario economics (.txt)</span>
           </button>
           <button className="btn-secondary-action" onClick={handleDownloadBrsr} title="Export SEBI BRSR Core / GHG Protocol ESG Card for OEM buyers">
             <ShieldCheckIcon size={14} />
@@ -253,7 +253,7 @@ Generated by ForgeOps Energy Autonomous Decision-Intelligence Platform
           onClick={() => setActiveSection('bee_dpr')}
         >
           <Building2Icon size={14} />
-          <span>BEE ADEETIE CapEx (&lt; 2 Mo Payback)</span>
+          <span>Installation economics (scenario)</span>
         </button>
         <button
           className={`btn-secondary-action ${activeSection === 'load_shifting' ? 'btn-primary-action' : ''}`}
@@ -308,8 +308,8 @@ Generated by ForgeOps Energy Autonomous Decision-Intelligence Platform
                 setSelectedCluster(e.target.value);
                 const found = clusters.find((c) => c.id === e.target.value);
                 if (found) {
-                  setMonthlyBillLakhs(found.typicalBillLakhs);
-                  setSecReductionPct(found.typicalSavingPct);
+                  setMonthlyBillLakhs(found.planningBillLakhs);
+                  setSecReductionPct(found.planningSavingPct);
                 }
               }}
               className="select-clean"
@@ -387,25 +387,25 @@ Generated by ForgeOps Energy Autonomous Decision-Intelligence Platform
             </div>
           </div>
 
-          {/* Slider 4: BEE Subsidy Rate */}
+          {/* Optional incentive sensitivity is not a scheme eligibility determination. */}
           <div className="slider-group-clean" style={{ marginTop: '16px' }}>
             <div className="slider-label-flex">
-              <span className="slider-label-text">BEE ADEETIE Capital Subsidy Rate</span>
+              <span className="slider-label-text">Illustrative CapEx credit sensitivity (not ADEETIE)</span>
               <span className="slider-val-readout text-emerald">{subsidyRatePct}%</span>
             </div>
             <input
               type="range"
-              min="20"
+              min="0"
               max="30"
-              step="5"
+              step="1"
               value={subsidyRatePct}
               onChange={(e) => setSubsidyRatePct(Number(e.target.value))}
               className="slider-native-clean"
             />
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#6b7280', fontFamily: 'var(--font-mono)' }}>
-              <span>20% (Standard SME)</span>
-              <span style={{ color: '#00d328' }}>25% (Foundry Cluster)</span>
-              <span>30% (Special Zone)</span>
+              <span>0% (default)</span>
+              <span style={{ color: '#00d328' }}>Planning sensitivity only</span>
+              <span>30% (not a grant promise)</span>
             </div>
           </div>
 
@@ -428,7 +428,7 @@ Generated by ForgeOps Energy Autonomous Decision-Intelligence Platform
                 }}
               >
                 <strong style={{ fontSize: '12px', color: '#f9fafb', display: 'block' }}>Basic Retrofit</strong>
-                <div className="font-mono text-emerald" style={{ fontSize: '13px', fontWeight: 700, marginTop: '2px' }}>₹25,000</div>
+              <div className="font-mono text-emerald" style={{ fontSize: '13px', fontWeight: 700, marginTop: '2px' }}>₹75,000</div>
                 <small style={{ fontSize: '10.5px', color: '#9ca3af', display: 'block', marginTop: '2px' }}>3 Modbus Meters</small>
               </div>
 
@@ -445,7 +445,7 @@ Generated by ForgeOps Energy Autonomous Decision-Intelligence Platform
                 }}
               >
                 <strong style={{ fontSize: '12px', color: '#f9fafb', display: 'block' }}>Standard SME</strong>
-                <div className="font-mono text-emerald" style={{ fontSize: '13px', fontWeight: 700, marginTop: '2px' }}>₹45,000</div>
+              <div className="font-mono text-emerald" style={{ fontSize: '13px', fontWeight: 700, marginTop: '2px' }}>₹1,20,000</div>
                 <small style={{ fontSize: '10.5px', color: '#9ca3af', display: 'block', marginTop: '2px' }}>8 Meters + Gateway</small>
               </div>
 
@@ -462,7 +462,7 @@ Generated by ForgeOps Energy Autonomous Decision-Intelligence Platform
                 }}
               >
                 <strong style={{ fontSize: '12px', color: '#f9fafb', display: 'block' }}>Multi-Line Plant</strong>
-                <div className="font-mono text-emerald" style={{ fontSize: '13px', fontWeight: 700, marginTop: '2px' }}>₹60,000</div>
+              <div className="font-mono text-emerald" style={{ fontSize: '13px', fontWeight: 700, marginTop: '2px' }}>₹2,00,000</div>
                 <small style={{ fontSize: '10.5px', color: '#9ca3af', display: 'block', marginTop: '2px' }}>Full Edge Cluster</small>
               </div>
             </div>
@@ -494,27 +494,27 @@ Generated by ForgeOps Energy Autonomous Decision-Intelligence Platform
             </div>
 
             <div style={{ background: 'rgba(11, 17, 30, 0.85)', padding: '16px', borderRadius: '10px', border: '1px solid rgba(255, 255, 255, 0.06)', boxShadow: 'var(--neu-sunken)' }}>
-              <div style={{ fontSize: '11px', color: '#9ca3af', textTransform: 'uppercase' }}>Annual P&L Addition</div>
+              <div style={{ fontSize: '11px', color: '#9ca3af', textTransform: 'uppercase' }}>Modelled gross annual savings</div>
               <div className="font-mono text-primary" style={{ fontSize: '24px', fontWeight: 800, marginTop: '4px' }}>
                 ₹{(annualSavingsInr / 100000).toFixed(2)} Lakhs
               </div>
               <div style={{ fontSize: '11px', color: '#9ca3af', marginTop: '2px' }}>
-                Direct margin addition to P&L
+                Before subscription, maintenance, finance, tax and downtime
               </div>
             </div>
 
             <div style={{ background: 'rgba(11, 17, 30, 0.85)', padding: '16px', borderRadius: '10px', border: '1px solid rgba(16, 185, 129, 0.3)', boxShadow: 'var(--neu-sunken)' }}>
-              <div style={{ fontSize: '11px', color: '#9ca3af', textTransform: 'uppercase' }}>Net CapEx Post-BEE Subsidy</div>
+              <div style={{ fontSize: '11px', color: '#9ca3af', textTransform: 'uppercase' }}>Modeled installation cost after optional credit</div>
               <div className="font-mono text-emerald" style={{ fontSize: '24px', fontWeight: 800, marginTop: '4px' }}>
                 ₹{Math.round(dpr.net_capex_inr).toLocaleString('en-IN')}
               </div>
               <div style={{ fontSize: '11px', color: '#00d328', marginTop: '2px' }}>
-                {subsidyRatePct}% BEE subsidy (₹{Math.round(dpr.subsidy_amount_inr).toLocaleString('en-IN')})
+          {subsidyRatePct}% optional planning credit (not ADEETIE; ₹{Math.round(dpr.subsidy_amount_inr).toLocaleString('en-IN')})
               </div>
             </div>
 
             <div style={{ background: 'rgba(11, 17, 30, 0.85)', padding: '16px', borderRadius: '10px', border: '1px solid rgba(6, 182, 212, 0.3)', boxShadow: 'var(--neu-sunken)' }}>
-              <div style={{ fontSize: '11px', color: '#9ca3af', textTransform: 'uppercase' }}>Scope 2 Carbon Abatement</div>
+              <div style={{ fontSize: '11px', color: '#9ca3af', textTransform: 'uppercase' }}>Indicative Scope 2 scenario</div>
               <div className="font-mono text-cyan" style={{ fontSize: '24px', fontWeight: 800, marginTop: '4px' }}>
                 {annualCo2SavedTons} tCO₂e/yr
               </div>
@@ -526,7 +526,7 @@ Generated by ForgeOps Energy Autonomous Decision-Intelligence Platform
 
           <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span className="font-mono" style={{ fontSize: '12px', color: '#9ca3af' }}>
-              IRR: <strong className="text-emerald">{dpr.irr_annual_pct}%</strong> • Net Payback: <strong className="text-emerald">{dpr.payback_months_net} Mo</strong>
+                Annual net savings / modeled CapEx: <strong className="text-emerald">{dpr.annual_net_savings_to_capex_pct}%</strong> • Estimated payback: <strong className="text-emerald">{netMonthlyGain > 0 ? `${dpr.payback_months_net} Mo` : 'N/A'}</strong>
             </span>
             <button className="btn-primary-action" onClick={onOpenWorkbench}>
               <span>Apply Savings to Line 2 Workbench →</span>
@@ -851,7 +851,7 @@ Generated by ForgeOps Energy Autonomous Decision-Intelligence Platform
                 </h3>
                 <p className="card-subtitle-clean">Guaranteed data transparency for Tier-1 supply contract renewals</p>
               </div>
-              <span className="kpi-badge info">ESG Bankable</span>
+              <span className="kpi-badge info">Scenario estimate</span>
             </div>
 
             <div className="kpi-grid-clean" style={{ gridTemplateColumns: 'repeat(2, 1fr)', gap: '14px', marginTop: '12px' }}>
@@ -860,7 +860,7 @@ Generated by ForgeOps Energy Autonomous Decision-Intelligence Platform
                 <div className="font-mono text-emerald" style={{ fontSize: '24px', fontWeight: 800, marginTop: '4px' }}>
                   {brsr.ghg_emissions.abated_emissions_via_forgeops_tco2e_yr} tCO₂e
                 </div>
-                <div style={{ fontSize: '11px', color: '#00d328', marginTop: '2px' }}>Verified via IPMVP</div>
+                <div style={{ fontSize: '11px', color: '#9ca3af', marginTop: '2px' }}>Scenario estimate; not field verified</div>
               </div>
 
               <div style={{ background: 'rgba(11, 17, 30, 0.85)', padding: '16px', borderRadius: '10px', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
@@ -882,7 +882,7 @@ Generated by ForgeOps Energy Autonomous Decision-Intelligence Platform
               <div style={{ background: 'rgba(11, 17, 30, 0.85)', padding: '16px', borderRadius: '10px', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
                 <div style={{ fontSize: '11px', color: '#9ca3af', textTransform: 'uppercase' }}>ISO 50001 Alignment</div>
                 <div className="font-mono text-emerald" style={{ fontSize: '24px', fontWeight: 800, marginTop: '4px' }}>
-                  CERTIFIED
+                  DEMO ONLY
                 </div>
                 <div style={{ fontSize: '11px', color: '#9ca3af', marginTop: '2px' }}>Continuous EnMS Loop</div>
               </div>
@@ -915,9 +915,9 @@ Generated by ForgeOps Energy Autonomous Decision-Intelligence Platform
               <div>
                 <h3 className="card-title-clean">
                   <FileTextIcon size={18} className="text-emerald" />
-                  <span>BEE ADEETIE Investment-Grade Energy Audit (IGEA)</span>
+                  <span>Illustrative SME economics</span>
                 </h3>
-                <p className="card-subtitle-clean">Bankable Detailed Project Report Format • SIDBI / BEE Compliant</p>
+                <p className="card-subtitle-clean">Planning summary only • not an IGEA, DPR, or scheme-compliant report</p>
               </div>
               <button
                 onClick={() => setShowDprModal(false)}
@@ -930,7 +930,7 @@ Generated by ForgeOps Energy Autonomous Decision-Intelligence Platform
             <div style={{ fontSize: '13px', lineHeight: '1.6', color: '#d1d5db' }}>
               <div style={{ background: 'rgba(0, 211, 40, 0.08)', padding: '12px 16px', borderRadius: '8px', border: '1px solid rgba(0, 211, 40, 0.2)', marginBottom: '16px' }}>
                 <strong style={{ color: '#00d328', display: 'block' }}>Target Cluster: {currentCluster.name}</strong>
-                <span>Eligible for {subsidyRatePct}% direct capital subsidy under Bureau of Energy Efficiency National MSME Mission.</span>
+                <span>Illustrative calculator output only. ADEETIE describes conditional loan interest subvention, not this modeled CapEx credit. Confirm scheme eligibility with BEE and the lending institution.</span>
               </div>
 
               <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '16px', fontFamily: 'var(--font-mono)', fontSize: '12.5px' }}>
@@ -940,7 +940,7 @@ Generated by ForgeOps Energy Autonomous Decision-Intelligence Platform
                     <td style={{ padding: '8px 0', textAlign: 'right', color: '#f9fafb' }}>₹{hardwareCostInr.toLocaleString('en-IN')}</td>
                   </tr>
                   <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                    <td style={{ padding: '8px 0', color: '#9ca3af' }}>BEE ADEETIE Subsidy Grant ({subsidyRatePct}%)</td>
+                    <td style={{ padding: '8px 0', color: '#9ca3af' }}>Optional scenario credit (not a scheme grant, {subsidyRatePct}%)</td>
                     <td style={{ padding: '8px 0', textAlign: 'right', color: '#00d328' }}>- ₹{Math.round(dpr.subsidy_amount_inr).toLocaleString('en-IN')}</td>
                   </tr>
                   <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
@@ -952,7 +952,7 @@ Generated by ForgeOps Energy Autonomous Decision-Intelligence Platform
                     <td style={{ padding: '8px 0', textAlign: 'right', color: '#38bdf8' }}>₹{annualSavingsInr.toLocaleString('en-IN')}</td>
                   </tr>
                   <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                    <td style={{ padding: '8px 0', color: '#9ca3af' }}>Simple Payback Period (Post-Subsidy)</td>
+                    <td style={{ padding: '8px 0', color: '#9ca3af' }}>Estimated Payback (Net of Subscription)</td>
                     <td style={{ padding: '8px 0', textAlign: 'right', color: '#00d328', fontWeight: 800 }}>{dpr.payback_months_net} Months</td>
                   </tr>
                   <tr>
@@ -966,7 +966,7 @@ Generated by ForgeOps Energy Autonomous Decision-Intelligence Platform
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '16px' }}>
               <button className="btn-secondary-action" onClick={handleDownloadDpr}>
                 <FileTextIcon size={14} />
-                <span>Download Bankable DPR (.txt)</span>
+                <span>Download scenario economics (.txt)</span>
               </button>
               <button className="btn-primary-action" onClick={() => setShowDprModal(false)}>
                 <span>Close</span>

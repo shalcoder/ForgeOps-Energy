@@ -342,17 +342,14 @@ def calculate_pareto_front(
 
 def calculate_bee_adeetie_dpr(
     capex_inr: float = 120000.0,
-    annual_savings_inr: float = 2993000.0,
-    annual_kwh_saved: float = 383718.0,
+    annual_savings_inr: float = 1146600.0,
+    annual_kwh_saved: float = 147000.0,
     cluster_name: str = "Foundry & Castings - Belgaum",
-    subsidy_rate_pct: float = 25.0
+    subsidy_rate_pct: float = 0.0
 ) -> Dict[str, Any]:
     """
-    BEE ADEETIE (Assistance in Deploying Energy Efficient Technologies in Industries & Enterprises)
-    Generates bankable DPR (Detailed Project Report) metrics:
-    - Capital subsidy (20-30% from SIDBI / BEE)
-    - Net CapEx & post-subsidy payback period
-    - Scope 2 GHG emissions abatement (tCO2e/yr)
+    Calculates illustrative scenario economics only. It does not generate a
+    bankable DPR, establish ADEETIE eligibility, or certify emissions savings.
     """
     subsidy_amount_inr = capex_inr * (subsidy_rate_pct / 100.0)
     net_capex_inr = capex_inr - subsidy_amount_inr
@@ -361,7 +358,7 @@ def calculate_bee_adeetie_dpr(
     payback_months_net = (net_capex_inr / (annual_savings_inr / 12.0)) if annual_savings_inr > 0 else 0.0
     
     co2_abated_tons_per_year = (annual_kwh_saved * GRID_CO2_FACTOR_KG_PER_KWH) / 1000.0
-    irr_pct = ((annual_savings_inr / max(1.0, net_capex_inr)) * 100.0)
+    annual_savings_to_capex_pct = ((annual_savings_inr / max(1.0, net_capex_inr)) * 100.0)
 
     return {
         "cluster": cluster_name,
@@ -373,10 +370,10 @@ def calculate_bee_adeetie_dpr(
         "annual_financial_savings_inr": round(annual_savings_inr, 2),
         "payback_months_gross": round(payback_months_gross, 2),
         "payback_months_net": round(payback_months_net, 2),
-        "irr_annual_pct": round(irr_pct, 1),
+        "annual_net_savings_to_capex_pct": round(annual_savings_to_capex_pct, 1),
         "scope2_co2_abatement_tons_yr": round(co2_abated_tons_per_year, 2),
-        "dpr_format": "BEE-ADEETIE-DPR-REV-4",
-        "bankability_status": "Highly Bankable (Payback < 2 months, IRR > 200%)"
+        "dpr_format": "ILLUSTRATIVE-SCENARIO-ECONOMICS",
+        "bankability_status": "Scenario estimate only; not a bankability assessment"
     }
 
 
@@ -412,7 +409,7 @@ def calculate_ipmvp_option_bc_verification(
     verified_annual_savings_inr = verified_daily_savings_inr * 365.0
 
     return {
-        "protocol": "IPMVP Option B / Option C (BEE M&V Standard)",
+        "protocol": "Illustrative baseline normalization structure; not an IPMVP determination",
         "measured_baseline_sec": round(baseline_sec, 2),
         "adjusted_baseline_sec": round(adjusted_baseline_sec, 2),
         "measured_post_repair_sec": round(post_repair_sec, 2),
@@ -423,8 +420,8 @@ def calculate_ipmvp_option_bc_verification(
         "verified_sec_reduction_pct": round(verified_sec_reduction_pct, 2),
         "verified_daily_savings_inr": round(verified_daily_savings_inr, 2),
         "verified_annual_savings_inr": round(verified_annual_savings_inr, 2),
-        "statistical_confidence_pct": 95.0,
-        "verification_status": "APPROVED_VERIFIED",
+        "statistical_confidence_pct": None,
+        "verification_status": "MODELLED_SCENARIO_ONLY",
     }
 
 

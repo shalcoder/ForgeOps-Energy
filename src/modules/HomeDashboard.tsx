@@ -95,7 +95,7 @@ export function HomeDashboard({ onNavigate }: { onNavigate: (view: AppView) => v
         </div>
         <aside className="overview-note"><span className="note-symbol"><ActivityIcon size={17} /></span><p>ForgeOps brings plant signals, engineering context, and operational decisions together in one place.</p><button onClick={() => onNavigate('opportunities')}>Ask ForgeOps <ArrowRightIcon size={14} /></button></aside>
       </section>
-      <footer className="overview-footer">Updated {new Date(data.updatedAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })} <span>·</span> {data.source === 'degraded_fallback' ? 'Showing sample plant data' : 'Connected to plant data'}</footer>
+      <footer className="overview-footer">Updated {new Date(data.updatedAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })} <span>·</span> {data.source === 'degraded_fallback' ? 'Showing sample plant data' : 'Remote MCP/demo records · not verified plant telemetry'}</footer>
     </div>
   );
 }

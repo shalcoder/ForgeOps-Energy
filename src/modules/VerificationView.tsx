@@ -32,27 +32,27 @@ export function VerificationView({ onOpenWorkbench }: { onOpenWorkbench?: () => 
   // IPMVP Option B / Option C Normalized Verification
   const verification = calculateIpmvpVerification(
     11.2,               // baseline SEC (incident)
-    9.8,                // post-repair SEC (measured)
+    9.8,                // synthetic scenario SEC input
     758.9,              // baseline tonnage
-    actualTonnage,      // actual throughput
+    actualTonnage,      // selected scenario throughput
     28.0,               // baseline ambient temp °C
-    ambientTempActual,  // actual ambient temp °C
+    ambientTempActual,  // selected scenario ambient temp °C
     0.004               // temperature sensitivity coefficient
   );
 
   const handleDownloadCertificate = () => {
     const text = `========================================================================
-IPMVP OPTION B / OPTION C SAVINGS VERIFICATION CERTIFICATE
-Protocol: International Performance Measurement and Verification Protocol (IPMVP)
-Standard: BEE / ISO 50015 Energy Savings Verification Protocol
+FORGEOPS ENERGY — DEMONSTRATION SCENARIO REPORT
+NOT an IPMVP certificate, field measurement, or compliance attestation
+Data source: synthetic Belgaum Foundry demonstration fixture
 Facility: Belgaum Foundry SME Complex — Line 2 Moulding & Melting
 Incident Reference: INC-ENG-2401 • Work Order: WO-ENG-7922
 Verification Date: ${new Date().toLocaleDateString('en-IN')}
 ========================================================================
 
-1. MEASURED TELEMETRY BASELINE
+1. ASSUMED SCENARIO BASELINE (NOT MEASURED TELEMETRY)
 ------------------------------------------------------------------------
-Pre-Repair Measured SEC: 11.2 kWh/ton (Line 2 Manifold Leak)
+Baseline SEC assumption: 11.2 kWh/ton (illustrative)
 Baseline Production Throughput: 758.9 tons/day
 Baseline Ambient Temperature: 28.0 °C
 
@@ -64,38 +64,37 @@ Temperature Sensitivity Coefficient (alpha): 0.004 / °C
 Temperature Adjustment Factor: ${verification.temp_adjustment_factor}
 Normalized / Routine-Adjusted Baseline SEC: 11.0 kWh/ton
 
-3. POST-REPAIR MEASUREMENT & VERIFIED AUDIT
+3. MODELLED SCENARIO OUTPUT (NOT FIELD VERIFIED)
 ------------------------------------------------------------------------
-Post-Repair Measured SEC: 9.8 kWh/ton
-Verified Specific Energy Reduction: -1.2 kWh/ton (-12.5%)
-Verified Electrical Energy Saved: ${verification.verified_daily_kwh_saved.toLocaleString('en-IN')} kWh/day
-Verified Daily Financial Savings: ₹${verification.verified_daily_savings_inr.toLocaleString('en-IN')} / day
-Verified Annual Run-Rate Savings: ₹${(verification.verified_annual_savings_inr / 100000).toFixed(2)} Lakhs / year
-Statistical Confidence Level: 96.8% (p < 0.01)
+Scenario SEC assumption: 9.8 kWh/ton
+Modelled SEC delta: ${verification.verified_sec_reduction_pct}%
+Modelled energy delta: ${verification.verified_daily_kwh_saved.toLocaleString('en-IN')} kWh/day
+Illustrative cost delta: ₹${verification.verified_daily_savings_inr.toLocaleString('en-IN')} / day
 
 4. VERIFICATION STATUS & SIGN-OFF
 ------------------------------------------------------------------------
-Status: VERIFIED & COMPLIANT
-Governing Method: Direct Modbus submetering on Feeder F-03 & CMP-01 VFD drive
+Status: DEMONSTRATION CALCULATION ONLY — NOT CERTIFIED
+No plant meter, PLC, MES, CMMS, or QMS data was collected.
+No physical intervention or savings result is represented as having occurred.
 ========================================================================
-Verified by ForgeOps Energy Autonomous Industrial Decision-Intelligence Platform
+Independent review and field measurement are required before reporting realized savings or compliance.
 `;
     const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `IPMVP_Verification_Certificate_INC-ENG-2401.txt`;
+    link.download = `ForgeOps_Energy_Demo_Scenario_Report.txt`;
     link.click();
     URL.revokeObjectURL(url);
   };
 
   const auditStages = [
-    { id: 'decision', title: '1. Decision Approval', date: 'Today 10:41 AM', summary: 'Plant engineer approved Option A (Repair leak) under 10.0 t/h constraint gate.' },
-    { id: 'work_order', title: '2. Work Order Creation', date: 'Today 10:45 AM', summary: 'CMMS dispatched WO-ENG-7922 for scheduled 14:30 changeover window.' },
-    { id: 'execution', title: '3. Physical Execution', date: 'Today 11:32 AM', summary: 'Braided coupling replaced on Line 2 header drop #4. Leak eliminated.' },
-    { id: 'telemetry', title: '4. Post-Repair Telemetry', date: 'Today 12:00 PM', summary: 'PM8000 submeter recorded power drop from 61 kW to 49 kW.' },
-    { id: 'normalization', title: '5. Baseline Normalization', date: 'Today 12:30 PM', summary: 'IPMVP Option B algorithm adjusted for +3.5°C ambient temperature delta.' },
-    { id: 'verification', title: '6. Final Verification', date: 'Today 01:00 PM', summary: 'Certified -1.2 kWh/t SEC reduction with 96.8% statistical confidence.' },
+    { id: 'decision', title: '1. Demo approval record', date: 'Scenario event', summary: 'The fixture represents an operator selecting a repair scenario under a throughput constraint.' },
+    { id: 'work_order', title: '2. Simulated work-order record', date: 'Scenario event', summary: 'A demo reference is shown; no CMMS dispatch occurred.' },
+    { id: 'execution', title: '3. Assumed intervention', date: 'Scenario event', summary: 'The calculation assumes a coupling repair; no physical work is represented as completed.' },
+    { id: 'telemetry', title: '4. Scenario inputs', date: 'Scenario event', summary: 'Power and SEC values are synthetic inputs, not submeter readings.' },
+    { id: 'normalization', title: '5. Baseline calculation', date: 'Scenario event', summary: 'The calculator applies an illustrative temperature adjustment to the assumed baseline.' },
+    { id: 'verification', title: '6. Modelled result', date: 'Scenario event', summary: 'The calculated delta is not field verified, certified, or supported by statistical confidence.' },
   ];
 
   return (
@@ -105,18 +104,18 @@ Verified by ForgeOps Energy Autonomous Industrial Decision-Intelligence Platform
         <div>
           <div className="page-kicker">
             <span className="kicker-tag">VERIFICATION</span>
-            <span>BEE Normalized Measurement & Verification (IPMVP Option B/C)</span>
+            <span>Illustrative calculation · synthetic fixture</span>
           </div>
-          <h1 className="page-title">Savings Verification Engine</h1>
+          <h1 className="page-title">Scenario M&V Calculator</h1>
           <p className="page-subtitle">
-            Outcome-oriented mathematical verification proving actual recurring electrical savings normalized for throughput and weather.
+            Explore baseline normalization on demonstration inputs. This prototype does not certify savings or replace independent M&V review.
           </p>
         </div>
 
         <div className="header-controls-group">
           <button className="btn-secondary-action" onClick={handleDownloadCertificate}>
             <FileTextIcon size={14} />
-            <span>Download M&V Certificate (.txt)</span>
+            <span>Export scenario report (.txt)</span>
           </button>
           <button className="btn-primary-action" onClick={() => setShowFormulaModal(true)}>
             <span>Inspect Normalization Formula</span>
@@ -127,27 +126,27 @@ Verified by ForgeOps Energy Autonomous Industrial Decision-Intelligence Platform
       {/* ── Top Summary KPIs (Section 28 of Spec) ── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '12px' }}>
         <div className="card-clean" style={{ padding: '16px' }}>
-          <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Active Verifications</span>
+          <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Demo scenarios</span>
           <div style={{ fontSize: '24px', fontWeight: 650, color: '#bd6249', marginTop: '2px' }}>3 cases</div>
-          <small style={{ color: 'var(--text-muted)' }}>Ongoing telemetry logging</small>
+          <small style={{ color: 'var(--text-muted)' }}>No live telemetry logging</small>
         </div>
 
         <div className="card-clean" style={{ padding: '16px' }}>
-          <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Verified & Certified</span>
-          <div style={{ fontSize: '24px', fontWeight: 650, color: '#5e7e60', marginTop: '2px' }}>18 completed</div>
-          <small style={{ color: '#5e7e60', fontWeight: 600 }}>100% IPMVP compliant</small>
+          <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Demo scenarios</span>
+          <div style={{ fontSize: '24px', fontWeight: 650, color: '#5e7e60', marginTop: '2px' }}>18 examples</div>
+          <small style={{ color: '#5e7e60', fontWeight: 600 }}>Synthetic history only</small>
         </div>
 
         <div className="card-clean" style={{ padding: '16px' }}>
-          <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Pending Review</span>
+          <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Scenario review state</span>
           <div style={{ fontSize: '24px', fontWeight: 650, color: '#a8793e', marginTop: '2px' }}>2 awaiting</div>
-          <small style={{ color: 'var(--text-muted)' }}>Baseline gathering stage</small>
+          <small style={{ color: 'var(--text-muted)' }}>Illustrative workflow</small>
         </div>
 
         <div className="card-clean" style={{ padding: '16px' }}>
-          <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Verified Savings</span>
-          <div style={{ fontSize: '24px', fontWeight: 650, color: 'var(--text-primary)', marginTop: '2px' }}>₹12.8 Lakhs</div>
-          <small style={{ color: '#5e7e60', fontWeight: 600 }}>Annual run-rate delivered</small>
+          <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Modelled savings (illustrative)</span>
+          <div style={{ fontSize: '24px', fontWeight: 650, color: 'var(--text-primary)', marginTop: '2px' }}>No field data</div>
+          <small style={{ color: '#5e7e60', fontWeight: 600 }}>Illustrative annualized estimate</small>
         </div>
       </div>
 
@@ -156,25 +155,25 @@ Verified by ForgeOps Energy Autonomous Industrial Decision-Intelligence Platform
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span className="best-tag">VERIFIED OUTCOME</span>
+              <span className="best-tag">MODELLED SCENARIO</span>
               <span className="font-mono text-muted" style={{ fontSize: '12px' }}>WO-ENG-7922 &bull; Feeder F-03</span>
             </div>
             <h2 style={{ margin: '8px 0 2px', fontFamily: 'var(--font-serif)', fontSize: '20px', color: 'var(--text-primary)' }}>
               CMP-01 Pneumatic Leak Repair Outcome
             </h2>
             <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-secondary)' }}>
-              Line 2 manifold drop coupling replacement verified against continuous submeter telemetry.
+              Synthetic inputs demonstrate how normalized savings calculations could be reviewed after a real intervention.
             </p>
           </div>
 
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
             <div style={{ textAlign: 'right' }}>
-              <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Predicted vs Measured</span>
+              <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Model prediction vs scenario input</span>
               <div style={{ fontSize: '13px', color: 'var(--text-primary)', marginTop: '2px' }}>
-                Predicted: <span className="font-mono"><strong>-1.5 kWh/t</strong></span> &bull; Measured: <span className="font-mono" style={{ color: '#5e7e60' }}><strong>-1.2 kWh/t</strong></span>
+                Predicted: <span className="font-mono"><strong>-1.5 kWh/t</strong></span> &bull; Scenario input: <span className="font-mono" style={{ color: '#5e7e60' }}><strong>-1.2 kWh/t</strong></span>
               </div>
             </div>
-            <span className="provenance-badge provenance-measured">Verified</span>
+            <span className="provenance-badge provenance-simulated">Modelled</span>
           </div>
         </div>
 
@@ -209,13 +208,13 @@ Verified by ForgeOps Energy Autonomous Industrial Decision-Intelligence Platform
           <div style={{ padding: '14px', borderRadius: '7px', border: '1px solid var(--glass-border)', background: 'var(--bg-surface)' }}>
             <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Post-Intervention</span>
             <div style={{ fontSize: '20px', fontWeight: 650, color: '#5e7e60', marginTop: '2px' }}>9.8 kWh/t</div>
-            <small style={{ color: '#5e7e60', fontWeight: 600 }}>Measured post-repair</small>
+            <small style={{ color: '#5e7e60', fontWeight: 600 }}>Illustrative scenario value</small>
           </div>
 
           <div style={{ padding: '14px', borderRadius: '7px', border: '1px solid #5e7e60', background: 'var(--bg-surface)' }}>
-            <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Verified Impact</span>
+            <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Modelled scenario impact</span>
             <div style={{ fontSize: '20px', fontWeight: 650, color: '#5e7e60', marginTop: '2px' }}>-1.2 kWh/t</div>
-            <small style={{ color: '#5e7e60', fontWeight: 600 }}>₹6,240/day recurring saving</small>
+            <small style={{ color: '#5e7e60', fontWeight: 600 }}>Scenario estimate; not measured</small>
           </div>
         </div>
       </div>
@@ -272,7 +271,7 @@ Verified by ForgeOps Energy Autonomous Industrial Decision-Intelligence Platform
             </div>
             <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '12px', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
               <div style={{ padding: '12px', borderRadius: '6px', background: 'var(--bg-ground)', fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--text-primary)' }}>
-                Savings = (Baseline SEC × Routine Adjustments) - Measured Post-Repair SEC
+                Modelled change = (Assumed baseline SEC × Routine adjustments) - Scenario SEC input
               </div>
               <p style={{ margin: 0 }}>
                 Routine adjustments isolate weather (ambient temperature alpha = 0.004/°C) and product tonnage from physical energy efficiency changes.

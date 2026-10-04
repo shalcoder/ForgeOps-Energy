@@ -41,18 +41,18 @@ export function LiveOperationsView({ onNavigate }: LiveOperationsProps) {
         <div>
           <div className="page-kicker">
             <span className="kicker-tag">OPERATIONS</span>
-            <span>Shopfloor Real-time Telemetry Engine</span>
+            <span>Demonstration telemetry workspace</span>
           </div>
-          <h1 className="page-title">Live Operations</h1>
+          <h1 className="page-title">Operations Demo</h1>
           <p className="page-subtitle">
-            Continuous real-time telemetry across Belgaum foundry feeders, lines, and submetered equipment.
+            Synthetic Belgaum foundry telemetry for exploring the workflow. No live meters, PLCs, or plant controls are connected.
           </p>
         </div>
 
         <div className="header-controls-group">
           <div className="live-status-pill">
             <span className="pulsing-indicator" />
-            <strong style={{ color: '#5e7e60', fontSize: '11.5px' }}>TELEMETRY STREAM LIVE (1s)</strong>
+            <strong style={{ color: '#b7791f', fontSize: '11.5px' }}>DEMO PLAYBACK · NOT LIVE TELEMETRY</strong>
           </div>
         </div>
       </header>
@@ -84,7 +84,7 @@ export function LiveOperationsView({ onNavigate }: LiveOperationsProps) {
         <div className="card-clean" style={{ padding: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '10.5px', color: 'var(--text-secondary)', textTransform: 'uppercase', fontWeight: 600 }}>Active Power</span>
-            <span className="provenance-badge provenance-measured">Measured</span>
+            <span className="provenance-badge provenance-simulated">Demo</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginTop: '6px' }}>
             <strong style={{ fontFamily: 'var(--font-serif)', fontSize: '26px', color: 'var(--text-primary)' }}>482</strong>
@@ -95,8 +95,8 @@ export function LiveOperationsView({ onNavigate }: LiveOperationsProps) {
 
         <div className="card-clean" style={{ padding: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '10.5px', color: 'var(--text-secondary)', textTransform: 'uppercase', fontWeight: 600 }}>Live SEC</span>
-            <span className="provenance-badge provenance-measured">Measured</span>
+            <span style={{ fontSize: '10.5px', color: 'var(--text-secondary)', textTransform: 'uppercase', fontWeight: 600 }}>Demo SEC</span>
+            <span className="provenance-badge provenance-simulated">Demo</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginTop: '6px' }}>
             <strong style={{ fontFamily: 'var(--font-serif)', fontSize: '26px', color: 'var(--text-primary)' }}>9.8</strong>
@@ -108,7 +108,7 @@ export function LiveOperationsView({ onNavigate }: LiveOperationsProps) {
         <div className="card-clean" style={{ padding: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '10.5px', color: 'var(--text-secondary)', textTransform: 'uppercase', fontWeight: 600 }}>Hourly Throughput</span>
-            <span className="provenance-badge provenance-measured">Measured</span>
+            <span className="provenance-badge provenance-simulated">Demo</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginTop: '6px' }}>
             <strong style={{ fontFamily: 'var(--font-serif)', fontSize: '26px', color: 'var(--text-primary)' }}>10.2</strong>
@@ -124,13 +124,13 @@ export function LiveOperationsView({ onNavigate }: LiveOperationsProps) {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
             <div>
               <h3 style={{ margin: 0, fontFamily: 'var(--font-serif)', fontSize: '17px', fontWeight: 500, color: 'var(--text-primary)' }}>
-                Live Plant Energy Profile (24 Hours)
+                Sample Plant Energy Profile (24 Hours)
               </h3>
               <p style={{ margin: '3px 0 0', fontSize: '11px', color: 'var(--text-secondary)' }}>
                 Time-series power draw, baseline envelope, and detected anomaly correlation
               </p>
             </div>
-            <span className="provenance-badge provenance-measured">1 sec sampling</span>
+            <span className="provenance-badge provenance-simulated">Synthetic sample series</span>
           </div>
 
           <div style={{ width: '100%', height: '220px', position: 'relative' }}>
@@ -271,7 +271,7 @@ export function LiveOperationsView({ onNavigate }: LiveOperationsProps) {
                       <div style={{ fontSize: '10px', color: 'var(--text-secondary)' }}>{asset.name}</div>
                     </td>
                     <td>
-                      <span className={`provenance-badge ${asset.state === 'alert' ? 'provenance-simulated' : asset.state === 'warning' ? 'provenance-estimated' : 'provenance-measured'}`}>
+                      <span className="provenance-badge provenance-simulated">
                         {asset.state.toUpperCase()}
                       </span>
                     </td>
@@ -298,7 +298,7 @@ export function LiveOperationsView({ onNavigate }: LiveOperationsProps) {
         <div className="card-clean" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 650, color: 'var(--text-primary)' }}>Active Anomalies</h3>
-            <span className="provenance-badge provenance-measured">System 1 Live</span>
+            <span className="provenance-badge provenance-simulated">System 1 fallback</span>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>

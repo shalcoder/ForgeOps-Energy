@@ -3,15 +3,15 @@ Decision 2.0 (System 1) Fast Inference Engine for ForgeOps Energy.
 Integrated with vLLM Semantic Router (vllm-sr/Decision-2.0) architecture.
 
 Supports:
-- Model: vllm-sr/Decision-2.0-Sol-2B (Optimal for RTX 3060 6GB VRAM, consumes ~1.8GB-3.5GB)
-- Edge Alternative: vllm-sr/Decision-2.0-Kai-0.6B (Consumes <600MB VRAM/RAM for DIN-Rail Edge Gateways)
-- Non-autoregressive single-forward-pass inference (<10ms)
+- Model: vllm-sr/Decision-2.0-Sol-2B (1.88B parameters; local runtime and GPU memory use are not yet benchmarked here)
 - Structured questions: choice, yes/no (noul), score
-- Graceful offline fallback when model weights are not pre-downloaded
+- Graceful deterministic fallback when native inference is disabled or unavailable
 """
 
 import time
 import os
+from pathlib import Path
+from importlib import metadata
 from typing import Dict, Any, List, Optional
 
 
@@ -24,28 +24,44 @@ class Decision2Engine:
     def __init__(self, model_id: str = "vllm-sr/Decision-2.0-Sol-2B", device: str = "auto"):
         self.model_id = model_id
         self.device = device
-        self.model_path = os.environ.get("FORGEOPS_DECISION2_MODEL_PATH", model_id)
+        configured_path = os.environ.get("FORGEOPS_DECISION2_MODEL_PATH")
+        local_snapshot = Path(__file__).resolve().parents[2] / "models" / "Decision-2.0-Sol-2B"
+        self.model_path = configured_path or (str(local_snapshot) if local_snapshot.is_dir() else model_id)
         self._model = None
         self._is_live_loaded = False
         self._load_error: str | None = None
         self._attempt_load()
 
+    def _weights_present(self) -> bool:
+        """Only accept an explicitly configured local snapshot; never download weights at startup."""
+        path = Path(self.model_path)
+        if not path.is_dir() or not (path / "config.json").is_file():
+            return False
+        return any(path.glob("*.safetensors")) or any(path.glob("pytorch_model*.bin"))
+
     def _attempt_load(self):
-        """Attempts to load the model via Hugging Face transformers if torch and CUDA/CPU are ready."""
+        """Load only a complete local snapshot when explicitly enabled."""
         try:
-            # Check if user explicitly enabled live local transformer weights
             if os.environ.get("FORGEOPS_LOAD_DECISION2_WEIGHTS", "false").lower() == "true":
+                if not self._weights_present():
+                    self._load_error = "Local model weights are not present; remote downloads are disabled."
+                    return
                 import torch
                 from transformers import AutoModel
-                print(f"[Decision 2.0] Loading {self.model_id} onto {self.device}...")
+                print(f"[Decision 2.0] Loading local snapshot {self.model_path} onto {self.device}...")
                 self._model = AutoModel.from_pretrained(
                     self.model_path,
                     trust_remote_code=True,
                     device_map=self.device,
                     torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+                    local_files_only=True,
                 )
+                if not callable(getattr(self._model, "system_one", None)):
+                    self._model = None
+                    self._load_error = "Loaded model does not expose the required system_one interface."
+                    return
                 self._is_live_loaded = True
-                print(f"[Decision 2.0] Successfully loaded {self.model_id} on GPU/RAM.")
+                print(f"[Decision 2.0] Successfully loaded local snapshot {self.model_path}.")
         except Exception as exc:
             # High-performance calibrated fallback is maintained for deterministic offline execution
             self._is_live_loaded = False
@@ -54,11 +70,23 @@ class Decision2Engine:
 
     def health(self) -> Dict[str, Any]:
         """Expose model loading state without hiding deterministic fallback use."""
+        weights_present = self._weights_present()
+        enabled = os.environ.get("FORGEOPS_LOAD_DECISION2_WEIGHTS", "false").lower() == "true"
+        versions: dict[str, str | None] = {}
+        for package in ("transformers", "huggingface-hub", "tokenizers", "torch"):
+            try:
+                versions[package] = metadata.version(package)
+            except metadata.PackageNotFoundError:
+                versions[package] = None
         return {
             "model": self.model_id,
             "model_path": self.model_path,
             "live_loaded": self._is_live_loaded,
-            "engine": "vllm-sr-decision-2.0-native" if self._is_live_loaded else "vllm-sr-decision-2.0-calibrated",
+            "weights_present": weights_present,
+            "load_enabled": enabled,
+            "runtime": "native_local_model" if self._is_live_loaded else "calibrated_deterministic_fallback",
+            "status": "loaded" if self._is_live_loaded else ("weights_missing" if enabled and not weights_present else ("load_failed" if self._load_error else "fallback_active")),
+            "packages": versions,
             "load_error": self._load_error,
         }
 
@@ -87,13 +115,13 @@ class Decision2Engine:
                 return {
                     "results": res,
                     "model": self.model_id,
-                    "engine": "vllm-sr-decision-2.0-native",
+                    "engine": "native_local_model",
                     "latency_ms": round(latency_ms, 2),
                 }
             except Exception as e:
                 pass
 
-        # Fast calibrated emulation (<5ms) replicating Decision-2.0-Sol-2B behavior
+        # Deterministic calibrated routing fallback. This is not a loaded Sol-2B model.
         results: Dict[str, Any] = {}
         s_lower = state.lower()
 
@@ -151,9 +179,9 @@ class Decision2Engine:
         return {
             "results": results,
             "model": self.model_id,
-            "engine": "vllm-sr-decision-2.0-calibrated",
+            "engine": "calibrated_deterministic_fallback",
             "latency_ms": round(max(3.2, latency_ms), 2),
-            "memory_footprint_mb": 1850 if "Sol-2B" in self.model_id else 550,
+            "model_weights_loaded": False,
         }
 
     def route_tools_system1(self, user_query: str, available_tools: List[str]) -> List[str]:

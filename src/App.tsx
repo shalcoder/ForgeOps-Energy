@@ -389,6 +389,9 @@ function App() {
 
           {/* ── Main workspace ── */}
           <div className="workspace-column">
+            <div role="note" style={{ padding: '8px 22px', background: '#fff8e8', borderBottom: '1px solid #ead9b2', color: '#674d22', fontSize: '11px', lineHeight: 1.45 }}>
+              <strong>Prototype data:</strong> this deployment uses synthetic foundry fixtures and modelled scenarios. No live factory meters, PLCs, MES, CMMS, or plant controls are connected.
+            </div>
             <header className="app-header-modern">
               <div className="breadcrumbs">
                 <span>{selectedPlant}</span>

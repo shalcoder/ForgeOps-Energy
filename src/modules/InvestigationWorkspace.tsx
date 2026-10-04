@@ -918,7 +918,7 @@ export function InvestigationWorkspace({
                     }}
                   >
                     <CheckIcon size={14} />
-                    <span>Approve action &rarr; Dispatch CMMS</span>
+                    <span>Record demo approval</span>
                   </button>
                 </div>
               )}
@@ -926,7 +926,7 @@ export function InvestigationWorkspace({
               {decisionState === 'approved' && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#5e7e60', fontWeight: 650, fontSize: '13px' }}>
                   <CheckCircleIcon size={18} />
-                  <span>Approved by Plant Engineer • Work Order WO-ENG-7922 Created!</span>
+                  <span>Demo approval recorded • no live CMMS work order was created.</span>
                 </div>
               )}
 

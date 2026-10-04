@@ -288,17 +288,17 @@ class ForgeOpsMCPTools:
         action: str = "Replace coupling gasket and adjust setpoint to 6.2 bar",
         priority: str = "HIGH",
     ) -> Dict[str, Any]:
-        """Dispatches controlled maintenance work order to CMMS."""
+        """Create a simulated work-order record; no live CMMS adapter is connected."""
         work_order_id = "WO-ENG-7922"
         return {
             "work_order_id": work_order_id,
             "equipment_id": equipment_id,
             "action": action,
             "priority": priority,
-            "dispatched_at": datetime.now(timezone.utc).isoformat(),
-            "status": "SCHEDULED_FOR_SHIFT_B_CHANGEOVER",
-            "assigned_team": "Pneumatics Maintenance Shift Lead",
-            "control_type": "Simulated CMMS Dispatch (Read-Only Safety)",
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "status": "DEMO_DRAFT_REQUIRES_OPERATOR_REVIEW",
+            "assigned_team": "Unassigned demo placeholder",
+            "control_type": "Simulated record; no live CMMS or plant mutation",
         }
 
     # 15. Verification — M&V Engine
@@ -308,7 +308,7 @@ class ForgeOpsMCPTools:
         actual_tonnage: float = 762.4,
         ambient_temp_actual: float = 31.5,
     ) -> Dict[str, Any]:
-        """Calculates IPMVP Option B/C verified savings with closed-loop prediction error feedback."""
+        """Calculates an illustrative normalized scenario; does not verify field savings."""
         verification = calculate_ipmvp_option_bc_verification(
             baseline_sec=11.2,
             post_repair_sec=9.2,
@@ -347,22 +347,22 @@ class ForgeOpsMCPTools:
             },
         }
 
-    # 16. Report — M&V Report Generation
+    # 16. Report — illustrative M&V calculation
     def generate_mandv_report(self, incident_id: str = "INC-ENG-2401") -> str:
-        """Generates formal ISO 50015 / BEE savings verification document."""
+        """Generate a demonstration normalization report, not a certificate."""
         v = self.verify_savings(incident_id)
         d = v["verification_data"]
         return f"""========================================================================
-FORGEOPS ENERGY — CLOSED-LOOP SAVINGS VERIFICATION CERTIFICATE
-Protocol: IPMVP Option B / Option C • ISO 50015
-Incident Reference: {incident_id} • Work Order: WO-ENG-7922
+FORGEOPS ENERGY — ILLUSTRATIVE SCENARIO REPORT (NOT A CERTIFICATE)
+Method: Example baseline normalization structure; no IPMVP determination
+Incident Reference: {incident_id} • Synthetic fixture data
 ========================================================================
-1. MEASURED TELEMETRY BASELINE
-   Baseline SEC: 11.2 kWh/t • Adjusted Baseline SEC: {d['adjusted_baseline_sec']} kWh/t
-2. POST-INTERVENTION MEASUREMENT
-   Measured Post-Repair SEC: {d['measured_post_repair_sec']} kWh/t
-   Verified SEC Reduction: -{d['verified_sec_reduction_pct']}%
-3. CLOSED-LOOP PREDICTION ERROR FEEDBACK
+1. ILLUSTRATIVE BASELINE INPUT
+   Baseline SEC: 11.2 kWh/t • Adjusted scenario baseline: {d['adjusted_baseline_sec']} kWh/t
+2. MODELLED POST-ACTION INPUT
+   Scenario SEC: {d['measured_post_repair_sec']} kWh/t
+   Calculated scenario delta: -{d['verified_sec_reduction_pct']}% (not field verified)
+3. DEMONSTRATION PREDICTION ERROR FEEDBACK
    Predicted SEC Delta: {v['predicted_sec_delta']} kWh/t
    Actual SEC Delta: {v['actual_sec_delta']} kWh/t
    Prediction Error: {v['prediction_error_pct']}%

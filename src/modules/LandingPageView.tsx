@@ -35,15 +35,15 @@ export function LandingPageView({ onEnterApp, onLogin, theme, setTheme }: Landin
       num: '01',
       title: 'Sense & Detect (System 1)',
       subtitle: 'Deterministic Submetering Edge Triage',
-      desc: 'Edge gateways continuously monitor 1-sec Modbus telemetry. Detects abnormal SEC spikes (+16.8% on CMP-01 compressor) while verifying safety interlocks within <30ms.',
+      desc: 'The prototype evaluates a Belgaum foundry demonstration fixture with deterministic baseline and safety rules. Live Modbus telemetry is an integration target, not connected in this deployment.',
       tag: 'EDGE ENGINE',
-      badge: 'Latency: 28ms',
+      badge: 'Synthetic fixture',
     },
     {
       num: '02',
       title: 'Investigate (System 2)',
       subtitle: '4-Agent Multi-MCP Synthesis',
-      desc: 'Planner, Research, and Analysis agents correlate 6 live data sources (power, pressure, flow, MES production, CMMS leak complaints, and metallurgical scrap rates).',
+      desc: 'Planner, Research, Analysis, and Execution agents assemble evidence from configured MCP tools or deterministic fallback fixtures. No live plant feeds are connected in this deployment.',
       tag: 'MULTI-AGENT',
       badge: '6 Data Streams',
     },
@@ -53,23 +53,23 @@ export function LandingPageView({ onEnterApp, onLogin, theme, setTheme }: Landin
       subtitle: 'Counterfactual What-If Sandbox',
       desc: 'Thermodynamic sonic orifice and isentropic curves evaluate 3 alternative repair scenarios, verifying throughput (≥10.2 t/h) and pressure (≥5.5 bar) constraints.',
       tag: 'THERMODYNAMICS',
-      badge: 'BEE ADEETIE Ready',
+      badge: 'Modelled scenario',
     },
     {
       num: '04',
       title: 'Approve & Execute',
       subtitle: 'Human-in-the-Loop Decision Gate',
-      desc: 'Plant Manager signs off on Pareto-optimal Scenario A. Work order WO-ENG-7922 is automatically created and dispatched to maintenance shift crew with zero throughput loss.',
+      desc: 'The operator reviews a ranked scenario and can record an approval in the prototype. Work-order dispatch is simulated; the application does not control plant equipment or connect to a live CMMS.',
       tag: 'GOVERNANCE',
-      badge: 'CMMS Dispatched',
+      badge: 'Simulated approval',
     },
     {
       num: '05',
       title: 'Verify & Normalise',
-      subtitle: 'IPMVP Option B Bankable Savings',
-      desc: 'Post-intervention telemetry confirms SEC dropped from 11.2 → 9.8 kWh/t. Normalizes for weather (+3.5°C) and production variations for audit-grade bankable savings.',
+      subtitle: 'Measurement & verification workflow',
+      desc: 'The local verification model compares a stated baseline with scenario inputs and reports a modelled result. Field measurement and independent verification are required before calling savings verified.',
       tag: 'VERIFICATION',
-      badge: '₹48k/mo Verified',
+      badge: 'Modelled estimate',
     },
   ];
 
@@ -85,8 +85,8 @@ export function LandingPageView({ onEnterApp, onLogin, theme, setTheme }: Landin
             <span className="brand-title">
               ForgeOps<span>Energy</span>
             </span>
-            <span className="provenance-badge provenance-measured" style={{ marginLeft: '10px' }}>
-              v2.4 Production
+            <span className="provenance-badge provenance-simulated" style={{ marginLeft: '10px' }}>
+              Prototype · demo data
             </span>
           </div>
 
@@ -160,9 +160,9 @@ export function LandingPageView({ onEnterApp, onLogin, theme, setTheme }: Landin
         </h1>
 
         <p className="landing-hero-lead">
-          ForgeOps transforms passive energy meters into an active decision-intelligence engine. Continuously reduces
-          <strong> Specific Energy Consumption (SEC)</strong> while strictly preserving throughput, metallurgical quality,
-          and deterministic safety interlocks.
+          ForgeOps is an industrial energy decision-support prototype for foundry SMEs. It combines a four-role agent workflow,
+          deterministic physics and economics models, operator review, and a measurement plan to help teams investigate
+          <strong> Specific Energy Consumption (SEC)</strong> while keeping throughput, quality, and safety constraints visible.
         </p>
 
         <div className="landing-hero-cta-row">
@@ -177,44 +177,44 @@ export function LandingPageView({ onEnterApp, onLogin, theme, setTheme }: Landin
           </button>
         </div>
 
-        {/* Live Metrics Ticker Bar */}
+        {/* Demonstration scenario metrics */}
         <div className="landing-ticker-bar">
           <div className="ticker-item">
-            <span className="ticker-label">CURRENT SEC</span>
+            <span className="ticker-label">DEMO SEC</span>
             <div className="ticker-val">
               <strong>9.8</strong> <small>kWh/t</small>
             </div>
-            <span className="ticker-delta good">&darr; 8.4% vs baseline</span>
+            <span className="ticker-delta">Reference fixture · not field measured</span>
           </div>
 
           <div className="ticker-divider" />
 
           <div className="ticker-item">
-            <span className="ticker-label">IDENTIFIED SAVINGS</span>
+            <span className="ticker-label">MODELLED OPPORTUNITY</span>
             <div className="ticker-val">
-              <strong>₹3.8L</strong> <small>/ month</small>
+              <strong>₹6,240</strong> <small>/ demo day</small>
             </div>
-            <span className="ticker-delta">12 live opportunities</span>
+            <span className="ticker-delta">Scenario estimate · assumptions apply</span>
           </div>
 
           <div className="ticker-divider" />
 
           <div className="ticker-item">
-            <span className="ticker-label">AVERAGE PAYBACK</span>
+            <span className="ticker-label">DEMO PAYBACK</span>
             <div className="ticker-val">
               <strong>1.8</strong> <small>months</small>
             </div>
-            <span className="ticker-delta good">BEE ADEETIE Eligible</span>
+            <span className="ticker-delta">Calculated from fixture inputs</span>
           </div>
 
           <div className="ticker-divider" />
 
           <div className="ticker-item">
-            <span className="ticker-label">DECISION LATENCY</span>
+            <span className="ticker-label">SYSTEM 1 MODE</span>
             <div className="ticker-val">
-              <strong>&lt; 30</strong> <small>ms</small>
+              <strong>Rules</strong> <small>fallback</small>
             </div>
-            <span className="ticker-delta good">System 1 Fast Triage</span>
+            <span className="ticker-delta">Sol-2B weights not loaded</span>
           </div>
         </div>
       </header>
@@ -253,7 +253,7 @@ export function LandingPageView({ onEnterApp, onLogin, theme, setTheme }: Landin
               <span className="kicker-tag" style={{ border: '1px solid #d4e4d2', background: '#edf4ec', color: '#3b663b' }}>
                 {loopSteps[activeInteractiveStep].tag} &bull; {loopSteps[activeInteractiveStep].badge}
               </span>
-              <span className="provenance-badge provenance-measured">ISO 50001 Calibrated</span>
+              <span className="provenance-badge provenance-simulated">Demo fixture</span>
             </div>
 
             <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '24px', margin: '0 0 8px', color: 'var(--text-primary)' }}>
@@ -274,7 +274,7 @@ export function LandingPageView({ onEnterApp, onLogin, theme, setTheme }: Landin
                   <span style={{ fontSize: '11px', color: '#bd6249', fontWeight: 700 }}>+16.8% Above Baseline Envelope</span>
                 </div>
                 <div style={{ display: 'flex', gap: '16px', alignItems: 'baseline' }}>
-                  <div><span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>MEASURED POWER:</span> <strong>61 kW</strong></div>
+                  <div><span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>DEMO POWER:</span> <strong>61 kW</strong></div>
                   <div><span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>EXPECTED ENVELOPE:</span> <strong>47–53 kW</strong></div>
                   <div><span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>PRESSURE:</span> <strong>6.5 bar (Stable)</strong></div>
                 </div>
@@ -340,7 +340,7 @@ export function LandingPageView({ onEnterApp, onLogin, theme, setTheme }: Landin
               <div className="preview-widget">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                   <span style={{ fontSize: '11px', fontWeight: 600 }}>Work Order WO-ENG-7922 Prepared</span>
-                  <span className="provenance-badge provenance-measured">Safety Interlocks PASS</span>
+                  <span className="provenance-badge provenance-simulated">App constraints pass for scenario</span>
                 </div>
                 <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-secondary)' }}>
                   Action: <strong>Repair braided coupling on Line 2 Moulding bank drop #4</strong> &bull; Scheduled shift changeover (42 min) &bull; Zero production line stop.
@@ -351,13 +351,13 @@ export function LandingPageView({ onEnterApp, onLogin, theme, setTheme }: Landin
             {activeInteractiveStep === 4 && (
               <div className="preview-widget">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <span style={{ fontSize: '11px', fontWeight: 600 }}>IPMVP Option B Verified Results</span>
-                  <span className="provenance-badge provenance-verified">Verified</span>
+                  <span style={{ fontSize: '11px', fontWeight: 600 }}>Illustrative scenario output</span>
+                  <span className="provenance-badge provenance-simulated">Modelled</span>
                 </div>
                 <div style={{ display: 'flex', gap: '16px', fontSize: '11.5px' }}>
-                  <div>Measured SEC: <strong style={{ color: '#5e7e60' }}>9.8 kWh/t</strong> (Was 11.2)</div>
+                  <div>Scenario SEC: <strong style={{ color: '#5e7e60' }}>9.8 kWh/t</strong> (illustrative)</div>
                   <div>Power Restored: <strong style={{ color: '#5e7e60' }}>49 kW</strong> (Was 61)</div>
-                  <div>Audit Ledger: <span className="font-mono">SHA-256 #89c4</span></div>
+                  <div>Data source: <span className="font-mono">synthetic demo fixture</span></div>
                 </div>
               </div>
             )}
@@ -382,7 +382,7 @@ export function LandingPageView({ onEnterApp, onLogin, theme, setTheme }: Landin
           <h2>Overcoming High Tariffs and Fragmented Floors</h2>
           <p className="section-sub">
             In Indian foundries, energy represents 15–30% of total plant operational expenditure.
-            Traditional SCADA systems cost ₹25L–₹50L and take 9 months to deploy. ForgeOps delivers positive ROI in &lt;60 days.
+            A retrofit-oriented workflow could reduce the cost and effort of finding energy waste. Deployment cost and payback depend on plant equipment, tariffs, and field measurements.
           </p>
         </div>
 
@@ -422,13 +422,13 @@ export function LandingPageView({ onEnterApp, onLogin, theme, setTheme }: Landin
               BEE ADEETIE SCHEME ALIGNED
             </span>
             <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '18px', margin: '10px 0 6px' }}>
-              Bankable Investment Audits
+              Audit Preparation Support
             </h3>
             <p style={{ fontSize: '12.5px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-              Government subsidies under BEE ADEETIE require standardized baseline normalization. ForgeOps produces tamper-evident audit dossiers meeting IPMVP criteria.
+              ForgeOps can organize baseline and project inputs for review by an SME and its qualified energy auditor. Scheme eligibility and any loan benefit are decided by BEE and the lender; this prototype does not produce an approved audit dossier.
             </p>
             <div style={{ marginTop: '14px', paddingTop: '10px', borderTop: '1px solid var(--glass-border)', fontSize: '11px', color: '#5e7e60', fontWeight: 600 }}>
-              &bull; Unlocks up to 30% capital subsidy on energy-efficient retrofits
+              &bull; Helps organize project inputs; scheme eligibility requires independent review
             </div>
           </div>
         </div>
@@ -440,7 +440,7 @@ export function LandingPageView({ onEnterApp, onLogin, theme, setTheme }: Landin
           <p className="eyebrow">DECISION 2.0 INTELLIGENCE ARCHITECTURE</p>
           <h2>Dual-Process Industrial AI: System 1 & System 2</h2>
           <p className="section-sub">
-            Moving beyond passive dashboards and noisy text LLMs. Calibrated edge models guarantee deterministic safety, backed by multi-agent causal reasoning.
+            Deterministic safety and physics checks are kept separate from optional model-assisted reasoning. This prototype currently runs System 1 with its calibrated rules fallback.
           </p>
         </div>
 
@@ -452,14 +452,14 @@ export function LandingPageView({ onEnterApp, onLogin, theme, setTheme }: Landin
                 <h3 style={{ margin: 0, fontFamily: 'var(--font-serif)', fontSize: '20px' }}>System 1: Edge Fast Triage</h3>
               </div>
               <p style={{ fontSize: '12.5px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-                Local non-autoregressive decision models (Decision-2.0 Sol-2B / CLM-8B) running on DIN-rail edge hardware. Evaluates 100% of telemetry in &lt;30ms with zero parsing errors.
+                System 1 currently uses a calibrated deterministic fallback for routing and screening. Transformers, Hugging Face Hub, and tokenizers are installed, but Decision-2.0-Sol-2B weights are not present in the configured runtime. Safety checks remain explicit deterministic rules.
               </p>
               <ul style={{ margin: '14px 0', paddingLeft: '18px', fontSize: '12px', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                 <li>Hard deterministic safety interlocks (Pressure &ge; 5.5 bar, Temp &le; 1460&deg;C)</li>
                 <li>Equipment-specific baseline envelope validation</li>
                 <li>Instant filtering of sensor noise vs genuine anomalies</li>
               </ul>
-              <span className="provenance-badge provenance-measured">Edge Gateway: 28ms Latency</span>
+              <span className="provenance-badge provenance-estimated">Native model: not loaded</span>
             </div>
 
             <div style={{ borderLeft: '1px solid var(--glass-border)', paddingLeft: '30px' }}>
@@ -468,15 +468,15 @@ export function LandingPageView({ onEnterApp, onLogin, theme, setTheme }: Landin
                 <h3 style={{ margin: 0, fontFamily: 'var(--font-serif)', fontSize: '20px' }}>System 2: Deep 4-Agent Pipeline</h3>
               </div>
               <p style={{ fontSize: '12.5px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-                Cloud/On-prem agentic orchestrator triggered only when System 1 confirms an anomaly. Coordinates 4 specialized agents over Model Context Protocol (MCP):
+                The backend coordinates four bounded agent roles. Live provider calls depend on deployment configuration; otherwise the pipeline uses deterministic fallback behavior. MCP research tools are read-only:
               </p>
               <ul style={{ margin: '14px 0', paddingLeft: '18px', fontSize: '12px', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                 <li><strong>Planner:</strong> Formulates hypothesis test plan & retrieves CMMS context</li>
-                <li><strong>Research:</strong> Pulls Modbus, SCADA, and MES telemetry via 16 MCP tools</li>
+                <li><strong>Research:</strong> Retrieves available MCP evidence or demo fixtures</li>
                 <li><strong>Analysis:</strong> Competing Bayesian hypotheses + thermodynamic physics</li>
                 <li><strong>Execution:</strong> Prepares Pareto-optimal dispatch orders for human approval</li>
               </ul>
-              <span className="provenance-badge provenance-modelled">4-Agent LangGraph Pipeline</span>
+              <span className="provenance-badge provenance-modelled">4-agent prototype</span>
             </div>
           </div>
         </div>
@@ -488,7 +488,7 @@ export function LandingPageView({ onEnterApp, onLogin, theme, setTheme }: Landin
           Ready to optimize your foundry’s specific energy?
         </h2>
         <p style={{ fontSize: '14px', color: 'var(--text-secondary)', maxWidth: '600px', margin: '0 auto 24px' }}>
-          Explore the live Belgaum Foundry Complex workspace. Test the interactive what-if simulator, inspect multi-agent evidence, and sign off on real-world interventions.
+          Explore the Belgaum Foundry demonstration workspace. Test the what-if simulator, inspect evidence provenance, and review simulated approvals. No live plant controls are connected.
         </p>
 
         <div style={{ display: 'flex', justifyContent: 'center', gap: '14px' }}>
@@ -501,7 +501,7 @@ export function LandingPageView({ onEnterApp, onLogin, theme, setTheme }: Landin
         </div>
 
         <div style={{ marginTop: '48px', paddingTop: '20px', borderTop: '1px solid var(--glass-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', color: 'var(--text-muted)', flexWrap: 'wrap', gap: '10px' }}>
-          <div>&copy; 2026 ForgeOps Energy Inc. Aligned with Bureau of Energy Efficiency (BEE ADEETIE) and ISO 50001.</div>
+          <div>&copy; 2026 ForgeOps Energy · Industrial energy decision-support prototype</div>
           <div style={{ display: 'flex', gap: '16px' }}>
             <span style={{ cursor: 'pointer' }} onClick={() => onEnterApp('settings')}>System Health</span>
             <span style={{ cursor: 'pointer' }} onClick={() => onEnterApp('reports')}>Audit Dossiers</span>

@@ -33,16 +33,16 @@ export function AskForgeOpsModal({
 }) {
   const [query, setQuery] = useState('');
   const [activeResponse, setActiveResponse] = useState<CopilotResponse | null>({
-    answer: 'Specific Energy Consumption (SEC) increased +14.3% above baseline (9.8 to 11.2 kWh/ton) on Line 2 between 08:00 AM and 08:30 AM.',
+    answer: 'In the synthetic case study, Specific Energy Consumption (SEC) rises +14.3% above its fixture baseline (9.8 to 11.2 kWh/t). These are demonstration values, not live plant readings.',
     evidence: [
-      'Line 2 pneumatic manifold pressure dropped from 7.2 to 6.1 bar (-15.3%)',
+      'Fixture scenario: pneumatic manifold pressure changes from 7.2 to 6.1 bar (-15.3%)',
       'COMP-02 screw compressor on-load modulation surged from 62% to 84% (+22% duty)',
       'Motor drive current increased to 142 A (+13.6% overload)',
-      'Throughput (10.2 ton/hr) and quality (97.6%) remained nominal',
+      'Throughput and quality values are held as synthetic scenario guardrails',
     ],
-    confidence: 0.94,
-    impact: '₹780 / hr excess energy loss (₹6,240 / operating day unmitigated)',
-    nextAction: 'Replace ruptured braided coupling on Line 2 manifold and re-tune setpoint to 6.5 bar.',
+    confidence: 0.72,
+    impact: 'Illustrative cost estimate from fixture assumptions; verify with site meters and tariff.',
+    nextAction: 'Inspect the evidence and confirm the hypothesis with plant staff before drafting a work order.',
     actionLabel: 'Launch What-If Simulation in Workbench',
     actionTarget: 'workbench',
   });
@@ -55,43 +55,43 @@ export function AskForgeOpsModal({
 
     if (q.toLowerCase().includes('setpoint') || q.toLowerCase().includes('simulate')) {
       setActiveResponse({
-        answer: 'Simulating setpoint reduction from 7.2 to 6.5 bar alongside 100% leak elimination yields an optimal SEC of 9.2 kWh/ton (-18.0% reduction).',
+        answer: 'The synthetic case-study simulation estimates 9.2 kWh/t at a 6.5 bar setpoint with assumed leak repair (-18% vs the incident input). It is not a plant measurement or operating instruction.',
         evidence: [
-          'CapEx requirement: ₹9,500 for braided coupling replacement',
-          'Downtime window required: 48 min (fits within 11:00 AM mold changeover)',
-          'Hard constraints satisfied: Throughput ≥ 10.0 ton/hr, Quality ≥ 97.5%',
+          'Fixture repair-cost assumption: ₹9,500; verify with site quotes',
+          'Downtime and timing must be assessed by the plant team',
+          'Throughput, quality, and safety checks are modeled guardrails only',
         ],
         confidence: 0.96,
-        impact: 'Estimated savings of ₹6,240 per day with a simple payback of about 1.5 days on ₹9,500 CapEx.',
-        nextAction: 'Approve intervention package Option C for CMMS work order dispatch.',
+        impact: 'Fixture estimate only; no realized savings or site payback has been established.',
+        nextAction: 'Validate the scenario with the plant team and prepare a draft action for human review.',
         actionLabel: 'Open Decision Gate in Workbench',
         actionTarget: 'workbench',
       });
     } else if (q.toLowerCase().includes('verified') || q.toLowerCase().includes('savings') || q.toLowerCase().includes('ipmvp')) {
       setActiveResponse({
-        answer: 'Post-maintenance submeter telemetry on Feeder F-03 confirms SEC dropped to 9.2 kWh/ton, achieving -17.9% verified energy reduction.',
+        answer: 'This prototype calculates an illustrative before/after scenario using synthetic inputs. No post-maintenance plant meter data is connected, so it cannot verify savings or issue an IPMVP certificate.',
         evidence: [
-          'Throughput verified at 10.2 ton/hr (100% baseline preserved)',
-          'Metallurgical yield confirmed at 97.8% (+0.2% yield improvement)',
-          'Carbon abatement verified at 96 kg CO₂/day (35 tCO₂e/year)',
+          'Throughput and quality are scenario guardrails; actual production data is not connected',
+          'Independent post-action meter and production data are required for savings verification',
+          'Carbon values are indicative and depend on a site-specific emissions factor',
         ],
-        confidence: 0.99,
-        impact: 'Savings officially logged to plant energy audit ledger and certified under IPMVP.',
-        nextAction: 'Download official BEE Measurement & Verification dossier.',
+        confidence: 0.72,
+        impact: 'Scenario estimate only; not field verified, certified, or written to a plant ledger.',
+        nextAction: 'Review the normalization example and requirements for independent M&V.',
         actionLabel: 'View Closed-Loop Verification Center',
         actionTarget: 'verification',
       });
     } else {
       setActiveResponse({
-        answer: 'Primary root cause: Compressed-air leakage on Line 2 distribution manifold causing continuous compressor overcycling.',
+        answer: 'The synthetic case study points to compressed-air leakage as a root-cause hypothesis. Confirm it with calibrated site readings and a maintenance inspection.',
         evidence: [
-          '3 leak complaints logged in CMMS over past 14 days on Line 2 Moulding Bank',
-          'Header pressure deficit: 1.1 bar loss across delivery manifold',
-          'Continuous on-load compressor power: 68 kW draw',
+          'Synthetic fixture includes three sample maintenance records; no live CMMS is connected',
+          'Fixture input: 1.1 bar pressure change across the delivery manifold',
+          'Scenario compressor draw: 68 kW; validate onsite',
         ],
-        confidence: 0.94,
-        impact: '₹1.87 Lakhs monthly financial bleed if unaddressed.',
-        nextAction: 'Execute work order WO-ENG-7922 during scheduled changeover.',
+        confidence: 0.72,
+        impact: 'Illustrative cost exposure only; calculate actual impact from site meter data and tariff.',
+        nextAction: 'Validate onsite and prepare a proposed work-order draft for human review.',
         actionLabel: 'Inspect Multi-Sensor Diagnostics',
         actionTarget: 'workbench',
       });
@@ -196,9 +196,9 @@ export function AskForgeOpsModal({
           <button
             className="btn-secondary-action"
             style={{ fontSize: '11px', padding: '4px 10px' }}
-            onClick={() => handleAsk('Show me verified before vs after IPMVP savings')}
+            onClick={() => handleAsk('Show me the modelled before and after scenario')}
           >
-            Show verified IPMVP savings
+            Show modelled scenario
           </button>
         </div>
 

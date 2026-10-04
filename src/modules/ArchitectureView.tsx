@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { getSystemRuntimeStatus, type SystemRuntimeStatus } from '../integrations/forgeOpsClient';
 import {
   ZapIcon,
   ActivityIcon,
@@ -18,10 +19,55 @@ import {
   ClockIcon,
 } from '../components/Icons';
 
-type TabView = 'harness_overview' | 'flowchart' | 'system1_sandbox' | 'competing_hypotheses' | 'closed_loop_feedback' | 'failure_modes';
+type TabView = 'architecture_map' | 'harness_overview' | 'flowchart' | 'system1_sandbox' | 'competing_hypotheses' | 'closed_loop_feedback' | 'failure_modes';
+
+function ArchitectureMap() {
+  const [runtime, setRuntime] = useState<SystemRuntimeStatus | null>(null);
+  useEffect(() => {
+    let mounted = true;
+    getSystemRuntimeStatus().then((status) => { if (mounted) setRuntime(status); });
+    return () => { mounted = false; };
+  }, []);
+
+  const layers = [
+    { id: '01', title: 'People & roles', status: 'Implemented in prototype', body: 'Plant operator, energy manager, maintenance engineer, plant owner, sustainability and finance personas. Human review gates are represented in the UI.' },
+    { id: '02', title: 'Web application', status: 'Implemented', body: 'React 18 + TypeScript workbench with overview, opportunities, investigation, simulation, approval, verification and reports.' },
+    { id: '03', title: 'API & orchestration', status: 'Implemented', body: 'FastAPI REST endpoints, typed Pydantic contracts, pipeline orchestration, approval records and SSE pipeline updates.' },
+    { id: '04', title: 'Agentic decision engine', status: runtime ? `System 1: ${runtime.system1.runtime}` : 'Checking runtime', body: `System 1 currently routes with a deterministic fallback unless a compatible local model snapshot is explicitly configured. System 2 has Planner, Research, Analysis and Execution roles; provider calls are optional. ${runtime?.system1.model ?? 'Decision-2.0-Sol-2B is the configured target; weights are not confirmed loaded.'}` },
+    { id: '05', title: 'Data & model layer', status: 'Demo fixtures + deterministic models', body: `Belgaum plant data and MCP fixtures power the demonstration. Physics, tariff and economics calculations are deterministic. transformers ${runtime?.system1.packages.transformers ?? 'installed per local environment note'} · huggingface-hub ${runtime?.system1.packages['huggingface-hub'] ?? 'installed per local environment note'} · tokenizers ${runtime?.system1.packages.tokenizers ?? 'installed per local environment note'} · torch ${runtime?.system1.packages.torch ?? 'not installed in this runtime'}. Sol-2B weights: ${runtime?.system1.weights_present ? 'present locally' : 'not present in configured path'}.` },
+    { id: '06', title: 'Integration layer', status: runtime?.integrations.remote_mcp.reachable ? `Remote MCP reachable (${runtime.integrations.remote_mcp.tool_count} tools)` : 'MCP fallback / unavailable', body: 'Remote MCP provides tool access when available. Live Modbus, OPC-UA, MQTT, MES, CMMS, QMS and ERP plant adapters are not connected in this deployment; integration protocols are design targets.' },
+    { id: '07', title: 'Factory floor', status: 'Not connected · demo data', body: 'Meters, compressors, furnaces, motors, PLC/SCADA and plant systems are represented by synthetic demonstration records. No control path or physical actuation is enabled.' },
+  ];
+
+  return (
+    <section className="card-clean" style={{ padding: '22px' }}>
+      <div className="card-header-clean">
+        <div>
+          <h2 className="card-title-clean">ForgeOps full-stack architecture</h2>
+          <p className="card-subtitle-clean">Current implementation and integration boundaries · runtime-aware, prototype status</p>
+        </div>
+        <span className="kpi-badge warning">No live plant OT connection</span>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '10px' }}>
+        {layers.map((layer) => (
+          <article key={layer.id} className="card-clean" style={{ padding: '14px', borderTop: '2px solid var(--brand-primary)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '8px', alignItems: 'start' }}>
+              <strong style={{ color: 'var(--text-primary)', fontSize: '13px' }}>{layer.id} · {layer.title}</strong>
+              <span className="provenance-badge provenance-estimated">{layer.status}</span>
+            </div>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '11.5px', lineHeight: 1.55, margin: '10px 0 0' }}>{layer.body}</p>
+          </article>
+        ))}
+      </div>
+      <p style={{ color: 'var(--text-muted)', fontSize: '10.5px', margin: '14px 0 0' }}>
+        Inference libraries being installed does not mean model weights are loaded. Native inference stays opt-in and local-only; deterministic safety checks and physics calculations remain separate from model output.
+      </p>
+    </section>
+  );
+}
 
 export function ArchitectureView({ onOpenWorkbench }: { onOpenWorkbench: () => void }) {
-  const [activeTab, setActiveTab] = useState<TabView>('harness_overview');
+  const [activeTab, setActiveTab] = useState<TabView>('architecture_map');
   const [simulatedPower, setSimulatedPower] = useState(61.0);
   const [simulatedPressure, setSimulatedPressure] = useState(6.5);
   const [simulatedVibration, setSimulatedVibration] = useState(1.7);
@@ -139,6 +185,7 @@ export function ArchitectureView({ onOpenWorkbench }: { onOpenWorkbench: () => v
 
       {/* Navigation Sub-Tabs */}
       <div style={{ display: 'flex', gap: '8px', marginBottom: '18px', borderBottom: '1px solid var(--glass-border)', paddingBottom: '12px', flexWrap: 'wrap' }}>
+        <button className={`btn-subtab ${activeTab === 'architecture_map' ? 'active' : ''}`} onClick={() => setActiveTab('architecture_map')}>Current Full-Stack Map</button>
         <button
           className={`btn-subtab ${activeTab === 'harness_overview' ? 'active' : ''}`}
           onClick={() => setActiveTab('harness_overview')}
@@ -241,6 +288,8 @@ export function ArchitectureView({ onOpenWorkbench }: { onOpenWorkbench: () => v
           6. Safety Invariants & Failure Handling
         </button>
       </div>
+
+      {activeTab === 'architecture_map' && <ArchitectureMap />}
 
       {/* TAB 1: 8-Layer Harness Architecture */}
       {activeTab === 'harness_overview' && (
@@ -393,7 +442,7 @@ export function ArchitectureView({ onOpenWorkbench }: { onOpenWorkbench: () => v
                 <LayersIcon size={16} className="text-emerald" />
                 <span>Closed-Loop Architecture Topology Map (12 Subgraphs)</span>
               </h3>
-              <p className="card-subtitle-clean">End-to-end data and decision pipeline from factory meters to IPMVP verification certificate</p>
+              <p className="card-subtitle-clean">Prototype workflow and intended integration path. Factory endpoints shown are not connected.</p>
             </div>
             <span className="kpi-badge info">Mermaid 12-Layer Engine</span>
           </div>
@@ -501,7 +550,7 @@ export function ArchitectureView({ onOpenWorkbench }: { onOpenWorkbench: () => v
                   <div style={{ fontSize: '11px', color: '#cbd5e1', lineHeight: '1.5' }}>
                     • Specific Energy Cost (₹/ton)<br />
                     • Expected Financial Savings (₹/day)<br />
-                    • BEE ADEETIE CapEx Subsidy Modeling<br />
+                    • Scenario economics; no scheme grant assumed<br />
                     • Payback = CapEx / Monthly Net Savings
                   </div>
                 </div>
@@ -524,10 +573,10 @@ export function ArchitectureView({ onOpenWorkbench }: { onOpenWorkbench: () => v
                 <div style={{ background: 'rgba(15, 23, 42, 0.9)', padding: '12px', borderRadius: '8px', border: '1px solid rgba(148, 163, 184, 0.3)' }}>
                   <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 700, marginBottom: '4px' }}>CONTROLLED EXECUTION</div>
                   <div style={{ fontSize: '11px', color: '#cbd5e1', lineHeight: '1.5' }}>
-                    • CMMS Work Order Dispatch (WO-ENG-7922)<br />
-                    • Shift Changeover Maintenance Task<br />
-                    • Approved Simulated Setpoint (6.2 bar)<br />
-                    • Production / Energy Load Rescheduling
+                    • Demo approval record (no CMMS dispatch)<br />
+                    • Proposed maintenance task for operator review<br />
+                    • Setpoint scenario (requires engineering validation)<br />
+                    • Scheduling is an integration target
                   </div>
                 </div>
 
@@ -536,10 +585,10 @@ export function ArchitectureView({ onOpenWorkbench }: { onOpenWorkbench: () => v
                 <div style={{ background: 'rgba(15, 23, 42, 0.9)', padding: '12px', borderRadius: '8px', border: '1px solid rgba(0, 211, 40, 0.5)' }}>
                   <div style={{ fontSize: '11px', color: '#00d328', fontWeight: 700, marginBottom: '4px' }}>MEASURE & VERIFY (L7)</div>
                   <div style={{ fontSize: '11px', color: '#cbd5e1', lineHeight: '1.5' }}>
-                    • Post-Intervention Direct Telemetry (9.2 kWh/t)<br />
-                    • Normalized Baseline Adjustment (Tonnage + Weather)<br />
-                    • IPMVP Option B/C Verified Savings (-17.9%)<br />
-                    • Cryptographic Savings Certificate Export
+                    • Synthetic scenario inputs (no live telemetry)<br />
+                    • Illustrative baseline calculation<br />
+                    • No IPMVP or field savings verification<br />
+                    • Demo report export only
                   </div>
                 </div>
 
@@ -850,7 +899,7 @@ export function ArchitectureView({ onOpenWorkbench }: { onOpenWorkbench: () => v
                 </h3>
                 <p className="card-subtitle-clean">How post-intervention telemetry measures actual savings and updates future baseline envelopes</p>
               </div>
-              <span className="kpi-badge success">Audit Verified</span>
+              <span className="kpi-badge success">Scenario only</span>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '14px', alignItems: 'center' }}>

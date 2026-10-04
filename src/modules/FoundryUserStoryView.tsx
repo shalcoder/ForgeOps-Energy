@@ -289,7 +289,7 @@ export function FoundryUserStoryView({ onSwitchToWorkbench }: { onSwitchToWorkbe
                 </div>
                 <strong style={{ fontSize: '13px', color: '#f9fafb' }}>What-If Simulated</strong>
                 <p style={{ fontSize: '11.5px', color: '#9ca3af', lineHeight: '1.5', margin: 0 }}>
-                  Simulated 4 scenarios. Option C (Manifold repair + 6.5 bar retune) delivers ₹6,240/day savings.
+                  Synthetic fixture comparison. Option C models a 9.2 kWh/t SEC output; savings are not field measured.
                 </p>
               </div>
 
@@ -297,11 +297,11 @@ export function FoundryUserStoryView({ onSwitchToWorkbench }: { onSwitchToWorkbe
               <div style={{ backgroundColor: 'var(--bg-surface, #090d16)', border: '1px solid var(--glass-border)', borderRadius: '8px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span className="font-mono" style={{ color: '#00d328', fontWeight: 700, fontSize: '13px' }}>04 • 08:40 AM</span>
-                  <span className="kpi-badge success">Dispatched</span>
+                  <span className="kpi-badge info">Simulated</span>
                 </div>
                 <strong style={{ fontSize: '13px', color: '#f9fafb' }}>Human Gate Approved</strong>
                 <p style={{ fontSize: '11.5px', color: '#9ca3af', lineHeight: '1.5', margin: 0 }}>
-                  Operator approved intervention. CMMS work order WO-ENG-7922 dispatched for 11:00 AM changeover.
+                  The demo records an operator approval and work-order reference. No live CMMS dispatch occurred.
                 </p>
               </div>
 
@@ -309,11 +309,11 @@ export function FoundryUserStoryView({ onSwitchToWorkbench }: { onSwitchToWorkbe
               <div style={{ backgroundColor: 'var(--bg-surface, #090d16)', border: '1px solid rgba(0, 211, 40, 0.4)', borderRadius: '8px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span className="font-mono" style={{ color: '#00d328', fontWeight: 700, fontSize: '13px' }}>05 • 11:30 AM</span>
-                  <span className="kpi-badge success">Verified</span>
+                  <span className="kpi-badge info">Modelled</span>
                 </div>
                 <strong style={{ fontSize: '13px', color: '#f9fafb' }}>Impact Closed-Loop</strong>
                 <p style={{ fontSize: '11.5px', color: '#9ca3af', lineHeight: '1.5', margin: 0 }}>
-                  Telemetry confirms SEC reduced to 9.2 kWh/ton (-18.0%). Savings logged to energy audit ledger.
+                  The simulation projects SEC at 9.2 kWh/ton (-18.0%) for this fixture. Field measurements are required to verify savings.
                 </p>
               </div>
             </div>

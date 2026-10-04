@@ -8,7 +8,7 @@
  *   3. Electric Induction Furnace Specific Energy (kWh/ton) Physics
  *   4. Multi-Objective Pareto Frontier Optimizer (calculateParetoFront)
  *   5. Indian Industrial DISCOM Tariff & Power Factor Engine (ToD, PF Penalties/Incentives)
- *   6. BEE ADEETIE Subsidy DPR & IPMVP Option B/C Normalized Verification Engine
+ *   6. Scenario Economics & Illustrative Baseline Normalization Engine
  *   7. Decision Record & Executive/Engineering Report Generator
  */
 
@@ -128,7 +128,7 @@ export interface BeeAdeetieDprResult {
   annual_financial_savings_inr: number;
   payback_months_gross: number;
   payback_months_net: number;
-  irr_annual_pct: number;
+  annual_net_savings_to_capex_pct: number;
   scope2_co2_abatement_tons_yr: number;
   dpr_format: string;
   bankability_status: string;
@@ -146,7 +146,7 @@ export interface IpmvpVerificationResult {
   verified_sec_reduction_pct: number;
   verified_daily_savings_inr: number;
   verified_annual_savings_inr: number;
-  statistical_confidence_pct: number;
+  statistical_confidence_pct: number | null;
   verification_status: string;
 }
 
@@ -598,17 +598,17 @@ export function calculateParetoFront(
 
 export function calculateBeeAdeetieDpr(
   capexInr = 120000.0,
-  annualSavingsInr = 2993000.0,
-  annualKwhSaved = 383718.0,
+  annualSavingsInr = 1146600.0,
+  annualKwhSaved = 147000.0,
   clusterName = 'Foundry & Castings - Belgaum',
-  subsidyRatePct = 25.0
+  subsidyRatePct = 0.0
 ): BeeAdeetieDprResult {
   const subsidyAmount = capexInr * (subsidyRatePct / 100.0);
   const netCapex = capexInr - subsidyAmount;
   const paybackGross = annualSavingsInr > 0 ? capexInr / (annualSavingsInr / 12.0) : 0.0;
   const paybackNet = annualSavingsInr > 0 ? netCapex / (annualSavingsInr / 12.0) : 0.0;
   const co2Abated = (annualKwhSaved * GRID_CO2_FACTOR_KG_PER_KWH) / 1000.0;
-  const irr = (annualSavingsInr / Math.max(1.0, netCapex)) * 100.0;
+  const annualSavingsToCapex = (annualSavingsInr / Math.max(1.0, netCapex)) * 100.0;
 
   return {
     cluster: clusterName,
@@ -620,10 +620,10 @@ export function calculateBeeAdeetieDpr(
     annual_financial_savings_inr: Number(annualSavingsInr.toFixed(2)),
     payback_months_gross: Number(paybackGross.toFixed(2)),
     payback_months_net: Number(paybackNet.toFixed(2)),
-    irr_annual_pct: Number(irr.toFixed(1)),
+    annual_net_savings_to_capex_pct: Number(annualSavingsToCapex.toFixed(1)),
     scope2_co2_abatement_tons_yr: Number(co2Abated.toFixed(2)),
-    dpr_format: 'BEE-ADEETIE-DPR-REV-4',
-    bankability_status: 'Highly Bankable (Payback < 2 months, IRR > 200%)',
+    dpr_format: 'ILLUSTRATIVE-SCENARIO-ECONOMICS',
+    bankability_status: 'Scenario estimate only; not a bankability assessment',
   };
 }
 
@@ -652,7 +652,7 @@ export function calculateIpmvpVerification(
   const verifiedAnnualSavingsInr = verifiedDailySavingsInr * 365.0;
 
   return {
-    protocol: 'IPMVP Option B / Option C (BEE M&V Standard)',
+    protocol: 'Illustrative baseline normalization structure; not an IPMVP determination',
     measured_baseline_sec: Number(baselineSec.toFixed(2)),
     adjusted_baseline_sec: Number(adjustedBaselineSec.toFixed(2)),
     measured_post_repair_sec: Number(postRepairSec.toFixed(2)),
@@ -663,8 +663,8 @@ export function calculateIpmvpVerification(
     verified_sec_reduction_pct: Number(verifiedSecReductionPct.toFixed(2)),
     verified_daily_savings_inr: Number(verifiedDailySavingsInr.toFixed(2)),
     verified_annual_savings_inr: Number(verifiedAnnualSavingsInr.toFixed(2)),
-    statistical_confidence_pct: 95.0,
-    verification_status: 'APPROVED_VERIFIED',
+    statistical_confidence_pct: null,
+    verification_status: 'MODELLED_SCENARIO_ONLY',
   };
 }
 

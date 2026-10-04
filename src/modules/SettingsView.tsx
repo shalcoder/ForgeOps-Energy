@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { getSystemRuntimeStatus, type SystemRuntimeStatus } from '../integrations/forgeOpsClient';
 import {
   SettingsIcon,
   ShieldCheckIcon,
@@ -30,16 +31,27 @@ type SettingsTab =
 
 export function SettingsView({ currentRole, onRoleChange, onNavigate }: SettingsProps) {
   const [activeTab, setActiveTab] = useState<SettingsTab>('system_health');
+  const [runtime, setRuntime] = useState<SystemRuntimeStatus | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    getSystemRuntimeStatus().then((status) => {
+      if (mounted) setRuntime(status);
+    });
+    return () => { mounted = false; };
+  }, []);
 
   const dataSources = [
-    { name: 'Modbus RTU / TCP Submeters', protocol: 'Modbus', status: 'Connected', lastSync: '1 sec ago', signals: 48 },
-    { name: 'Siemens S7-1500 PLC & VFD Drives', protocol: 'OPC-UA', status: 'Connected', lastSync: '2 sec ago', signals: 64 },
-    { name: 'Shopfloor Environmental MQTT Bus', protocol: 'MQTT', status: 'Connected', lastSync: '4 sec ago', signals: 16 },
-    { name: 'MES Production & Tonnage System', protocol: 'REST / SQL', status: 'Connected', lastSync: '12 sec ago', signals: 12 },
-    { name: 'CMMS Maintenance & Work Orders', protocol: 'SAP PM API', status: 'Connected', lastSync: '28 sec ago', signals: 8 },
-    { name: 'QMS Quality Inspection Terminal', protocol: 'REST API', status: 'Connected', lastSync: '45 sec ago', signals: 6 },
-    { name: 'DISCOM Tariff & Billing Feed', protocol: 'JSON Webhook', status: 'Connected', lastSync: '1 hr ago', signals: 4 },
+    { name: 'Energy meters & submeters', protocol: 'Modbus RTU / TCP', status: 'Not connected', lastSync: 'Not available', signals: 'Demo fixture' },
+    { name: 'PLC, VFD & machine telemetry', protocol: 'OPC-UA / Modbus', status: 'Not connected', lastSync: 'Not available', signals: 'Demo fixture' },
+    { name: 'Shopfloor sensor bus', protocol: 'MQTT / 4–20mA', status: 'Not connected', lastSync: 'Not available', signals: 'Demo fixture' },
+    { name: 'Production, maintenance & quality', protocol: 'MES / CMMS / QMS', status: 'Not connected', lastSync: 'Not available', signals: 'Demo fixture' },
+    { name: 'Tariff, materials & finance', protocol: 'ERP / API / file', status: 'Not connected', lastSync: 'Not available', signals: 'Demo fixture' },
   ];
+
+  const modelLabel = runtime?.system1.runtime === 'native_local_model'
+    ? 'Local Decision-2 model'
+    : 'Calibrated deterministic fallback';
 
   return (
     <div className="page-container">
@@ -58,8 +70,8 @@ export function SettingsView({ currentRole, onRoleChange, onNavigate }: Settings
 
         <div className="header-controls-group">
           <div className="live-status-pill">
-            <span className="pulsing-indicator" />
-            <span>All 7 Data Feeds Operational</span>
+            <span className="pulsing-indicator" style={{ background: '#d5a04e' }} />
+            <span>Prototype · demo plant data</span>
           </div>
         </div>
       </header>
@@ -70,7 +82,7 @@ export function SettingsView({ currentRole, onRoleChange, onNavigate }: Settings
           System Health & Decision Engine
         </button>
         <button className={`btn-subtab ${activeTab === 'data_sources' ? 'active' : ''}`} onClick={() => setActiveTab('data_sources')}>
-          Data Sources (7 Connected)
+          Data Sources (Demo status)
         </button>
         <button className={`btn-subtab ${activeTab === 'safety' ? 'active' : ''}`} onClick={() => setActiveTab('safety')}>
           Safety & Constraint Invariants
@@ -94,33 +106,33 @@ export function SettingsView({ currentRole, onRoleChange, onNavigate }: Settings
             <div className="card-clean" style={{ padding: '16px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>System 1 Fast Loop</span>
-                <span className="provenance-badge provenance-measured">Healthy</span>
+                <span className="provenance-badge provenance-estimated">{runtime?.system1.live_loaded ? 'Native loaded' : 'Fallback active'}</span>
               </div>
               <div style={{ fontSize: '15px', fontWeight: 650, color: 'var(--text-primary)', marginTop: '4px' }}>
-                Decision-2.0 Sol-2B
+                {modelLabel}
               </div>
               <p style={{ margin: '4px 0 0', fontSize: '10.5px', color: 'var(--text-secondary)' }}>
-                Non-autoregressive edge triage &bull; 8.4ms inference
+                {runtime ? `Target ${runtime.system1.model} · ${runtime.system1.weights_present ? 'weights available' : 'weights not found locally'} · torch ${runtime.system1.packages.torch ?? 'not installed'}` : 'Runtime status unavailable'}
               </p>
             </div>
 
             <div className="card-clean" style={{ padding: '16px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>System 2 Reasoning</span>
-                <span className="provenance-badge provenance-measured">Healthy</span>
+                <span className="provenance-badge provenance-estimated">{runtime?.system2.live_provider_enabled ? 'Provider enabled' : 'Fallback mode'}</span>
               </div>
               <div style={{ fontSize: '15px', fontWeight: 650, color: 'var(--text-primary)', marginTop: '4px' }}>
                 4-Agent Bounded Pipeline
               </div>
               <p style={{ margin: '4px 0 0', fontSize: '10.5px', color: 'var(--text-secondary)' }}>
-                Planner &bull; Research &bull; Analysis &bull; Execution
+                {runtime?.system2.agents.join(' · ') ?? 'Planner · Research · Analysis · Execution'}
               </p>
             </div>
 
             <div className="card-clean" style={{ padding: '16px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Physics Engine</span>
-                <span className="provenance-badge provenance-measured">Validated</span>
+                <span className="provenance-badge provenance-measured">Deterministic model</span>
               </div>
               <div style={{ fontSize: '15px', fontWeight: 650, color: 'var(--text-primary)', marginTop: '4px' }}>
                 Thermodynamic Validator
@@ -133,18 +145,24 @@ export function SettingsView({ currentRole, onRoleChange, onNavigate }: Settings
             <div className="card-clean" style={{ padding: '16px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>MCP Protocol</span>
-                <span className="provenance-badge provenance-measured">Active (16)</span>
+                <span className={`provenance-badge ${runtime?.integrations.remote_mcp.reachable ? 'provenance-measured' : 'provenance-estimated'}`}>{runtime?.integrations.remote_mcp.reachable ? `Remote tools (${runtime.integrations.remote_mcp.tool_count})` : 'Local fallback'}</span>
               </div>
               <div style={{ fontSize: '15px', fontWeight: 650, color: 'var(--text-primary)', marginTop: '4px' }}>
                 ForgeOps MCP Server
               </div>
               <p style={{ margin: '4px 0 0', fontSize: '10.5px', color: 'var(--text-secondary)' }}>
-                16 controlled tools &bull; Port 8787 HTTP API
+                MCP tools are read-only in the research path; remote availability is checked at runtime.
               </p>
             </div>
           </div>
 
           {/* Canonical FactoryState Contract Verification */}
+          <div className="card-clean" style={{ padding: '20px', marginBottom: '14px', borderLeft: '4px solid #d5a04e' }}>
+            <strong>Data provenance: synthetic demonstration</strong>
+            <p style={{ margin: '5px 0 0', fontSize: '11.5px', color: 'var(--text-secondary)' }}>
+              {runtime?.data_note ?? 'Factory telemetry and operational records in this prototype are demonstration fixtures. No live plant OT adapter is connected.'}
+            </p>
+          </div>
           <div className="card-clean" style={{ padding: '20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
               <div>
@@ -152,30 +170,30 @@ export function SettingsView({ currentRole, onRoleChange, onNavigate }: Settings
                   Canonical FactoryState Contract & Data Pipeline
                 </h3>
                 <p style={{ margin: '3px 0 0', fontSize: '11px', color: 'var(--text-secondary)' }}>
-                  Immutable typed schema consuming shopfloor telemetry with zero parsing errors.
+                  Typed data contract for structured records; this deployment is populated with demonstration fixtures.
                 </p>
               </div>
-              <span className="provenance-badge provenance-measured">Zero Parsing Errors</span>
+                  <span className="provenance-badge provenance-estimated">Typed demo contract</span>
             </div>
 
             <div style={{ padding: '14px', borderRadius: '8px', background: 'var(--bg-ground)', fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--text-primary)', display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '14px' }}>
               <div>
                 <div style={{ color: 'var(--text-muted)', marginBottom: '4px' }}>// INGESTION RING BUFFER</div>
-                <div>Ring capacity: 72 hours</div>
-                <div>Current samples: 259,200</div>
-                <div>Dropped frames: 0 (0.00%)</div>
+                <div>Ingestion: not connected</div>
+                <div>Sample count: demo fixture</div>
+                <div>Field buffer: not deployed</div>
               </div>
               <div>
                 <div style={{ color: 'var(--text-muted)', marginBottom: '4px' }}>// MCP TOOLS REGISTERED</div>
-                <div>Read tools: 12 read_telemetry_*</div>
-                <div>Sim tools: 2 simulate_counterfactual</div>
-                <div>Action tools: 2 dispatch_cmms_order</div>
+                <div>Remote endpoint: {runtime?.integrations.remote_mcp.reachable ? 'reachable' : 'unavailable / unchecked'}</div>
+                <div>Read-only research tools</div>
+                <div>Plant action dispatch: simulated only</div>
               </div>
               <div>
                 <div style={{ color: 'var(--text-muted)', marginBottom: '4px' }}>// AUDIT LEDGER INTEGRITY</div>
-                <div>Chain length: 18 entries</div>
-                <div>Hash algorithm: SHA-256</div>
-                <div>Cryptographic check: VALID</div>
+                <div>Audit storage: local SQLite</div>
+                <div>Persistence: deployment dependent</div>
+                <div>Runtime checks: see API health</div>
               </div>
             </div>
           </div>
@@ -201,12 +219,12 @@ export function SettingsView({ currentRole, onRoleChange, onNavigate }: Settings
                   <td><strong>{ds.name}</strong></td>
                   <td><span className="font-mono">{ds.protocol}</span></td>
                   <td>
-                    <span className="provenance-badge provenance-measured">
+                  <span className="provenance-badge provenance-estimated">
                       ● {ds.status}
                     </span>
                   </td>
                   <td><span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{ds.lastSync}</span></td>
-                  <td><span className="font-mono">{ds.signals} signals</span></td>
+                  <td><span className="font-mono">{ds.signals}</span></td>
                 </tr>
               ))}
             </tbody>
@@ -228,17 +246,17 @@ export function SettingsView({ currentRole, onRoleChange, onNavigate }: Settings
             <div style={{ padding: '14px', borderRadius: '7px', background: 'var(--bg-ground)', border: '1px solid var(--glass-border)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <strong style={{ fontSize: '12px', color: 'var(--text-primary)' }}>Compressor Pressure Interlock</strong>
-                <span className="provenance-badge provenance-measured">Hard Lock</span>
+                <span className="provenance-badge provenance-estimated">App constraint</span>
               </div>
               <p style={{ margin: '4px 0 0', fontSize: '11px', color: 'var(--text-secondary)' }}>
-                Minimum header pressure: <strong>5.5 bar</strong>. Sol-2B edge gateway immediately trips if pressure drops below limit.
+                Minimum header pressure: <strong>5.5 bar</strong>. The application blocks recommendations below this configured boundary; it is not wired to trip plant hardware.
               </p>
             </div>
 
             <div style={{ padding: '14px', borderRadius: '7px', background: 'var(--bg-ground)', border: '1px solid var(--glass-border)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <strong style={{ fontSize: '12px', color: 'var(--text-primary)' }}>Bearing Vibration Guard</strong>
-                <span className="provenance-badge provenance-measured">Hard Lock</span>
+                <span className="provenance-badge provenance-estimated">App constraint</span>
               </div>
               <p style={{ margin: '4px 0 0', fontSize: '11px', color: 'var(--text-secondary)' }}>
                 Vibration threshold: <strong>3.5 mm/s RMS</strong>. Prevents catastrophic mechanical bearing seizure.
@@ -248,7 +266,7 @@ export function SettingsView({ currentRole, onRoleChange, onNavigate }: Settings
             <div style={{ padding: '14px', borderRadius: '7px', background: 'var(--bg-ground)', border: '1px solid var(--glass-border)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <strong style={{ fontSize: '12px', color: 'var(--text-primary)' }}>Furnace Temperature Threshold</strong>
-                <span className="provenance-badge provenance-measured">Hard Lock</span>
+                <span className="provenance-badge provenance-estimated">App constraint</span>
               </div>
               <p style={{ margin: '4px 0 0', fontSize: '11px', color: 'var(--text-secondary)' }}>
                 Maximum bath temperature: <strong>1,480°C</strong>. Protects refractory lining and avoids coil burn.
@@ -258,7 +276,7 @@ export function SettingsView({ currentRole, onRoleChange, onNavigate }: Settings
             <div style={{ padding: '14px', borderRadius: '7px', background: 'var(--bg-ground)', border: '1px solid var(--glass-border)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <strong style={{ fontSize: '12px', color: 'var(--text-primary)' }}>Throughput Preserved Guardrail</strong>
-                <span className="provenance-badge provenance-measured">Process Gate</span>
+                <span className="provenance-badge provenance-estimated">App constraint</span>
               </div>
               <p style={{ margin: '4px 0 0', fontSize: '11px', color: 'var(--text-secondary)' }}>
                 Minimum line rate: <strong>10.0 t/h</strong>. Interventions causing throughput penalty are automatically rejected.

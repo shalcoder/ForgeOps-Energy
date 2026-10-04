@@ -1,8 +1,8 @@
 # ForgeOps Energy ⚡
 
-> **Continuously reduce specific energy consumption while preserving throughput, quality, safety, and economic viability.**
+> **Help foundry SMEs investigate specific energy consumption while keeping throughput, quality, safety, and economics in view.**
 
-An enterprise-grade **agentic industrial decision-intelligence platform** specifically architected for Indian manufacturing SMEs (Foundries, Forging, Heavy Engineering, Steel Fabrication, and Textiles). Aligned with the Bureau of Energy Efficiency (**BEE ADEETIE**) scheme to unlock bankable, investment-grade energy audits and rapid CapEx payback (<3 months).
+ForgeOps Energy is an **agentic industrial decision-support prototype** for Indian foundry and forging SMEs. It combines a React/TypeScript workbench, a FastAPI four-role agent pipeline, typed MCP tools, deterministic engineering simulations, and a human review workflow. The Belgaum plant scenario uses synthetic demonstration data; field adapters, physical dispatch, and independent savings verification are not connected in this deployment.
 
 ---
 
@@ -32,7 +32,7 @@ Traditional energy management systems (EMS) in manufacturing act merely as passi
 
 **ForgeOps Energy** is an **active decision-intelligence platform**. Rather than asking *"What was our energy bill yesterday?"*, ForgeOps continuously computes:
 
-> *"Why is Line 2 currently consuming +14.3% more energy per ton of good castings than its baseline, what physical sub-system is failing, what are the Pareto-optimal trade-offs between repair cost and downtime, and what precise work order should be dispatched to fix it?"*
+> *"In this synthetic Line 2 scenario, what may explain the modeled +14.3% SEC increase, what evidence would an engineer need to inspect, and which repair options should be simulated before an operator drafts a work order?"*
 
 ### The Core Operational Loop
 
@@ -64,7 +64,7 @@ India's manufacturing sector comprises over 63 million Micro, Small, and Medium 
 ### The ForgeOps Low-CapEx Advantage:
 - **Plug-and-Play Edge Hardware**: Retrofit with DIN-rail edge gateways (Modbus RS-485 / MQTT) costing ₹20,000 – ₹60,000.
 - **Non-Invasive**: Reads existing meter pulse outputs, clamp-on CT sensors, and pneumatic pressure transducers without halting the production line.
-- **Direct Payback**: Payback achieved within 1.0 to 3.0 months through immediate elimination of compressor idling, peak demand penalties, and pneumatic leaks.
+- **Payback**: A site-specific scenario metric based on measured savings, installed cost, production schedule, and tariff. No guaranteed period is asserted.
 
 ---
 
@@ -91,7 +91,9 @@ $$\text{Thermal Holding Temp} \in [T_{\text{min\_liquidus}} + \Delta T, T_{\text
 ### 3. Economic Viability Constraint
 CapEx and OpEx for any proposed intervention must produce positive NPV within the operational fiscal quarter:
 
-$$\text{Simple Payback (Months)} = \frac{\text{Implementation Cost (₹)}}{\text{Verified Monthly Energy Savings (₹)}} \le 3.0 \text{ months}$$
+$$\text{Simple Payback (Months)} = \frac{\text{Installed Cost (₹)}}{\text{Net Monthly Savings (₹)}}$$
+
+Payback is a site-specific scenario metric, not a guaranteed target; net savings must deduct recurring software, maintenance, and other operating costs.
 
 ---
 
@@ -347,14 +349,25 @@ MODELREG --> BASELINE
 
 | Layer | Responsibility | Runtime / Technology |
 |---|---|---|
-| **L0 Factory** | Sensors, PLCs, submeters, MES, CMMS, QMS, ERP | Modbus RTU / RS-485, OPC-UA, 4-20mA, SQL |
-| **L1 Edge** | Telemetry ingestion, 72h buffering, normalization, learned asset baseline | DIN-Rail IPC, Python / Node.js, SQLite ring buffer |
-| **L2 System 1** | Sub-10ms fast anomaly detection and deterministic safety screening | `Decision-2.0-Sol-2B` (RTX 3060) / `Kai-0.6B` (Edge) |
+| **L0 Factory** | Synthetic demonstration records; live sensors, PLCs, MES, CMMS, QMS, ERP not connected | Adapter targets: Modbus RTU / RS-485, OPC-UA, 4-20mA, SQL |
+| **L1 Edge** | Local baseline service and anomaly screening; field ingestion and durable buffer not deployed | Python prototype; gateway integration is future work |
+| **L2 System 1** | Calibrated deterministic routing fallback and explicit application-level safety checks | Optional local Decision-2.0 snapshot loader; weights absent in current runtime |
 | **L3 System 2** | Bounded 4-Agent deliberative investigation and competing hypotheses | Planner &rarr; Research &rarr; Analysis &rarr; Execution |
 | **L4 Engineering** | Deterministic thermodynamics, isentropic curves, and ToD tariffs | Python / TypeScript Physics Engine (`simulation/engine`) |
 | **L5 Decision** | Counterfactual what-if simulation, hard constraints, Pareto frontier | Multi-objective optimizer, BEE ADEETIE CapEx model |
-| **L6 Human** | Evidence inspection, option selection, approval gate, and CMMS dispatch | Modern Dark Dashboard, Work Order API (Read-only/Simulated) |
-| **L7 Verification** | Post-repair IPMVP Option B/C verification & prediction error loopback | Normalized regression, 14.3% error feedback to registry |
+| **L6 Human** | Evidence inspection, option selection, and recorded demo approval | Work-order record is simulated; no live CMMS dispatch or PLC control |
+| **L7 Verification** | IPMVP-inspired normalization calculations on synthetic scenario inputs | Scenario estimate only; no field-verified or certified savings |
+
+**Current runtime qualification:** The `vllm-sr/Decision-2.0-Sol-2B` snapshot is downloaded locally at `models/Decision-2.0-Sol-2B` (revision `64235bef55dad29387dd16da7c90e038bf2f0972`; about 4.8 GB of safetensor weights). System 1 still runs its calibrated deterministic fallback: this machine's installed Transformers is 4.57.6, below the model card's `>=5.17` requirement, and `import torch` currently fails with a Windows DLL load error. Windows has not exposed an NVIDIA adapter to this process, so CUDA inference has not been validated. The native loader remains opt-in, uses local files only, and does not download weights at application startup. A downloaded snapshot is not evidence that inference is active. Factory telemetry and the Belgaum incident records shown in the UI are demonstration fixtures unless a specific source is identified as connected and verified.
+
+**Local Sol-2B snapshot:** The backend discovers `models/Decision-2.0-Sol-2B` automatically; set `FORGEOPS_DECISION2_MODEL_PATH` only to override it. Set `FORGEOPS_LOAD_DECISION2_WEIGHTS=true` only after installing a compatible PyTorch/CUDA runtime and Transformers `>=5.17,<6`. On PowerShell, for example:
+
+```powershell
+$env:FORGEOPS_LOAD_DECISION2_WEIGHTS = 'true'
+python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
+```
+
+The model code uses `trust_remote_code=True`; review the downloaded model code before enabling it. Keep the multi-gigabyte snapshot local and out of source control.
 
 ### 4.3 Key Design Principle
 
@@ -431,7 +444,7 @@ Rather than using a single monolithic LLM that hallucinates calculations, each a
 - **Logic**:
   - Computes Pareto frontiers balancing **Energy Saved (kWh)** vs **Implementation Cost (₹)** vs **Production Downtime (minutes)**.
   - Formulates the optimal recommendation (Option C: Manifold seal repair + setpoint trim to 6.5 bar).
-  - Prepares the dispatchable CMMS Work Order package with parts list and torque specifications.
+  - Prepares a proposed work-order draft for operator review; no live CMMS adapter or dispatch is connected.
   - Emits declarative UI state mutations to synchronize the frontend charts, DAG graph highlights, and interactive sliders.
 
 ---
@@ -458,11 +471,13 @@ The MCP server is located at `forgeops-mcp/` and provides typed tools adhering t
 | **orchestrator** | `get_timeline` | High-resolution synchronized timeline of all factory events | `batch_id` |
 | **orchestrator** | `get_causal_graph` | Causal directed acyclic graph (DAG) nodes & probability edges | `batch_id` |
 | **orchestrator** | `get_recommendations`| Pareto-ranked actionable engineering interventions | `batch_id` |
-| **orchestrator** | `get_business_impact` | Monetary impact, ROI, electricity tariff cost modeling | `batch_id` |
+| **orchestrator** | `get_business_impact` | Scenario cost and simple payback using editable assumptions | `batch_id` |
 
 ---
 
-## 7. Industrial Case Study: Belgaum Foundry Incident
+## 7. Synthetic Demonstration Scenario: Belgaum Foundry
+
+**Evidence boundary:** every plant, meter, maintenance, production, and quality record in this case study is synthetic demonstration data. The numbers exercise the workflow; they do not describe a real customer or measured intervention. The scenario assumes 9.8 kWh/t normal SEC, 11.2 kWh/t incident SEC, and 9.2 kWh/t modeled output. That is 17.9% below the incident point and 6.1% below the normal reference. Throughput and yield values are modeled guardrails, not proof of real-world preservation.
 
 ### Plant Context
 - **Location**: Belgaum Industrial Area, Karnataka, India.
@@ -472,13 +487,13 @@ The MCP server is located at `forgeops-mcp/` and provides typed tools adhering t
 
 ### High-Resolution Incident Timeline:
 
-| Time | Stage | Real-Time Telemetry & Evidence | Decision & Agent Action |
+| Time | Stage | Synthetic scenario inputs | Demonstrated workflow |
 |---|---|---|---|
-| **08:30 AM** | **1. Anomaly Detected** | Specific Energy Consumption (SEC) on Line 2 jumps from baseline **9.8 kWh/ton to 11.2 kWh/ton (+14.3%)**. Good casting tonnage steady at 10.2 tons/hour. | **Planner Agent** flags abnormal energy consumption without throughput justification. Triggers investigation. |
-| **08:33 AM** | **2. Causal Investigation** | Compressor power climbs from 52 kW to 68 kW (+30.8%). Air line pressure drops from 7.2 bar to 6.1 bar. Motor current reaches 142A. CMMS shows 3 recurring minor leak reports on Line 2 manifold over 14 days. | **Research & Analysis Agents** correlate pneumatic decay with compressor loading ($R^2 = 0.94$). Rejects furnace & motor fault hypotheses. Confirms 93% confidence in manifold gasket blowout. |
-| **08:35 AM** | **3. Counterfactual Simulation** | Evaluates 4 candidate interventions:<br>• **Option A**: Seal leak only $\to$ SEC 9.8 kWh/t, Cost ₹9,500.<br>• **Option B**: Trim pressure to 6.0 bar only $\to$ Inadequate safety margin for mold clamping.<br>• **Option C (Pareto Optimal)**: Seal leak + tune pressure setpoint to 6.5 bar $\to$ SEC 9.2 kWh/t, Cost ₹9,500, Payback 1.5 mo.<br>• **Option D**: Replace 75 kW compressor $\to$ Cost ₹14,50,000, Payback 18 mo (Rejected). | **Execution Agent** selects Option C as Pareto-optimal. Prepares work order package for scheduled tooling changeover at 10:15 AM. |
-| **08:37 AM** | **4. Human Sign-Off Gate** | Shift Supervisor (Vaishak) reviews the evidence bundle, financial ROI, and 48-minute changeover window in the Decision Workbench. | **Supervisor Vaishak** clicks **[Approve Intervention]**. Dispatching CMMS Work Order `WO-ENG-8821`. |
-| **11:30 AM** | **5. Closed-Loop Verification** | Maintenance team replaces EPDM flange gasket and recalibrates pressure regulator during shift change. Edge telemetry measures actual response. | **Closed-Loop Verification View** registers SEC drop to **9.2 kWh/ton (-18.0%)**. Plant throughput preserved at 10.2 t/h. Defect rate unchanged (2.4%). **1,840 kWh/day (₹6,240/day) permanently saved.** |
+| **08:30 AM** | **1. Anomaly Detected** | Fixture SEC moves from **9.8 kWh/t to 11.2 kWh/t (+14.3%)**. Fixture output is 10.2 t/h. | **Planner Agent** flags the synthetic deviation and starts the demo investigation. |
+| **08:33 AM** | **2. Causal Investigation** | Fixture values represent compressor load, line pressure, current, and maintenance notes. | **Research & Analysis Agents** compare hypotheses and show a leak hypothesis with evidence. Confidence is model-generated, not a statistical field finding. |
+| **08:35 AM** | **3. Counterfactual Simulation** | Compares illustrative leak-repair and pressure-setpoint scenarios. SEC, cost, and payback are fixture outputs. | **Execution Agent** ranks options for human review; it does not issue a real work order. |
+| **08:37 AM** | **4. Human Sign-Off Gate** | A demo operator reviews the evidence bundle and modeled changeover window. | The prototype demonstrates an approval record; no live CMMS is connected. |
+| **11:30 AM** | **5. Post-Action Scenario** | Fixture assumes a modeled output SEC of 9.2 kWh/t; no post-action edge telemetry exists. | View demonstrates a future M&V comparison. No actual intervention, preserved throughput, or realized savings is claimed. |
 
 ---
 
@@ -495,18 +510,18 @@ The user interface is built with **React 18 + Vite + TypeScript**, engineered fo
 - **JetBrains Mono**: Used for all raw industrial sensor values, machine IDs (`MCH-B-007`), engineering units, and time-stamped log lines.
 
 ### Core Modules & Views:
-1. **⚡ Energy Overview (`HomeDashboard.tsx`)**: High-level real-time plant KPIs, SEC gauges, active factory alerts, Line 1 vs Line 2 telemetry charts, and peak tariff band indicators.
+1. **⚡ Energy Overview (`HomeDashboard.tsx`)**: Synthetic demonstration KPIs, SEC gauges, example alerts, and fixture charts. Not connected to live plant telemetry.
 2. **🤖 Agentic Decision Workbench (`Workbench.tsx`)**: The central operational cockpit featuring:
    - **Agent Pipeline Status**: Real-time visualization of Planner, Research, Analysis, and Execution agent states.
    - **Interactive Causal DAG (`GraphPanel.tsx`)**: Visual node network isolating root cause with confidence scores.
    - **What-If Physics Simulator (`SimulatorPanel.tsx`)**: Interactive sliders to model pressure reductions, leak remediations, and VFD setpoints.
-   - **Evidence Explorer (`EvidencePanel.tsx`)**: Raw, immutable data packets proving every assertion made by the agents.
-   - **Recommendations & Approval Gate (`RecommendationsPanel.tsx`)**: Comprehensive operator sign-off interface with financial metrics and one-click work order dispatch.
+   - **Evidence Explorer (`EvidencePanel.tsx`)**: Inspectable demo evidence packets with fixture provenance; claims are not independently verified.
+   - **Recommendations & Approval Gate (`RecommendationsPanel.tsx`)**: Operator review interface for scenario estimates. Approval is recorded in the prototype; external work-order dispatch is not connected.
 3. **🏭 Foundry User Story (`FoundryUserStoryView.tsx`)**: Guided 5-phase interactive narrative of the Belgaum SME incident for training, demonstrations, and operator onboarding.
 4. **🏗️ Architecture & Blueprint Explorer (`ArchitectureView.tsx`)**: In-page interactive system schematic displaying data flow from shop floor sensors to cloud agents with node inspect drawers.
-5. **📊 SME Economics & BEE ADEETIE (`SmeEconomicsView.tsx`)**: Interactive financial calculator calculating simple payback, 3-year IRR, annual CO₂ emissions reduction, and BEE ADEETIE subsidy eligibility.
-6. **🔍 Closed-Loop Verification (`VerificationView.tsx`)**: Dedicated analytics view comparing pre-incident baseline, incident peak, and post-repair verified operation.
-7. **💬 Embedded Industrial Copilot (`AskForgeOpsView.tsx`)**: Natural language chat interface with conversational access to factory telemetry, historical anomalies, and maintenance records.
+5. **📊 SME Economics & BEE ADEETIE (`SmeEconomicsView.tsx`)**: Interactive financial calculator calculating scenario payback and indicative emissions; ADEETIE eligibility must be determined by BEE/lender.
+6. **🔍 Closed-Loop Verification (`VerificationView.tsx`)**: Scenario M&V calculator demonstrating normalization on synthetic inputs; it does not verify field operation.
+7. **💬 Embedded Industrial Copilot (`AskForgeOpsView.tsx`)**: Demo Q&A and scenario responses over fixture data; it has no live factory telemetry connection.
 
 ---
 
@@ -547,7 +562,7 @@ Content-Type: application/json
   }
 }
 ```
-**Response**: Returns simulated SEC (9.2 kWh/t), daily kWh savings (1,840 kWh), daily monetary savings (₹6,240), and safety compliance flag (`true`).
+**Response**: Returns modeled SEC and scenario deltas for the supplied inputs. It does not establish measured savings or plant safety approval.
 
 #### 3. Human Decision Approval & Work Order Dispatch
 ```http
@@ -566,72 +581,33 @@ Content-Type: application/json
   "agent_conclusion": "Manifold gasket blowout confirmed with 93% confidence."
 }
 ```
-**Response**: Logs immutable record in `audit_log.db` and dispatches CMMS work order `WO-ENG-8821`.
+**Response**: Persists a local prototype approval/audit record. No external CMMS dispatch is enabled in this deployment.
 
 ---
 
-## 10. BEE ADEETIE Alignment & SME Economics
+## 10. ADEETIE Alignment & SME Economics
 
-The **Bureau of Energy Efficiency (BEE)** under the Ministry of Power, Government of India, launched the **ADEETIE** (*Assistance in Deploying Energy Efficient Technologies in Industries & Establishments*) scheme targeting **60 energy-intensive industrial clusters across 14 manufacturing sectors**.
+ForgeOps Energy can organize energy, production, proposed-measure, and post-implementation monitoring inputs that an SME and qualified energy auditor may use during an efficiency project. The prototype is not BEE/SIDBI-approved, does not conduct an Investment Grade Energy Audit (IGEA), and does not produce a compliant or bankable DPR. BEE ADEETIE describes 5% interest subvention for eligible micro/small enterprises and 3% for eligible medium enterprises on qualifying loans, subject to scheme terms; it is not a 25% equipment grant. Confirm eligibility, cluster coverage, technology, and loan terms with BEE and the lending institution. [BEE ADEETIE](https://www.beeindia.gov.in/show_content.php?lang=1&level=1&lid=384&ls_id=234) · [SIDHIEE scheme details](https://sidhiee.beeindia.gov.in/ProjectComponent/ADEETIE).
 
-ForgeOps Energy directly serves as the digital intelligence layer for ADEETIE compliance:
+### Illustrative economics (assumptions, not an achieved result)
 
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│                      BEE ADEETIE INTEGRATION FLOW                      │
-│                                                                        │
-│   1. Telemetry Logging ──► 2. Investment-Grade ──► 3. Bankable DPR     │
-│      Submeter Modbus          Energy Audit            (Detailed        │
-│      SEC Baseline             (IGEA Data Model)        Project Report) │
-│                                                              │         │
-│   4. Capital Subsidy   ◄── 5. Continuous      ◄──────────────┘         │
-│      Approval (BEE/           Measurement &                            │
-│      SIDBI 20-30%)            Verification                             │
-└────────────────────────────────────────────────────────────────────────┘
-```
+Assumptions: separate whole-site baseline 3.65 GWh/year; tariff ₹7.80/kWh; 10% modeled energy improvement; installation ₹1.20 lakh; subscription ₹6,000/month; emissions factor 0.82 kg CO₂e/kWh for illustration only. These whole-site assumptions do not share a boundary with the synthetic Line 2 SEC story.
 
-### 10.1 BEE ADEETIE Capital Subsidy & Financial Return Model
-Financial Return Matrix (Standard 50-Ton/Day Foundry):
-- **Annual Electrical Consumption**: 3,650,000 kWh
-- **Average Tariff Rate**: ₹7.80 / kWh (Blended: ₹8.20 / kWh)
-- **Total Annual Energy Bill**: ₹2,99,30,000
-- **ForgeOps SEC Reduction (Conservative 10%)**: 365,000 kWh / year
-- **Direct Annual Savings**: **₹29,93,000 / year**
-- **System Retrofit Cost (Gateway + 4 Submeters)**: ₹45,000 – ₹1,20,000
-- **BEE/SIDBI Capital Subsidy (25%)**: -₹30,000 grant
-- **Net SME Out-of-Pocket CapEx**: **₹33,750 – ₹90,000**
-- **Software Subscription**: ₹6,000 / month (₹72,000 / year)
-- **Net Year 1 Return**: **₹29,21,000**
-- **Payback Period**: **0.2 to 1.4 Months (< 45 Days)**
-- **Scope 2 Carbon Abatement**: **299.3 Metric Tons of CO₂e / year**
+| Metric | Scenario value |
+|---|---:|
+| Annual baseline energy bill | ₹2.847 crore |
+| Avoided energy at 10% | 365,000 kWh/year |
+| Gross energy cost reduction | ₹28.47 lakh/year |
+| Software fee | ₹0.72 lakh/year |
+| Net annual benefit before taxes, maintenance and financing | ₹27.75 lakh/year |
+| Simple payback on ₹1.20 lakh installation | 0.52 months |
+| Indicative Scope 2 reduction at assumed factor | 299.3 tCO₂e/year |
 
-### 10.2 Time-of-Day (ToD) Load-Shifting & Solar Arbitrage Engine
-In Indian manufacturing DISCOM tariffs (e.g., BESCOM, HESCOM, MSEDCL, TANGEDCO), electricity costs fluctuate sharply by time of day:
-- **Peak Band (06:00 – 10:00 & 18:00 – 22:00)**: $+20\%$ surcharge ($\approx ₹9.36/\text{kWh}$)
-- **Normal Band (10:00 – 18:00)**: Baseline rate ($₹7.80/\text{kWh}$)
-- **Solar Window & Night Off-Peak (10:00 – 16:00 & 22:00 – 06:00)**: $-15\%$ discount ($\approx ₹6.63/\text{kWh}$)
+The result is sensitive to actual good output, operating hours, tariff, savings, sensor coverage, and implementation cost. Measure and normalize SEC before making a savings claim. Preserve throughput, first-pass yield, and safety as acceptance constraints. Do not include government incentives in payback unless approved for the specific borrower and project.
 
-**The ForgeOps Arbitrage Solution**:
-ForgeOps continuously analyzes scheduled batch heat runs, mold preparation, and pneumatic receiver charging. By shifting **1,600 kWh/day of non-continuous batch load** into the solar/off-peak band:
-- **Tariff Delta Captured**: ₹2.73 / kWh
-- **Daily Operating Savings**: **₹4,368 / day**
-- **Annual Financial Addition**: **₹13.63 Lakhs / year** with **Zero Hardware CapEx** and **100% throughput preserved**.
+### Additional product directions (not validated claims)
 
-### 10.3 Thermal Process Decarbonisation & Fuel-Switching (Scope 1)
-Foundries and forging plants consume significant thermal energy in ladle preheating, reheating furnaces, and heat treatment stations:
-- **Baseline Fuels**: Furnace Oil ($77.4\text{ kg CO}_2\text{/GJ}$), Sub-bituminous Coal ($94.6\text{ kg CO}_2\text{/GJ}$), or HSD Diesel.
-- **Clean Transition Target**: Piped Natural Gas (PNG - $56.1\text{ kg CO}_2\text{/GJ}$) or Agricultural Biomass Briquettes ($4.2\text{ kg CO}_2\text{/GJ}$ net).
-- **Economic Feasibility**:
-  - **Retrofit CapEx (Dual-fuel burner & manifold valves)**: ₹2,50,000
-  - **Annual Operating Fuel Savings**: **₹26.25 Lakhs / year**
-  - **Simple Payback**: **1.1 Months**
-  - **Scope 1 Direct Emission Cut**: **-266.3 Metric Tons CO₂e / year (-27.5%)**
-
-### 10.4 SEBI BRSR Core & Tier-1 OEM Supply Chain ESG Card
-Tier-2/3 automotive suppliers in India face strict ESG compliance mandates from global OEMs (Tata Motors, Mahindra, Bosch, Maruti Suzuki). ForgeOps Energy automatically compiles an exportable **SEBI BRSR Core & GHG Protocol Disclosure Card**:
-- **Energy Intensity**: Evaluates total energy consumed per metric ton of good output ($1.06\text{ GJ/ton}$, a $-14.3\%$ reduction against baseline).
-- **Scope 1 + Scope 2 Accounting**: Certified according to the GHG Protocol Corporate Standard using CEA India grid emission factors ($0.82\text{ kg CO}_2\text{e/kWh}$).
-- **1-Click Audit Export**: Generates signed, tamper-evident audit dossiers for ISO 50001 certification and OEM contract renewals.
+Time-of-day scheduling and thermal fuel switching are future use cases. Their economics depend on local DISCOM tariff orders, production constraints, fuel prices, equipment changes, and verified emissions factors; the demo does not claim a realized arbitrage or fuel-switching result. Carbon summaries are indicative calculations, not certified GHG Protocol/BRSR disclosures or ISO 50001 evidence.
 
 ---
 
@@ -690,7 +666,7 @@ E:\ForgeOps-Energy\
 │   │   └── Workbench.tsx          # Master 4-agent decision cockpit
 │   ├── App.tsx                    # Root routing, view controller, and navigation
 │   ├── FocusContext.tsx           # Cross-panel synchronized node highlight context
-│   ├── mockData.ts                # Real-world industrial foundry dataset
+│   ├── mockData.ts                # Synthetic foundry demonstration fixtures
 │   ├── energy-styles.css          # Core CSS variables, typography, and layout rules
 │   ├── schneider-theme.css        # Enterprise SCADA theme styling tokens
 │   ├── theme.css                  # Light / Dark theme color tokens and classes
@@ -801,8 +777,10 @@ The native Decision 2.0 loader is opt-in:
 $env:FORGEOPS_LOAD_DECISION2_WEIGHTS = "true"
 ```
 
-Without local model weights, the application reports the calibrated fallback
-engine rather than silently claiming native model execution.
+Without local model weights, the application reports the calibrated deterministic
+fallback. The API endpoint `GET /api/system/status` reports the active System 1
+runtime, model package versions, local weight readiness, remote MCP reachability,
+and plant-integration status. The endpoint never initiates a model download.
 
 ---
 
@@ -822,7 +800,7 @@ pytest backend/tests/ -v
 - `test_nitrochat_client.py`: Verifies resilience and deterministic fallback behavior during LLM latency spikes.
 - `test_closed_loop_harness.py`: Validates factory state, equipment envelopes, System 1 anomaly detection, competing hypotheses, MCP tools, payback, and feedback persistence.
 - `test_decision2_engine.py`: Validates typed Decision 2.0 responses, fast tool routing, and pressure/vibration interlocks.
-- `test_physics_simulation.py`: Validates thermodynamics, compressor/furnace models, Pareto selection, tariffs, ADEETIE economics, IPMVP normalization, carbon calculations, and simulation guardrails.
+- `test_physics_simulation.py`: Exercises thermodynamics, compressor/furnace models, Pareto selection, tariffs, illustrative economics and normalization, carbon calculations, and simulation guardrails.
 
 Focused validation command:
 
@@ -886,24 +864,24 @@ The architecture is implemented end-to-end at prototype level:
 |---|---|---|
 | Factory telemetry, MES, CMMS, quality | **Partial / simulated** | Controlled MCP tools model these sources; live PLC, Modbus, OPC-UA, MQTT, MES, CMMS, and QMS adapters remain to be integrated. |
 | Edge ingestion and baseline | **Implemented locally** | Equipment-specific envelopes and anomaly screening are implemented in `backend/edge/baseline_service.py`; field ingestion and durable buffering remain future integration work. |
-| System 1 fast loop | **Implemented** | `backend/decision2/decision2_engine.py` provides structured low-latency decisions, safety checks, native model loading when configured, and deterministic fallback. |
+| System 1 fast loop | **Deterministic fallback active** | `backend/decision2/decision2_engine.py` provides calibrated routing and explicit rule-based safety checks. Sol-2B snapshot is installed locally; native inference remains opt-in and awaits Transformers 5.17+, a working PyTorch runtime and CUDA device visibility. |
 | System 2 deep loop | **Implemented** | Planner → Research → Analysis → Execution is orchestrated by `backend/pipeline.py`. |
 | Engineering truth | **Implemented** | `simulation/engine.py` and `simulation/engine.ts` provide compressed-air, compressor, furnace, tariff, carbon, and verification models. |
 | What-if and Pareto optimization | **Implemented** | Scenario validation and A–D Pareto recommendations are available through the simulation and MCP layers. |
-| Energy and economics | **Implemented** | Savings, payback, ToD arbitrage, ADEETIE DPR, fuel switching, and BRSR-aligned metrics are calculated. |
-| Human approval and audit | **Implemented** | FastAPI approval and audit-export endpoints persist decision records in SQLite. |
-| Controlled action | **Partial / simulated** | Work-order creation is represented as a read-only simulated CMMS dispatch; no live plant mutation occurs. |
-| Measure and verify | **Implemented locally** | IPMVP Option B/C normalization, verified savings, confidence, and prediction error are calculated. |
+| Energy and economics | **Scenario calculator** | Payback, tariff, load-shifting, fuel-switching, and indicative emissions estimates use editable assumptions; no savings or eligibility is verified. |
+| Human approval and audit | **Implemented locally** | FastAPI approval and audit-export endpoints persist demo decision records in SQLite. |
+| Controlled action | **Simulated draft** | Work-order creation returns a proposed demo record for review; there is no CMMS connection or dispatch. |
+| Measure and verify | **Scenario calculation only** | IPMVP-inspired baseline normalization and savings calculations operate on synthetic inputs. They do not certify measured savings or compliance. |
 | Feedback to baseline/models | **Implemented locally** | Verification feedback is persisted in `backend/database/feedback_registry.db`; automated retraining and external model-registry sync remain future work. |
 
 ### Current role personas
 
 | Person | Role | Primary responsibilities |
 |---|---|---|
-| Vishal | Plant Manager | Executive cockpit, opportunities, approval gates, and verified savings |
-| Vaishak | Energy Manager | SEC baselines, tariff arbitrage, and carbon reporting |
-| Keerthi | Maintenance Engineer | Asset telemetry, root-cause evidence, and CMMS work orders |
-| Sham | Shopfloor Operator | Live operations, process graph, and interlock checks |
+| Vishal | Plant Manager persona | Executive cockpit, opportunities, demo approval gates, and scenario review |
+| Vaishak | Energy Manager persona | SEC baselines, tariff scenarios, and indicative carbon reporting |
+| Keerthi | Maintenance Engineer persona | Fixture telemetry, root-cause evidence, and proposed work-order drafts |
+| Sham | Shopfloor Operator persona | Demo operations, process graph, and illustrative interlock checks |
 
 ### Delivered commits
 
@@ -926,9 +904,8 @@ The architecture is implemented end-to-end at prototype level:
 ## 📜 License & Compliance
 
 ForgeOps Energy is engineered for industrial resilience, safety compliance, and verifiable energy reduction.
-- Built in compliance with **BEE ADEETIE** measurement and verification protocols.
-- Aligned with **ISO 50001** (Energy Management Systems) continuous improvement cycles.
+- Designed to support an energy-management improvement workflow; this prototype is not BEE/ADEETIE approved and is not certified to ISO 50001.
 
 ---
 
-*ForgeOps Energy — Turning Industrial Energy Telemetry into Immediate, Bankable Action.*\n
+*ForgeOps Energy — Turning industrial energy data into human-reviewed efficiency decisions.*

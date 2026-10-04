@@ -210,7 +210,7 @@ export function SimulatorPanel() {
             <div className="flex items-center gap-2 mb-3">
               <SlidersIcon size={14} className="text-emerald-400" />
               <h4 className="text-xs font-semibold text-slate-200 uppercase tracking-wider">
-                Live Parameter Tuning
+                Scenario Parameter Tuning
               </h4>
             </div>
 

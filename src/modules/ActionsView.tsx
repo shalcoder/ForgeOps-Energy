@@ -20,7 +20,7 @@ export function ActionsView({ onNavigate, selectedActionId = 'WO-ENG-7922' }: Ac
   const executionSteps = [
     { time: '10:32 AM', title: 'Investigation completed', desc: 'INV-1024 synthesized causal evidence pack', done: true },
     { time: '10:41 AM', title: 'Scenario approved', desc: 'Scenario A selected by Plant Engineer Vaishak', done: true },
-    { time: '10:45 AM', title: 'Work order created', desc: 'WO-ENG-7922 dispatched to CMMS database', done: true },
+    { time: '10:45 AM', title: 'Demo work-order record', desc: 'Prototype-only record; no CMMS connection or dispatch occurred', done: true },
     { time: '11:00 AM', title: 'Technician started', desc: 'Shift B maintenance technician arrived at Line 2 Moulding bank', done: true },
     { time: '11:32 AM', title: 'Leak repaired', desc: 'Replaced braided coupling with reinforced flexible connector', done: true },
     { time: '11:48 AM', title: 'Equipment returned', desc: 'Air header pressurized to 6.5 bar; soap bubble test passed', done: true },
@@ -38,7 +38,7 @@ export function ActionsView({ onNavigate, selectedActionId = 'WO-ENG-7922' }: Ac
           </div>
           <h1 className="page-title">Operational Actions & Work Orders</h1>
           <p className="page-subtitle">
-            Closed-loop execution tracking from human decision approval to CMMS work dispatch and post-repair return to service.
+            Review the prototype approval record and simulated work-order flow. This deployment is not connected to a CMMS or plant equipment.
           </p>
         </div>
 
@@ -73,7 +73,7 @@ export function ActionsView({ onNavigate, selectedActionId = 'WO-ENG-7922' }: Ac
               <span className="kicker-tag" style={{ border: '1px solid #d4e4d2', background: '#edf4ec', color: '#3b663b' }}>
                 SCHEDULED &bull; WO-ENG-7922
               </span>
-              <span className="provenance-badge provenance-measured">CMMS Dispatched</span>
+              <span className="provenance-badge provenance-simulated">Demo work-order record</span>
             </div>
             <h2 style={{ margin: '8px 0 2px', fontFamily: 'var(--font-serif)', fontSize: '20px', color: 'var(--text-primary)' }}>
               Repair CMP-01 Pneumatic Distribution Leak
@@ -114,14 +114,14 @@ export function ActionsView({ onNavigate, selectedActionId = 'WO-ENG-7922' }: Ac
         {/* Before vs After Telemetry Delta (Section 27 of Spec) */}
         <div style={{ margin: '20px 0' }}>
           <h4 style={{ margin: '0 0 10px', fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>
-            Before Action vs Verified Telemetry Delta
+            Scenario Inputs vs Modelled Outcome
           </h4>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '12px' }}>
             <div style={{ padding: '14px', borderRadius: '8px', border: '1px solid var(--glass-border)', background: 'var(--bg-surface)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>Compressor Power</span>
-                <span className="provenance-badge provenance-measured">Measured</span>
+                <span className="provenance-badge provenance-simulated">Demo input</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '6px' }}>
                 <span style={{ fontSize: '16px', color: '#bd6249', fontWeight: 700 }}>61 kW</span>
@@ -134,7 +134,7 @@ export function ActionsView({ onNavigate, selectedActionId = 'WO-ENG-7922' }: Ac
             <div style={{ padding: '14px', borderRadius: '8px', border: '1px solid var(--glass-border)', background: 'var(--bg-surface)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>Header Pressure</span>
-                <span className="provenance-badge provenance-measured">Measured</span>
+                <span className="provenance-badge provenance-simulated">Demo input</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '6px' }}>
                 <span style={{ fontSize: '16px', color: '#a8793e', fontWeight: 700 }}>6.1 bar</span>
@@ -147,14 +147,14 @@ export function ActionsView({ onNavigate, selectedActionId = 'WO-ENG-7922' }: Ac
             <div style={{ padding: '14px', borderRadius: '8px', border: '1px solid var(--glass-border)', background: 'var(--bg-surface)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>Line 2 Specific Energy</span>
-                <span className="provenance-badge provenance-verified">Verified</span>
+                <span className="provenance-badge provenance-simulated">Modelled</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '6px' }}>
                 <span style={{ fontSize: '16px', color: '#bd6249', fontWeight: 700 }}>11.2 kWh/t</span>
                 <span style={{ color: 'var(--text-muted)' }}>&rarr;</span>
                 <span style={{ fontSize: '18px', color: '#5e7e60', fontWeight: 700 }}>9.8 kWh/t</span>
               </div>
-              <small style={{ color: '#5e7e60', fontWeight: 600, display: 'block', marginTop: '4px' }}>-1.4 kWh/t reduction verified</small>
+              <small style={{ color: '#5e7e60', fontWeight: 600, display: 'block', marginTop: '4px' }}>-1.4 kWh/t scenario estimate</small>
             </div>
           </div>
         </div>

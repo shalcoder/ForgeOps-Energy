@@ -236,7 +236,7 @@ export const incidentEvents: IncidentEvent[] = [
     id: 'evt_eng_08',
     timestamp: at('08:33'),
     offsetMinutes: 33,
-    label: 'Analysis Agent Proves Root Cause',
+    label: 'Analysis Agent Scores a Root-Cause Hypothesis',
     category: 'system',
     severity: 'info',
     source: 'Analysis Agent',
@@ -246,8 +246,8 @@ export const incidentEvents: IncidentEvent[] = [
     evidenceIds: ['ev_root_cause_analysis'],
     confidence: 0.93,
     value: 'Line 2 Compressed-Air Leakage (93% confidence)',
-    description: 'Causal inference graph confirmed: Leakage -> Pressure Drop (-1.1 bar) -> Compressor Load (+21%) -> Motor Draw (+12%) -> SEC Surge (+14.3%).',
-    secImpact: 'Root cause verified',
+    description: 'Synthetic case-study graph suggests: leakage -> pressure drop (-1.1 bar) -> compressor load (+21%) -> motor draw (+12%) -> SEC increase (+14.3%). Inspect onsite before treating this as a root cause.',
+    secImpact: 'Fixture-based hypothesis',
   },
   {
     id: 'evt_eng_09',
@@ -279,26 +279,26 @@ export const incidentEvents: IncidentEvent[] = [
     graphNodeIds: ['node_leakage'],
     evidenceIds: ['ev_work_order_dispatch'],
     confidence: 1.0,
-    value: 'Work order WO-ENG-8821 dispatched to CMMS',
-    description: 'Plant supervisor approved scheduled 48-minute maintenance intervention during die changeover window. Zero unplanned downtime incurred.',
+    value: 'Demo approval recorded; proposed work-order draft only',
+    description: 'Synthetic approval-gate example; no CMMS dispatch, physical intervention, or downtime outcome occurred.',
     secImpact: 'Execution authorized',
   },
   {
     id: 'evt_eng_11',
     timestamp: at('11:30'),
     offsetMinutes: 210,
-    label: 'Post-Action Verification & Impact Closure',
+    label: 'Modelled Scenario Result',
     category: 'energy',
     severity: 'info',
-    source: 'ForgeOps Verification Engine',
+    source: 'ForgeOps Scenario Engine (synthetic fixture)',
     recordId: 'verify:VRF-2408-01',
     stageId: 'stage-verified',
     graphNodeIds: ['node_sec', 'node_production', 'node_quality'],
-    evidenceIds: ['ev_verified_impact'],
-    confidence: 0.99,
-    value: 'SEC: 9.2 kWh/ton (-18.0%) · Throughput: 10.2t · Quality: 97.8%',
-    description: 'Air pressure restored to optimal 6.5 bar. Compressor runtime dropped back to 64%. Actual verified savings: 1,840 kWh/day (₹6,240/day). Case closed.',
-    secImpact: 'Verified SEC: 9.2 kWh/ton',
+    evidenceIds: ['ev_simulation_matrix'],
+    confidence: 0.72,
+    value: 'Scenario SEC: 9.2 kWh/t (-18% vs incident fixture)',
+    description: 'Synthetic scenario assumes a 6.5 bar setpoint and leak repair. No physical intervention, post-action telemetry, or verified savings occurred.',
+    secImpact: 'Modelled scenario SEC: 9.2 kWh/t',
   },
 ];
 
@@ -374,19 +374,19 @@ export const replayStages: ReplayStage[] = [
   },
   {
     id: 'stage-verified',
-    label: '11:30 AM — Action Verified & Resolved',
-    shortLabel: 'Verified Impact',
+    label: '11:30 AM — Modelled Scenario Output',
+    shortLabel: 'Modelled Result',
     status: 'ok',
     startMinute: 135,
     endMinute: 210,
-    summary: 'Pneumatic fitting repaired; compressor setpoint optimized to 6.5 bar. SEC dropped to 9.2 kWh/ton (-18.0%). Throughput & quality preserved.',
-    inputs: ['CMMS Work Order WO-ENG-8821', 'Pressure Calibrator'],
-    outputs: ['SEC Restoration', 'Verified 1,840 kWh/day Saving'],
+    summary: 'Illustrative calculation assumes pneumatic repair and a 6.5 bar setpoint. Result is not a measured intervention or proof that output and quality were preserved.',
+    inputs: ['Synthetic repair assumption', 'Illustrative pressure setpoint'],
+    outputs: ['Scenario SEC estimate', 'Illustrative energy-cost estimate'],
     metrics: [
-      { label: 'Verified SEC', value: '9.2 kWh/ton (-18%)', state: 'normal' },
-      { label: 'Daily Savings', value: '₹6,240 / day', state: 'normal' },
-      { label: 'CO2 Reduction', value: '96 kg / day', state: 'normal' },
-      { label: 'Quality Yield', value: '97.8% (+0.2%)', state: 'normal' },
+      { label: 'Modelled SEC', value: '9.2 kWh/t (-18%)', state: 'normal' },
+      { label: 'Indicative cost impact', value: '₹6,240 / scenario day', state: 'normal' },
+      { label: 'Indicative CO₂ impact', value: '96 kg / scenario day', state: 'normal' },
+      { label: 'Quality guardrail input', value: '97.6% (held constant)', state: 'normal' },
     ],
     eventIds: ['evt_eng_10', 'evt_eng_11'],
   },
@@ -634,7 +634,7 @@ export const evidenceRecords: EvidenceRecord[] = [
     recordId: 'mes:BATCH-FD-2408',
     timestamp: at('08:30'),
     kind: 'record',
-    summary: 'Daily foundry throughput confirmed at 10.2 tons good castings. Verified that SEC spike is pure energy waste, not output growth.',
+    summary: 'Synthetic fixture records hold foundry throughput at 10.2 tons/day so the scenario can isolate an SEC change. No live MES or quality source is connected.',
     confidence: 0.99,
     evidenceType: 'observed_correlation',
     metricDetails: {
@@ -663,13 +663,13 @@ export const evidenceRecords: EvidenceRecord[] = [
   },
   {
     id: 'ev_verified_impact',
-    title: 'Post-Intervention Verified Energy Measurement',
-    source: 'ForgeOps Verification Engine / Smart Meter',
+    title: 'Illustrative Before/After Scenario Calculation',
+    source: 'ForgeOps Scenario Engine / synthetic fixture',
     recordId: 'verify:VRF-2408-01',
     timestamp: at('11:30'),
     kind: 'comparison',
-    summary: 'Post-intervention telemetry proves SEC dropped to 9.2 kWh/ton (-18.0%). Daily savings verified at 1,840 kWh/day (₹6,240/day) with zero throughput loss.',
-    confidence: 0.99,
+    summary: 'Scenario inputs calculate SEC at 9.2 kWh/t (-18.0%). No post-intervention telemetry or verified energy saving is available.',
+    confidence: 0.72,
     evidenceType: 'model_estimated',
     metricDetails: {
       metric: 'Post-Action SEC',
@@ -907,9 +907,9 @@ export const agentTraceSteps = [
     agentTitle: '1. Planner Agent',
     status: 'complete' as const,
     durationMs: 310,
-    model: 'Gemini 3.8 Flash (High Reasoning)',
+    model: 'Deterministic demonstration trace',
     objective: 'Define energy optimization objective and operational boundary constraints',
-    summary: 'Formulated primary objective: min(SEC = kWh / ton good casting). Set hard constraints: Throughput >= 10.2 ton/day, Quality Yield >= 97.6%, Safety = Preserved. Formulated investigation plan and selected MCP tools: Energy Telemetry, Pneumatics SCADA, CMMS Maintenance History, MES Production.',
+    summary: 'Synthetic trace sets the objective min(SEC = kWh / ton good casting), with throughput and quality guardrails held at fixture values. MCP tool names are illustrative; live plant adapters are not connected.',
     keyOutputs: [
       'Objective: min(SEC) subject to Throughput >= Baseline, Quality >= Baseline, Safety = Preserved',
       'Target line: Induction Melting & Moulding Line 2',
@@ -921,9 +921,9 @@ export const agentTraceSteps = [
     agentTitle: '2. Research Agent',
     status: 'complete' as const,
     durationMs: 460,
-    model: 'Gemini 3.8 Flash (High Reasoning)',
+    model: 'Deterministic demonstration trace',
     objective: 'Retrieve multi-domain manufacturing and energy evidence across plant systems',
-    summary: 'Queried smart energy meters (MTR-LINE2), pressure transmitter (PT-204), and compressor controller (COMP-02). Correlated CMMS maintenance logs showing 3 recurring flexible hose patch repairs in past 15 days. Verified MES daily output (10.2t) and quality yield (97.6%) were unaffected.',
+    summary: 'Illustrative fixture bundle includes sample meter, pressure, compressor, maintenance, throughput, and quality fields. They have not been queried from live plant systems.',
     keyOutputs: [
       'SEC increased from 9.8 to 11.2 kWh/ton (+14.3%)',
       'Air pressure collapsed from 7.2 to 6.1 bar (-15.3%)',
@@ -936,13 +936,13 @@ export const agentTraceSteps = [
     agentTitle: '3. Analysis Agent',
     status: 'complete' as const,
     durationMs: 540,
-    model: 'Gemini 3.8 Flash (High Reasoning)',
+    model: 'Deterministic demonstration trace',
     objective: 'Detect anomalies, calculate SEC, establish causal chain and root cause',
-    summary: 'Correlated the 1.1 bar pneumatic pressure drop with compressor on-load runtime spike and 18 kW excess electrical draw. Established causal inference: Line 2 Pneumatic Leakage -> Pressure Drop -> Modulation Overcycling -> SEC Surge. Confirmed root cause with 93% confidence.',
+    summary: 'Fixture-based analysis associates a 1.1 bar pressure change with compressor runtime and modeled draw. Treat the causal chain as a hypothesis for field inspection, not a confirmed root cause.',
     keyOutputs: [
-      'Root Cause: Compressed-air distribution leakage on Line 2 manifold (93% confidence)',
+      'Root-cause hypothesis: compressed-air distribution leakage on Line 2 manifold (fixture confidence only)',
       'Energy Waste: 1,840 kWh/day unrecovered parasitic draw',
-      'Confirmed: Energy spike is 100% waste (Throughput and Quality unaffected)',
+      'Scenario guardrails hold throughput and quality inputs constant; a pilot must validate output and quality',
     ],
   },
   {
@@ -950,14 +950,14 @@ export const agentTraceSteps = [
     agentTitle: '4. Execution Agent (What-If & Optimization)',
     status: 'complete' as const,
     durationMs: 620,
-    model: 'Gemini 3.8 Flash (High Reasoning)',
+    model: 'Deterministic demonstration trace',
     objective: 'Run what-if scenario simulations, optimize interventions, quantify ROI and recommend action',
     summary: 'Compared leak repair, setpoint optimization, the combined option, and no action. The case-study estimate for the combined option is 9.2 kWh/ton SEC (-18%), ₹6,240 saved per day, and a simple payback of about 1.5 days.',
     keyOutputs: [
       'Recommended Action: Repair Line 2 leakage and optimize compressor setpoint to 6.5 bar',
-      'Financial estimate: ₹6,240 saved per day (₹1,87,200 over 30 days) · Simple payback: 1.5 days',
-      'Carbon Abatement: 96 kg CO2 / day (28.8 tCO2e / year)',
-      'Awaiting human operator approval gate before CMMS dispatch',
+      'Illustrative impact: ₹6,240 per scenario day; not measured or a site business case',
+      'Indicative CO2 calculation: 96 kg per scenario day; not field verified',
+      'Human review is demonstrated; CMMS integration and dispatch are future work',
     ],
   },
 ];
@@ -1051,14 +1051,14 @@ export const assistantResponses: Record<string, AssistantResponse> = {
 **Objective:** $\\min \\text{SEC} = \\frac{\\text{kWh}}{\\text{ton good casting}}$
 
 #### 1. Anomaly Diagnosis
-At 08:30 AM, ForgeOps Energy detected a **+14.3% surge in Specific Energy Consumption** ($9.8 \\to 11.2\\text{ kWh/ton}$) on Line 2. Total daily electrical draw rose to 8,500 kWh, incurring an excess loss of ₹1,87,200 per month.
-Crucially, MES production records confirmed casting throughput was nominal at **10.2 tons/day** and quality yield was **97.6%** (target $\\ge 97.0\\%$). This definitively proved the energy spike was non-productive waste.
+This synthetic case study represents a **+14.3% SEC increase** ($9.8 \\to 11.2\\text{ kWh/t}$) on Line 2. Fixture assumptions include daily draw and tariff-based cost exposure; these are not live readings or realized losses.
+The scenario holds throughput at **10.2 tons/day** and quality yield at **97.6%** as guardrail inputs. They are not connected MES/QMS records and do not demonstrate preserved production quality.
 
 #### 2. Root Cause Evidence
 - **Pneumatic Pressure Drop:** Pressure transmitter PT-204 recorded a continuous drop from 7.2 bar to 6.1 bar (-15.3%).
 - **Compressor Runtime Overcycling:** The 75 kW main screw compressor modulation increased from 67% to 88% on-load (+21% runtime), with motor current surging to 142A (+12%).
-- **CMMS Correlation:** Maintenance logs revealed 3 recurring patch repairs on Line 2 flexible coupling in the last 15 days.
-- **Probable Root Cause:** Distribution leakage at Line 2 moulding station manifold (93% confidence).
+- **Fixture maintenance history:** Three recurring patch repairs are represented in the synthetic case study.
+- **Root-cause hypothesis:** Distribution leakage at Line 2 moulding station manifold; inspect onsite to validate.
 
 #### 3. What-If Scenario Optimization & Recommendation
 ForgeOps Energy simulated 4 interventions:
@@ -1068,7 +1068,7 @@ ForgeOps Energy simulated 4 interventions:
 4. **Intervention D (No Action):** Status quo loss of ₹1.87 Lakhs/month with severe risk of compressor trip.
 
 #### 4. Human Approval Gate
-Action requires supervisor approval to dispatch CMMS Work Order WO-ENG-8821 for execution during the upcoming 48-minute die changeover window.
+This case study illustrates a human approval gate and a proposed work-order draft. It does not dispatch a CMMS work order or establish a real changeover slot.
 `,
       },
     ],

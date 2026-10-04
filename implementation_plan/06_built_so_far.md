@@ -1,7 +1,7 @@
 # ForgeOps Energy — What Has Been Built So Far
 
 > **Document ID:** `06_built_so_far.md`  
-> **Status:** Production-Ready MVP & Enterprise Decision-Intelligence Harness  
+> **Status:** Full-stack demonstration prototype · synthetic plant data · Sol-2B snapshot downloaded locally · deterministic System 1 fallback active pending compatible CUDA runtime
 > **Last Updated:** Current System State (Comprehensive Inventory)  
 > **Repository Scale:** 147 source files · 31,000+ lines of code, tests, schemas & documentation  
 

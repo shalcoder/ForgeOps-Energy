@@ -31,7 +31,7 @@ const SEARCHABLE_ITEMS: CommandResult[] = [
   { id: 'opp-3', category: 'Opportunity', title: 'Furnace F-02 idle holding loss reduction', subtitle: 'FURN-02 • Potential ₹26k/mo savings • Simulated scenario', badge: 'Simulated', view: 'opportunities', detailId: 'opp-3' },
   { id: 'inv-1024', category: 'Investigation', title: 'INV-1024: CMP-01 abnormal energy consumption', subtitle: '4 Agents active • Analysis stage • Leading cause: Air leakage (82%)', badge: 'Analysis', view: 'investigations', detailId: 'INV-1024' },
   { id: 'wo-7922', category: 'Action', title: 'WO-ENG-7922: Repair CMP-01 pneumatic coupling', subtitle: 'Assigned to Shift B • Scheduled 14:30–15:15 • Expected -1.5 SEC', badge: 'Scheduled', view: 'actions', detailId: 'WO-ENG-7922' },
-  { id: 'ver-332', category: 'Verification', title: 'VER-332: Line 2 manifold leak repair outcome', subtitle: 'IPMVP Option B • Measured SEC: 9.8 kWh/t (Verified -1.2 kWh/t savings)', badge: 'Verified', view: 'verification', detailId: 'VER-332' },
+  { id: 'ver-332', category: 'Verification', title: 'VER-332: Illustrative Line 2 scenario', subtitle: 'Baseline-normalization example • Synthetic fixture inputs; no field-verified savings', badge: 'Modelled', view: 'verification', detailId: 'VER-332' },
 ];
 
 export function CommandPalette({
@@ -103,7 +103,7 @@ export function CommandPalette({
       });
     } else if (lower.includes('action') || lower.includes('work order') || lower.includes('wo')) {
       setAiAnswer({
-        text: 'Work order WO-ENG-7922 is scheduled for 14:30 today during the Line 2 mold changeover. It replaces the degraded braided coupling on the main distribution header.',
+        text: 'The prototype can prepare a proposed work-order draft for review. No live CMMS adapter is connected, so nothing is dispatched or scheduled.',
         links: [
           { label: 'View Action WO-ENG-7922', view: 'actions', detailId: 'WO-ENG-7922' },
           { label: 'Check Verification Plan', view: 'verification', detailId: 'VER-332' },
@@ -111,7 +111,7 @@ export function CommandPalette({
       });
     } else if (lower.includes('verify') || lower.includes('savings')) {
       setAiAnswer({
-        text: 'Verified savings to date: ₹12.8 Lakhs across 18 completed interventions. Current active verification on Line 2 confirms -1.2 kWh/t SEC reduction normalized for throughput and ambient temp.',
+        text: 'No field-verified savings are recorded in this prototype. Explore the synthetic Line 2 normalization example; independent post-action meter and production data are required for verification.',
         links: [
           { label: 'View Savings Verification', view: 'verification', detailId: 'VER-332' },
           { label: 'Export M&V Report', view: 'reports', detailId: 'rep-mv' },
@@ -119,7 +119,7 @@ export function CommandPalette({
       });
     } else {
       setAiAnswer({
-        text: `Showing telemetry and operational records related to "${q}". Select an item below or ask about anomalies, opportunities, simulations, or verified savings.`,
+        text: `Showing demonstration fixtures related to "${q}". No live plant telemetry or completed interventions are connected.`,
         links: [
           { label: 'Live Operations', view: 'live-operations' },
           { label: 'All Opportunities', view: 'opportunities' },
